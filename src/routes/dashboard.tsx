@@ -17,6 +17,7 @@ import {
   Settings as SettingsIcon,
   ShoppingBag,
   Sparkles,
+  TrendingDown,
   Tv,
   Wallet,
   X,
@@ -37,6 +38,12 @@ import {
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { OtpVerifyModal } from "@/components/OtpVerifyModal";
 import { OnboardingTour } from "@/components/OnboardingTour";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type CategoryFilter = ProductCategory | "All";
 
