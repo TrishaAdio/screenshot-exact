@@ -2,23 +2,21 @@ import { Link } from "@tanstack/react-router";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-surface/50">
-      <div className="mx-auto max-w-7xl px-6 py-12">
+    <footer className="border-t border-border bg-surface/40">
+      <div className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-10 md:grid-cols-12">
           <div className="md:col-span-5">
-            <Link to="/" className="flex items-center gap-2.5">
-              <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary">
-                <span className="font-display text-[13px] font-bold text-primary-foreground">
-                  S
-                </span>
-              </div>
-              <span className="font-display text-[15px] font-bold tracking-tight text-foreground">
+            <Link to="/" className="flex items-center gap-2">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-foreground text-background">
+                <span className="font-display text-[13px] font-bold">S</span>
+              </span>
+              <span className="font-display text-[15px] font-semibold tracking-tight text-foreground">
                 SymDeals
               </span>
             </Link>
-            <p className="mt-4 max-w-sm text-[13px] leading-[1.6] text-muted-foreground">
-              Premium OTT subscriptions made affordable. Save up to 70% on
-              Netflix, Prime Video, YouTube, and Disney+ Hotstar.
+            <p className="mt-5 max-w-sm text-[13px] leading-[1.65] text-muted-foreground">
+              Premium digital access — subscriptions, software, and services
+              with instant automated delivery and built-in warranty.
             </p>
           </div>
 
