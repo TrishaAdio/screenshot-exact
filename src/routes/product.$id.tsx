@@ -423,6 +423,7 @@ function ProductPage() {
         onCancel={() => setLogoutOpen(false)}
         onConfirm={confirmLogout}
       />
+      <MobileBottomNav />
     </div>
   );
 }
