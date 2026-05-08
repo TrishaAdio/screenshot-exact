@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import {
   Bell,
   Code2,
@@ -14,15 +15,14 @@ import {
   Package,
   Search,
   Settings as SettingsIcon,
-  ShieldCheck,
   ShoppingBag,
   Sparkles,
   Tv,
   Wallet,
   X,
   Zap,
-  Lock,
   ArrowUpRight,
+  ArrowRight,
 } from "lucide-react";
 import {
   type AuthUser,
