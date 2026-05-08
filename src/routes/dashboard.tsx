@@ -1019,9 +1019,9 @@ function SearchOverlay({
                         className="group flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-surface-elevated"
                       >
                         <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-border bg-background/60">
-                          <ProductImage
+                          <ServiceLogo
                             src={p.image}
-                            alt={p.name}
+                            name={p.name}
                             className="h-full w-full object-cover"
                             iconClass="h-4 w-4"
                           />
