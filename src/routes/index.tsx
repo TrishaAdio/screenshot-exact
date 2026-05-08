@@ -1,26 +1,43 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Navbar } from "@/components/Navbar";
+import { Hero } from "@/components/Hero";
+import { HomeFeatures } from "@/components/HomeFeatures";
+import { CtaSection } from "@/components/CtaSection";
+import { Footer } from "@/components/Footer";
 
 export const Route = createFileRoute("/")({
   component: Index,
+  head: () => ({
+    meta: [
+      { title: "SymDeals — Netflix, Prime, YouTube All in One Place" },
+      {
+        name: "description",
+        content:
+          "Save up to 70% on premium OTT subscriptions — Netflix, Prime Video, YouTube, Disney+ Hotstar — with instant access and warranty included.",
+      },
+      {
+        property: "og:title",
+        content: "SymDeals — Netflix, Prime, YouTube All in One Place",
+      },
+      {
+        property: "og:description",
+        content:
+          "Save up to 70% on premium OTT subscriptions with instant access and warranty included.",
+      },
+    ],
+  }),
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="relative min-h-screen overflow-x-hidden">
+      <Navbar />
+      <main>
+        <Hero />
+        <HomeFeatures />
+        <CtaSection />
+      </main>
+      <Footer />
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
