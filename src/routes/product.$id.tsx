@@ -23,6 +23,8 @@ import {
   resolveImageUrl,
 } from "@/lib/api";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { ServiceLogo } from "@/components/ServiceLogo";
 
 export const Route = createFileRoute("/product/$id")({
   component: ProductPage,
