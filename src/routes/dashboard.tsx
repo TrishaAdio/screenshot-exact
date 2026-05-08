@@ -386,6 +386,7 @@ function DashboardPage() {
 
       <OnboardingTour />
     </div>
+    </TooltipProvider>
   );
 }
 
