@@ -149,7 +149,7 @@ function ProductPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-10">
+      <main className="mx-auto max-w-6xl px-6 py-10 pb-32 lg:pb-10">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-[12px] text-muted-foreground">
           <Link to="/dashboard" className="hover:text-foreground">
