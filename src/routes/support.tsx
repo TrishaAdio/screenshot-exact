@@ -178,6 +178,7 @@ function SupportPage() {
           </div>
         </section>
       </main>
+      <MobileBottomNav />
     </div>
   );
 }
