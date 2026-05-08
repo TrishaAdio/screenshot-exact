@@ -127,7 +127,7 @@ export function Navbar() {
                     </MenuLink>
                     <button
                       onClick={() => {
-                        logout();
+                        clearSession();
                         window.location.href = "/";
                       }}
                       className="flex w-full items-center gap-2.5 border-t border-border px-3 py-2.5 text-left text-[13px] text-muted-foreground transition-colors hover:bg-surface-elevated hover:text-foreground"
