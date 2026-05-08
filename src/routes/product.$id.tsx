@@ -20,7 +20,6 @@ import {
   clearSession,
   fetchProduct,
   getToken,
-  resolveImageUrl,
 } from "@/lib/api";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
