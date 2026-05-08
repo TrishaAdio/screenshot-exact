@@ -262,18 +262,18 @@ function DashboardPage() {
             </section>
 
             {/* Filter pills */}
-            <section className="mt-12 animate-fade-up" data-tour="categories">
+            <section className="mt-14 animate-fade-up" data-tour="categories">
               <div className="flex items-center justify-between">
-                <h2 className="font-display text-[15px] font-semibold tracking-tight text-foreground">
+                <h2 className="font-display text-[17px] font-semibold tracking-tight text-foreground">
                   Catalog
                 </h2>
-                <span className="text-[11.5px] text-muted-foreground">
+                <span className="text-[12px] text-muted-foreground">
                   {loadingProducts ? "—" : `${filteredProducts.length} services`}
                 </span>
               </div>
               <LayoutGroup id="category-pills">
                 <div
-                  className="mt-4 -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  className="mt-5 -mx-6 flex gap-2 overflow-x-auto px-6 pb-1 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
                   role="tablist"
                 >
                   {CATEGORY_TABS.map(({ key, label, Icon }) => {
@@ -286,7 +286,7 @@ function DashboardPage() {
                         onClick={() => setSelectedCategory(key)}
                         whileTap={{ scale: 0.94 }}
                         transition={{ type: "spring", stiffness: 400, damping: 26 }}
-                        className={`relative inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium tracking-tight transition-colors ${
+                        className={`relative inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-medium tracking-tight transition-colors ${
                           active
                             ? "border-transparent text-background"
                             : "border-border bg-surface/60 text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground"
@@ -309,20 +309,20 @@ function DashboardPage() {
             </section>
 
             {/* Product grid */}
-            <section className="mt-6" data-tour="products">
+            <section className="mt-7" data-tour="products">
               {loadingProducts ? (
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                   {[0, 1, 2, 3, 4, 5].map((i) => (
                     <div
                       key={i}
-                      className="h-[148px] animate-pulse rounded-2xl border border-border bg-surface/60"
+                      className="h-[180px] animate-pulse rounded-2xl border border-border bg-surface/60"
                     />
                   ))}
                 </div>
               ) : filteredProducts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface/40 px-6 py-16 text-center">
+                <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface/40 px-6 py-20 text-center">
                   <Package className="h-7 w-7 text-muted-foreground/60" />
-                  <p className="mt-3 text-[13.5px] font-medium text-foreground">
+                  <p className="mt-3 text-[14px] font-medium text-foreground">
                     {selectedCategory === "All"
                       ? "No services available yet"
                       : `No services in ${selectedCategory}`}
@@ -331,7 +331,7 @@ function DashboardPage() {
               ) : (
                 <div
                   key={selectedCategory}
-                  className="grid animate-fade-up grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                  className="grid animate-fade-up grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
                 >
                   {filteredProducts.map((p) => (
                     <ProductCard
