@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
+import { Categories } from "@/components/Categories";
 import { HomeFeatures } from "@/components/HomeFeatures";
+import { TrustedBy } from "@/components/TrustedBy";
 import { CtaSection } from "@/components/CtaSection";
 import { Footer } from "@/components/Footer";
 
@@ -9,20 +11,20 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "SymDeals — Netflix, Prime, YouTube All in One Place" },
+      { title: "SymDeals — Premium Digital Access. Instantly Delivered." },
       {
         name: "description",
         content:
-          "Save up to 70% on premium OTT subscriptions — Netflix, Prime Video, YouTube, Disney+ Hotstar — with instant access and warranty included.",
+          "Subscriptions, software, and premium services with instant automated delivery. Trusted by thousands. Warranty included.",
       },
       {
         property: "og:title",
-        content: "SymDeals — Netflix, Prime, YouTube All in One Place",
+        content: "SymDeals — Premium Digital Access. Instantly Delivered.",
       },
       {
         property: "og:description",
         content:
-          "Save up to 70% on premium OTT subscriptions with instant access and warranty included.",
+          "Subscriptions, software, and premium services with instant automated delivery.",
       },
     ],
   }),
@@ -30,11 +32,13 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
+    <div className="relative min-h-screen overflow-x-hidden bg-background">
       <Navbar />
       <main>
         <Hero />
+        <Categories />
         <HomeFeatures />
+        <TrustedBy />
         <CtaSection />
       </main>
       <Footer />
