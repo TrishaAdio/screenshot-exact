@@ -656,23 +656,23 @@ function ActiveOrdersCard({ loading }: { loading: boolean }) {
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="group relative overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur shadow-card"
+      className="group relative overflow-hidden rounded-2xl border border-border bg-surface/60 p-5 backdrop-blur shadow-card transition-colors hover:border-muted-foreground/25"
     >
       <div className="flex items-center justify-between">
         <span className="text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
           Active Orders
         </span>
-        <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background/60">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background/60">
           <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground" />
         </div>
       </div>
-      <div className="mt-3 flex items-baseline gap-2">
-        <span className="font-display text-[1.6rem] font-semibold tracking-tight text-foreground">
+      <div className="mt-4 flex items-baseline gap-2.5">
+        <span className="font-display text-[1.85rem] font-semibold tracking-tight text-foreground">
           {loading ? <span className="text-muted-foreground/40">—</span> : "0"}
         </span>
         <Link
           to="/orders"
-          className="group/link inline-flex items-center gap-0.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+          className="group/link inline-flex items-center gap-0.5 text-[11.5px] font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           View all
           <ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-0.5" />
@@ -682,48 +682,38 @@ function ActiveOrdersCard({ loading }: { loading: boolean }) {
   );
 }
 
-function QuickAccessCard({
-  items,
-  onSelect,
-}: {
-  items: { key: CategoryFilter; label: string; Icon: typeof Grid3x3 }[];
-  onSelect: (key: CategoryFilter) => void;
-}) {
+function TotalSavedCard({ loading, amount }: { loading: boolean; amount: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
-      className="relative overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur shadow-card sm:col-span-2"
+      className="group relative overflow-hidden rounded-2xl border border-border bg-surface/60 p-5 backdrop-blur shadow-card transition-colors hover:border-primary/25"
     >
-      <div className="flex items-center justify-between">
+      {/* soft emerald glow */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[radial-gradient(circle,color-mix(in_oklab,var(--primary)_22%,transparent),transparent_70%)] opacity-60 blur-2xl"
+      />
+      <div className="relative flex items-center justify-between">
         <span className="text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-          Quick Access
+          Total Saved
         </span>
-        <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary/20 bg-primary/10">
+          <TrendingDown className="h-3.5 w-3.5 text-primary" />
+        </div>
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {items.map(({ key, label, Icon }) => (
-          <motion.button
-            key={key}
-            type="button"
-            onClick={() => {
-              onSelect(key);
-              if (typeof window !== "undefined") {
-                window.scrollTo({ top: 320, behavior: "smooth" });
-              }
-            }}
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: "spring", stiffness: 380, damping: 24 }}
-            className="group flex flex-col items-start gap-1.5 rounded-xl border border-border bg-background/40 p-2.5 text-left transition-colors hover:border-muted-foreground/30 hover:bg-background/70"
-          >
-            <Icon className="h-3.5 w-3.5 text-muted-foreground transition-colors group-hover:text-foreground" />
-            <span className="text-[11.5px] font-medium tracking-tight text-foreground/85 group-hover:text-foreground">
-              {label}
-            </span>
-          </motion.button>
-        ))}
+      <div className="relative mt-4 flex items-baseline gap-2">
+        <span className="font-display text-[1.85rem] font-semibold tracking-tight text-foreground">
+          {loading ? (
+            <span className="text-muted-foreground/40">—</span>
+          ) : (
+            <>₹{amount.toLocaleString("en-IN")}</>
+          )}
+        </span>
+        <span className="text-[11.5px] font-medium text-muted-foreground">
+          across all orders
+        </span>
       </div>
     </motion.div>
   );
