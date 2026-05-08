@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import symdealsLogo from "@/assets/symdeals-logo.png";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import {
   AlertTriangle,
   ArrowRight,
