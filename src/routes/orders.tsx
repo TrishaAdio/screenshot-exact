@@ -159,6 +159,7 @@ function OrdersPage() {
           )}
         </div>
       </main>
+      <MobileBottomNav />
     </div>
   );
 }
