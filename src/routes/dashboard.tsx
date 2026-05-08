@@ -1052,32 +1052,5 @@ function SearchOverlay({
   );
 }
 
-function ProductImage({
-  src,
-  alt,
-  className,
-  iconClass,
-}: {
-  src?: string;
-  alt: string;
-  className?: string;
-  iconClass?: string;
-}) {
-  const [failed, setFailed] = useState(false);
-  if (!src || failed) {
-    return (
-      <div className="flex h-full w-full items-center justify-center text-muted-foreground/40">
-        <Package className={iconClass ?? "h-5 w-5"} />
-      </div>
-    );
-  }
-  return (
-    <img
-      src={resolveImageUrl(src)}
-      alt={alt}
-      loading="lazy"
-      className={className}
-      onError={() => setFailed(true)}
-    />
-  );
-}
+// ProductImage replaced by <ServiceLogo /> from @/components/ServiceLogo
+
