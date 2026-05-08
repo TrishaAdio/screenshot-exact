@@ -6,10 +6,11 @@ import {
   type OrderStatus,
   fetchMyOrders,
   getToken,
-  resolveImageUrl,
   verifyOrderStatus,
 } from "@/lib/api";
 import symdealsLogo from "@/assets/symdeals-logo.png";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { ServiceLogo } from "@/components/ServiceLogo";
 
 export const Route = createFileRoute("/orders")({
   component: OrdersPage,
@@ -118,7 +119,7 @@ function OrdersPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-5 py-10 sm:px-6 sm:py-12">
+      <main className="mx-auto max-w-3xl px-5 py-10 pb-32 sm:px-6 sm:py-12 lg:pb-12">
         <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1">
           <ShoppingBag className="h-3 w-3 text-primary" />
           <span className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
@@ -157,6 +158,7 @@ function OrdersPage() {
           )}
         </div>
       </main>
+      <MobileBottomNav />
     </div>
   );
 }
@@ -176,20 +178,12 @@ function OrderCard({ order }: { order: Order }) {
         {/* LEFT: image + name */}
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <div className="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-border bg-background sm:h-16 sm:w-16">
-            {order.productImage ? (
-              <img
-                src={resolveImageUrl(order.productImage)}
-                alt={order.productName}
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  (e.currentTarget as HTMLImageElement).style.display = "none";
-                }}
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-muted-foreground/40">
-                <ShoppingBag className="h-5 w-5" />
-              </div>
-            )}
+            <ServiceLogo
+              src={order.productImage}
+              name={order.productName}
+              className="h-full w-full object-cover"
+              iconClass="h-5 w-5"
+            />
           </div>
           <div className="min-w-0">
             <h3 className="truncate font-display text-[14.5px] font-semibold tracking-tight text-foreground sm:text-[15.5px]">

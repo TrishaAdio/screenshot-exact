@@ -20,9 +20,10 @@ import {
   clearSession,
   fetchProduct,
   getToken,
-  resolveImageUrl,
 } from "@/lib/api";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { ServiceLogo } from "@/components/ServiceLogo";
 
 export const Route = createFileRoute("/product/$id")({
   component: ProductPage,
@@ -147,7 +148,7 @@ function ProductPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-10">
+      <main className="mx-auto max-w-6xl px-6 py-10 pb-32 lg:pb-10">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-[12px] text-muted-foreground">
           <Link to="/dashboard" className="hover:text-foreground">
@@ -189,21 +190,13 @@ function ProductPage() {
               {/* Image */}
               <div className="lg:sticky lg:top-8 lg:self-start">
                 <div className="aspect-square w-full overflow-hidden rounded-2xl border border-border bg-surface">
-                  {product.image ? (
-                    <img
-                      src={resolveImageUrl(product.image)}
-                      alt={product.name}
-                      className="h-full w-full object-cover"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display =
-                          "none";
-                      }}
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-muted-foreground/40">
-                      <Package className="h-16 w-16" />
-                    </div>
-                  )}
+                  <ServiceLogo
+                    src={product.image}
+                    name={product.name}
+                    className="h-full w-full object-cover"
+                    iconClass="h-16 w-16"
+                    rounded="rounded-2xl"
+                  />
                 </div>
               </div>
 
@@ -421,6 +414,7 @@ function ProductPage() {
         onCancel={() => setLogoutOpen(false)}
         onConfirm={confirmLogout}
       />
+      <MobileBottomNav />
     </div>
   );
 }

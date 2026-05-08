@@ -3,6 +3,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { ArrowLeft, KeyRound, Mail, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 import symdealsLogo from "@/assets/symdeals-logo.png";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import {
   type AuthUser,
   clearSession,
@@ -75,7 +76,7 @@ function MyProfilePage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-6 py-12">
+      <main className="mx-auto max-w-3xl px-6 py-12 pb-32 lg:pb-12">
         <div>
           <h1 className="font-display text-[2rem] font-bold tracking-[-0.02em] text-foreground">
             My Profile
@@ -103,6 +104,7 @@ function MyProfilePage() {
           </div>
         )}
       </main>
+      <MobileBottomNav />
     </div>
   );
 }

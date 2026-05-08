@@ -38,6 +38,8 @@ import {
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { OtpVerifyModal } from "@/components/OtpVerifyModal";
 import { OnboardingTour } from "@/components/OnboardingTour";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { ServiceLogo } from "@/components/ServiceLogo";
 import {
   Tooltip,
   TooltipContent,
@@ -508,40 +510,7 @@ function DesktopSidebar({
 
 /* ---------- Mobile bottom nav + drawer ---------- */
 
-const MOBILE_NAV = [
-  { to: "/dashboard", label: "Home", Icon: LayoutDashboard },
-  { to: "/orders", label: "Orders", Icon: ShoppingBag },
-  { to: "/myprofile", label: "Wallet", Icon: Wallet },
-  { to: "/support", label: "Help", Icon: Headphones },
-] as const;
-
-function MobileBottomNav() {
-  const path = useRouterState({ select: (r) => r.location.pathname });
-  return (
-    <nav className="fixed inset-x-3 bottom-3 z-40 lg:hidden">
-      <div className="glass-nav flex items-center justify-around rounded-2xl border border-border px-2 py-1.5 shadow-elevated">
-        {MOBILE_NAV.map((item) => {
-          const Icon = item.Icon;
-          const active = path === item.to;
-          return (
-            <Link
-              key={item.label}
-              to={item.to}
-              className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl px-2 py-2 text-[10.5px] font-medium transition-colors ${
-                active
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Icon className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
-              {item.label}
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
+// MobileBottomNav now lives in @/components/MobileBottomNav (shared across pages).
 
 function MobileDrawer({
   open,
@@ -828,9 +797,9 @@ function ProductCard({
 
       <div className="relative flex items-start gap-4">
         <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-background/70 transition-transform duration-300 group-hover:scale-[1.04]">
-          <ProductImage
+          <ServiceLogo
             src={product.image}
-            alt={product.name}
+            name={product.name}
             className="h-full w-full object-cover"
             iconClass="h-6 w-6"
           />
@@ -1043,9 +1012,9 @@ function SearchOverlay({
                         className="group flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-surface-elevated"
                       >
                         <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-border bg-background/60">
-                          <ProductImage
+                          <ServiceLogo
                             src={p.image}
-                            alt={p.name}
+                            name={p.name}
                             className="h-full w-full object-cover"
                             iconClass="h-4 w-4"
                           />
@@ -1076,32 +1045,5 @@ function SearchOverlay({
   );
 }
 
-function ProductImage({
-  src,
-  alt,
-  className,
-  iconClass,
-}: {
-  src?: string;
-  alt: string;
-  className?: string;
-  iconClass?: string;
-}) {
-  const [failed, setFailed] = useState(false);
-  if (!src || failed) {
-    return (
-      <div className="flex h-full w-full items-center justify-center text-muted-foreground/40">
-        <Package className={iconClass ?? "h-5 w-5"} />
-      </div>
-    );
-  }
-  return (
-    <img
-      src={resolveImageUrl(src)}
-      alt={alt}
-      loading="lazy"
-      className={className}
-      onError={() => setFailed(true)}
-    />
-  );
-}
+// ProductImage replaced by <ServiceLogo /> from @/components/ServiceLogo
+
