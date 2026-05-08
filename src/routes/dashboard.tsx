@@ -38,6 +38,8 @@ import {
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { OtpVerifyModal } from "@/components/OtpVerifyModal";
 import { OnboardingTour } from "@/components/OnboardingTour";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { ServiceLogo } from "@/components/ServiceLogo";
 import {
   Tooltip,
   TooltipContent,
