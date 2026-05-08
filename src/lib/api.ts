@@ -17,6 +17,7 @@ export type AuthUser = {
   email: string;
   isVerified?: boolean;
   createdAt?: string;
+  totalSaved?: number;
 };
 
 export type AuthSuccess = {
