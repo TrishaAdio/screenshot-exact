@@ -304,13 +304,6 @@ function DashboardPage() {
               )}
             </section>
 
-            {/* Trust strip */}
-            <section className="mt-14 grid gap-3 rounded-2xl border border-border bg-surface/40 p-4 sm:grid-cols-4 sm:p-5">
-              <TrustChip Icon={ShieldCheck} label="Secure Checkout" />
-              <TrustChip Icon={Zap} label="Instant Delivery" />
-              <TrustChip Icon={Lock} label="Encrypted Sessions" />
-              <TrustChip Icon={Headphones} label="24/7 Support" />
-            </section>
           </main>
         </div>
       </div>
