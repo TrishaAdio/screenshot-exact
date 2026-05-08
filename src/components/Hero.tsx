@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowRight, Check, Zap, ShieldCheck, Lock } from "lucide-react";
+import { ArrowRight, Zap, ShieldCheck, Lock, Check } from "lucide-react";
 import { isLoggedIn } from "@/lib/api";
 import {
   NetflixMark,
@@ -36,103 +36,92 @@ export function Hero() {
     };
   }, []);
 
+  const browseTo = authed ? "/dashboard" : "/signup";
+  const ordersTo = authed ? "/orders" : "/login";
+
   return (
-    <section className="relative overflow-hidden border-b border-border pt-32 pb-20 md:pt-40 md:pb-28">
-      {/* Background — subtle radial green glow + grid */}
-      <div className="absolute inset-0 bg-radial-glow" />
-      <div className="absolute inset-0 grid-pattern" />
+    <section className="relative overflow-hidden pt-36 pb-24 md:pt-44 md:pb-32">
+      {/* Background layers — subtle gradient mesh + grid + particles */}
+      <div className="pointer-events-none absolute inset-0 mesh-bg" />
+      <div className="pointer-events-none absolute inset-0 grid-pattern opacity-60" />
+      <div className="pointer-events-none absolute inset-0 particles-bg opacity-40" />
+      {/* Edge fade */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-background" />
 
-      <div className="relative mx-auto max-w-7xl px-6">
-        <div className="grid gap-16 lg:grid-cols-12 lg:items-center">
-          {/* Left — text + CTA */}
-          <div className="lg:col-span-7">
-            {/* Status pill */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1 animate-fade-up">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-70" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
-              </span>
-              <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-                Save up to 70% on Premium OTT
-              </span>
-            </div>
-
-            {/* Headline */}
-            <h1
-              className="mt-6 font-display text-[2.5rem] font-bold leading-[1.05] tracking-[-0.03em] text-foreground sm:text-5xl md:text-6xl lg:text-[4rem] animate-fade-up"
-              style={{ animationDelay: "0.05s" }}
-            >
-              Netflix, Prime, YouTube
-              <br />
-              <span className="text-gradient">— All in One Place</span>
-            </h1>
-
-            {/* Subhead */}
-            <p
-              className="mt-6 max-w-xl text-[15px] leading-[1.65] text-muted-foreground md:text-base animate-fade-up"
-              style={{ animationDelay: "0.1s" }}
-            >
-              Save up to 70% on premium OTT subscriptions with instant access
-              and warranty included.
-            </p>
-
-            {/* CTAs */}
-            <div
-              className={`mt-8 flex flex-col items-start gap-3 sm:flex-row sm:items-center animate-fade-up transition-opacity duration-300 ${
-                authReady ? "opacity-100" : "opacity-0"
-              }`}
-              style={{ animationDelay: "0.15s" }}
-            >
-              {authed ? (
-                <Link
-                  to="/dashboard"
-                  className="group inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-[14px] font-semibold tracking-tight text-primary-foreground transition-all hover:bg-[var(--primary-hover)] hover:shadow-glow"
-                >
-                  Dashboard
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    to="/signup"
-                    className="group inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 text-[14px] font-semibold tracking-tight text-primary-foreground transition-all hover:bg-[var(--primary-hover)] hover:shadow-glow"
-                  >
-                    Get Started
-                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                  <Link
-                    to="/login"
-                    className="inline-flex items-center gap-2 rounded-md border border-border bg-surface px-6 py-3 text-[14px] font-semibold tracking-tight text-foreground transition-all hover:border-muted-foreground/30 hover:bg-surface-elevated"
-                  >
-                    Log In
-                  </Link>
-                </>
-              )}
-            </div>
-
-            {/* Helper line */}
-            <div
-              className="mt-4 text-[12px] text-muted-foreground animate-fade-up"
-              style={{ animationDelay: "0.2s" }}
-            >
-              Takes less than 30 seconds · Instant activation after payment
-            </div>
-
-            {/* Trust micro */}
-            <div
-              className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-border pt-6 animate-fade-up"
-              style={{ animationDelay: "0.25s" }}
-            >
-              <TrustItem icon={Lock} label="Secure Access" />
-              <TrustItem icon={Zap} label="Instant Delivery" />
-              <TrustItem icon={ShieldCheck} label="Warranty Included" />
-            </div>
+      <div className="relative mx-auto max-w-6xl px-6">
+        <div className="mx-auto max-w-3xl text-center">
+          {/* Status pill */}
+          <div
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 backdrop-blur animate-fade-up"
+          >
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
+            </span>
+            <span className="text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              New · Instant Automated Delivery
+            </span>
           </div>
 
-          {/* Right — OTT preview panel */}
-          <div className="lg:col-span-5">
-            <OttPreview />
+          {/* Headline */}
+          <h1
+            className="mt-7 font-display text-[2.4rem] font-semibold leading-[1.05] tracking-[-0.035em] text-foreground sm:text-5xl md:text-6xl lg:text-[4.25rem] animate-fade-up"
+            style={{ animationDelay: "0.05s" }}
+          >
+            <span className="text-gradient">Premium Digital Access.</span>
+            <br />
+            Instantly Delivered.
+          </h1>
+
+          {/* Subhead */}
+          <p
+            className="mx-auto mt-6 max-w-xl text-[15px] leading-[1.65] text-muted-foreground md:text-[16px] animate-fade-up"
+            style={{ animationDelay: "0.1s" }}
+          >
+            Subscriptions, software, and premium services with instant
+            automated delivery — all in one trusted marketplace.
+          </p>
+
+          {/* CTAs */}
+          <div
+            className={`mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row animate-fade-up transition-opacity duration-300 ${
+              authReady ? "opacity-100" : "opacity-0"
+            }`}
+            style={{ animationDelay: "0.15s" }}
+          >
+            <Link
+              to={browseTo}
+              className="group inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-[13.5px] font-semibold tracking-tight text-background transition-all hover:bg-foreground/90"
+            >
+              Browse Services
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <Link
+              to={ordersTo}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-6 py-3 text-[13.5px] font-medium tracking-tight text-foreground backdrop-blur transition-all hover:border-muted-foreground/40 hover:bg-surface-elevated"
+            >
+              My Orders
+            </Link>
           </div>
+
+          {/* Trust micro */}
+          <div
+            className="mx-auto mt-12 flex max-w-2xl flex-wrap items-center justify-center gap-x-8 gap-y-3 animate-fade-up"
+            style={{ animationDelay: "0.25s" }}
+          >
+            <TrustItem icon={Zap} label="Instant Delivery" />
+            <TrustItem icon={ShieldCheck} label="Warranty Included" />
+            <TrustItem icon={Lock} label="Encrypted Sessions" />
+          </div>
+        </div>
+
+        {/* Live catalog panel */}
+        <div
+          className="relative mx-auto mt-20 max-w-4xl animate-fade-up"
+          style={{ animationDelay: "0.3s" }}
+        >
+          <div className="pointer-events-none absolute -inset-8 rounded-[28px] bg-primary/5 blur-3xl" />
+          <OttPanel />
         </div>
       </div>
     </section>
@@ -148,9 +137,7 @@ function TrustItem({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/10">
-        <Icon className="h-3.5 w-3.5 text-primary" />
-      </div>
+      <Icon className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.75} />
       <span className="text-[12px] font-medium text-muted-foreground">
         {label}
       </span>
@@ -158,98 +145,82 @@ function TrustItem({
   );
 }
 
-function OttPreview() {
+function OttPanel() {
   const platforms = [
     { name: "Netflix", Logo: NetflixMark, plan: "Premium · UHD", savings: "65%" },
     { name: "Prime Video", Logo: PrimeMark, plan: "Premium · UHD", savings: "70%" },
     { name: "YouTube Premium", Logo: YouTubePremiumMark, plan: "Ad-free · Music", savings: "55%" },
     { name: "Disney+ Hotstar", Logo: DisneyHotstarMark, plan: "Super · 4K", savings: "60%" },
-    { name: "Spotify", Logo: SpotifyMark, plan: "Premium · Family", savings: "62%" },
+    { name: "Spotify", Logo: SpotifyMark, plan: "Family", savings: "62%" },
     { name: "SonyLIV", Logo: SonyLivMark, plan: "Premium · Yearly", savings: "58%" },
     { name: "Zee5", Logo: Zee5Mark, plan: "Premium · UHD", savings: "50%" },
-    { name: "Apple TV+", Logo: AppleTvMark, plan: "Standard · 4K HDR", savings: "45%" },
+    { name: "Apple TV+", Logo: AppleTvMark, plan: "Standard · 4K", savings: "45%" },
     { name: "MX Player", Logo: MxPlayerMark, plan: "Gold · Ad-free", savings: "40%" },
-    { name: "Crunchyroll", Logo: CrunchyrollMark, plan: "Mega Fan · HD", savings: "52%" },
+    { name: "Crunchyroll", Logo: CrunchyrollMark, plan: "Mega Fan", savings: "52%" },
     { name: "JioCinema", Logo: JioCinemaMark, plan: "Premium · UHD", savings: "48%" },
   ];
-
-  // Duplicate the list once so the marquee can loop seamlessly.
   const loop = [...platforms, ...platforms];
 
   return (
-    <div className="relative animate-fade-up" style={{ animationDelay: "0.3s" }}>
-      {/* Glow behind panel */}
-      <div className="pointer-events-none absolute -inset-6 rounded-2xl bg-primary/8 blur-3xl" />
-
-      <div className="relative overflow-hidden rounded-xl border border-border bg-surface shadow-elegant">
-        {/* Panel header */}
-        <div className="flex items-center justify-between border-b border-border bg-surface-elevated/60 px-5 py-3">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-70" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
-            </span>
-            <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              Active Catalog
-            </span>
-          </div>
-          <span className="font-mono text-[11px] text-muted-foreground/70">
-            Live · {platforms.length}+ services
+    <div className="relative overflow-hidden rounded-2xl border border-border bg-surface/80 backdrop-blur shadow-elevated">
+      <div className="flex items-center justify-between border-b border-border bg-surface-elevated/60 px-5 py-3">
+        <div className="flex items-center gap-2">
+          <span className="flex h-1.5 w-1.5 rounded-full bg-primary" />
+          <span className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+            Active Catalog
           </span>
         </div>
+        <span className="font-mono text-[10.5px] text-muted-foreground/70">
+          {platforms.length}+ services · Live
+        </span>
+      </div>
 
-        {/* Live feed — auto-scrolling list */}
-        <div className="marquee-pause relative h-[360px] overflow-hidden mask-fade-y">
-          <div className="animate-marquee-y flex flex-col">
-            {loop.map((p, i) => (
-              <div
-                key={`${p.name}-${i}`}
-                className="flex items-center justify-between border-b border-border/60 px-5 py-3.5 transition-colors hover:bg-surface-elevated/40"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 shrink-0 overflow-hidden rounded-md">
-                    <p.Logo className="h-full w-full" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="truncate text-[13px] font-semibold text-foreground">
-                      {p.name}
-                    </div>
-                    <div className="text-[11px] text-muted-foreground">
-                      {p.plan}
-                    </div>
-                  </div>
+      <div className="marquee-pause relative h-[320px] overflow-hidden mask-fade-y">
+        <div className="animate-marquee-y flex flex-col">
+          {loop.map((p, i) => (
+            <div
+              key={`${p.name}-${i}`}
+              className="flex items-center justify-between border-b border-border/60 px-5 py-3.5 transition-colors hover:bg-surface-elevated/40"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 shrink-0 overflow-hidden rounded-lg">
+                  <p.Logo className="h-full w-full" />
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="text-right">
-                    <div className="font-mono text-[13px] font-semibold text-primary">
-                      -{p.savings}
-                    </div>
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                      Saved
-                    </div>
+                <div className="min-w-0">
+                  <div className="truncate text-[13px] font-semibold text-foreground">
+                    {p.name}
                   </div>
-                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/15">
-                    <Check className="h-3 w-3 text-primary" strokeWidth={3} />
+                  <div className="text-[11px] text-muted-foreground">
+                    {p.plan}
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="flex items-center gap-2">
+                <div className="text-right">
+                  <div className="font-mono text-[12.5px] font-semibold text-primary">
+                    -{p.savings}
+                  </div>
+                  <div className="text-[9.5px] uppercase tracking-wider text-muted-foreground">
+                    Saved
+                  </div>
+                </div>
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/15">
+                  <Check className="h-3 w-3 text-primary" strokeWidth={3} />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
+      </div>
 
-        {/* Footer status */}
-        <div className="flex items-center justify-between border-t border-border bg-surface-elevated/60 px-5 py-3">
-          <span className="text-[11px] text-muted-foreground">
-            All services verified
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <span className="flex h-1.5 w-1.5 animate-pulse-soft rounded-full bg-primary" />
-            <span className="text-[11px] font-semibold text-primary">
-              Live
-            </span>
-          </span>
-        </div>
+      <div className="flex items-center justify-between border-t border-border bg-surface-elevated/60 px-5 py-3">
+        <span className="text-[11px] text-muted-foreground">
+          All services verified
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="flex h-1.5 w-1.5 animate-pulse-soft rounded-full bg-primary" />
+          <span className="text-[11px] font-semibold text-primary">Live</span>
+        </span>
       </div>
     </div>
   );
