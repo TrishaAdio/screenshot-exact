@@ -137,7 +137,7 @@ function TrustItem({
 }) {
   return (
     <div className="flex items-center gap-2">
-      <Icon className="h-3.5 w-3.5 text-muted-foreground" strokeWidth={1.75} />
+      <Icon className="h-3.5 w-3.5 text-muted-foreground" />
       <span className="text-[12px] font-medium text-muted-foreground">
         {label}
       </span>
