@@ -242,30 +242,41 @@ function DashboardPage() {
                   {loadingProducts ? "—" : `${filteredProducts.length} services`}
                 </span>
               </div>
-              <div
-                className="mt-4 -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                role="tablist"
-              >
-                {CATEGORY_TABS.map(({ key, label, Icon }) => {
-                  const active = selectedCategory === key;
-                  return (
-                    <button
-                      key={key}
-                      role="tab"
-                      aria-selected={active}
-                      onClick={() => setSelectedCategory(key)}
-                      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium tracking-tight transition-all duration-200 ${
-                        active
-                          ? "border-foreground bg-foreground text-background"
-                          : "border-border bg-surface/60 text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground"
-                      }`}
-                    >
-                      <Icon className="h-3.5 w-3.5" />
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
+              <LayoutGroup id="category-pills">
+                <div
+                  className="mt-4 -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  role="tablist"
+                >
+                  {CATEGORY_TABS.map(({ key, label, Icon }) => {
+                    const active = selectedCategory === key;
+                    return (
+                      <motion.button
+                        key={key}
+                        role="tab"
+                        aria-selected={active}
+                        onClick={() => setSelectedCategory(key)}
+                        whileTap={{ scale: 0.94 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 26 }}
+                        className={`relative inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium tracking-tight transition-colors ${
+                          active
+                            ? "border-transparent text-background"
+                            : "border-border bg-surface/60 text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground"
+                        }`}
+                      >
+                        {active && (
+                          <motion.span
+                            layoutId="category-pill-active"
+                            className="absolute inset-0 rounded-full bg-foreground"
+                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                          />
+                        )}
+                        <Icon className="relative h-3.5 w-3.5" />
+                        <span className="relative">{label}</span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </LayoutGroup>
             </section>
 
             {/* Product grid */}
