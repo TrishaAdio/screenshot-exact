@@ -75,7 +75,7 @@ function SupportPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-2xl px-6 py-16 md:py-24">
+      <main className="mx-auto max-w-2xl px-6 py-16 pb-32 md:py-24 lg:pb-24">
         {/* Top Section */}
         <div className="text-center animate-fade-up">
           <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1">
