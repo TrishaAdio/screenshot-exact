@@ -4,7 +4,7 @@ import {
   Bell,
   Code2,
   Grid3x3,
-  HeadphonesIcon,
+  Headphones,
   Layers,
   LayoutDashboard,
   LogOut,
@@ -58,7 +58,7 @@ const SIDEBAR_ITEMS = [
   { to: "/dashboard", label: "Browse", Icon: Grid3x3 },
   { to: "/orders", label: "Orders", Icon: ShoppingBag },
   { to: "/myprofile", label: "Wallet", Icon: Wallet },
-  { to: "/support", label: "Support", Icon: HeadphonesIcon },
+  { to: "/support", label: "Support", Icon: Headphones },
   { to: "/myprofile", label: "Settings", Icon: SettingsIcon },
 ] as const;
 
@@ -318,7 +318,7 @@ function DashboardPage() {
               <TrustChip Icon={ShieldCheck} label="Secure Checkout" />
               <TrustChip Icon={Zap} label="Instant Delivery" />
               <TrustChip Icon={Lock} label="Encrypted Sessions" />
-              <TrustChip Icon={HeadphonesIcon} label="24/7 Support" />
+              <TrustChip Icon={Headphones} label="24/7 Support" />
             </section>
           </main>
         </div>
@@ -459,7 +459,7 @@ const MOBILE_NAV = [
   { to: "/dashboard", label: "Home", Icon: LayoutDashboard },
   { to: "/orders", label: "Orders", Icon: ShoppingBag },
   { to: "/myprofile", label: "Wallet", Icon: Wallet },
-  { to: "/support", label: "Help", Icon: HeadphonesIcon },
+  { to: "/support", label: "Help", Icon: Headphones },
 ] as const;
 
 function MobileBottomNav() {
