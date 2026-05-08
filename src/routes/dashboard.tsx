@@ -207,7 +207,7 @@ function DashboardPage() {
               />
             )}
 
-            {/* Welcome + quick stats */}
+            {/* Welcome + single stat + quick access */}
             <section className="grid gap-6 lg:grid-cols-12 lg:items-end">
               <div className="lg:col-span-5 animate-fade-up">
                 <div className="label-uppercase">Overview</div>
@@ -219,21 +219,16 @@ function DashboardPage() {
                   )}
                 </h1>
                 <p className="mt-1.5 text-[13.5px] text-muted-foreground">
-                  Browse premium services and access them instantly.
+                  Pick up where you left off.
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3 lg:col-span-7">
-                {stats.map((s, i) => (
-                  <StatCard
-                    key={s.label}
-                    label={s.label}
-                    value={s.value}
-                    Icon={s.Icon}
-                    delay={i * 0.04}
-                    loading={loadingMe}
-                  />
-                ))}
+                <ActiveOrdersCard loading={loadingMe} />
+                <QuickAccessCard
+                  items={quickAccess}
+                  onSelect={(key) => setSelectedCategory(key)}
+                />
               </div>
             </section>
 
