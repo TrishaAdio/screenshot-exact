@@ -220,7 +220,7 @@ function DashboardPage() {
             </div>
           </header>
 
-          <main className="mx-auto w-full max-w-6xl flex-1 px-5 pb-28 pt-8 lg:px-8 lg:pb-12">
+          <main className="mx-auto w-full max-w-7xl flex-1 px-6 pb-28 pt-10 lg:px-10 lg:pb-16">
             {/* Verify email — slim */}
             {!loadingMe && user && user.isVerified === false && !bannerDismissed && (
               <VerifyBanner
@@ -229,28 +229,25 @@ function DashboardPage() {
               />
             )}
 
-            {/* Welcome + single stat + quick access */}
-            <section className="grid gap-6 lg:grid-cols-12 lg:items-end">
-              <div className="lg:col-span-5 animate-fade-up">
+            {/* Welcome + stats */}
+            <section className="grid gap-8 lg:grid-cols-12 lg:items-end">
+              <div className="lg:col-span-6 animate-fade-up">
                 <div className="label-uppercase">Overview</div>
-                <h1 className="mt-3 font-display text-[1.75rem] font-semibold tracking-[-0.025em] text-foreground sm:text-[2rem]">
+                <h1 className="mt-3 font-display text-[2rem] font-semibold tracking-[-0.025em] text-foreground sm:text-[2.35rem]">
                   {loadingMe ? (
                     <span className="text-muted-foreground/40">Loading…</span>
                   ) : (
                     <>Welcome back, {firstName}</>
                   )}
                 </h1>
-                <p className="mt-1.5 text-[13.5px] text-muted-foreground">
+                <p className="mt-2 text-[14px] text-muted-foreground">
                   Pick up where you left off.
                 </p>
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-3 lg:col-span-7">
+              <div className="grid gap-4 sm:grid-cols-2 lg:col-span-6">
                 <ActiveOrdersCard loading={loadingMe} />
-                <QuickAccessCard
-                  items={quickAccess}
-                  onSelect={(key) => setSelectedCategory(key)}
-                />
+                <TotalSavedCard loading={loadingMe} amount={totalSaved} />
               </div>
             </section>
 
