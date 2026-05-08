@@ -174,17 +174,20 @@ function DashboardPage() {
                 </Link>
               </div>
 
-              <button
+              <motion.button
                 onClick={() => setSearchOpen(true)}
                 data-tour="search"
-                className="group flex h-9 w-full max-w-md items-center gap-2 rounded-lg border border-border bg-surface/60 px-3 text-left text-[12.5px] text-muted-foreground transition-colors hover:border-muted-foreground/30 hover:text-foreground"
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.985 }}
+                transition={{ type: "spring", stiffness: 400, damping: 24 }}
+                className="group relative flex h-9 w-full max-w-md items-center gap-2 overflow-hidden rounded-lg border border-border bg-surface/60 px-3 text-left text-[12.5px] text-muted-foreground transition-all duration-300 hover:border-primary/30 hover:text-foreground hover:shadow-[0_0_0_3px_color-mix(in_oklab,var(--primary)_8%,transparent)]"
               >
-                <Search className="h-3.5 w-3.5" />
+                <Search className="h-3.5 w-3.5 transition-colors group-hover:text-primary" />
                 <span className="flex-1 truncate">Search services…</span>
                 <kbd className="hidden rounded border border-border bg-background/60 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-block">
                   ⌘K
                 </kbd>
-              </button>
+              </motion.button>
 
               <div className="flex items-center gap-2">
                 <button
