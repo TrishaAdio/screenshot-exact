@@ -177,11 +177,11 @@ function DashboardPage() {
         <div className="flex min-w-0 flex-1 flex-col">
           {/* Top bar */}
           <header className="sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
-            <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3 lg:px-8">
+            <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3.5 lg:px-10">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setMobileNavOpen(true)}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface/60 text-muted-foreground transition-colors hover:text-foreground lg:hidden"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface/60 text-muted-foreground transition-colors hover:text-foreground lg:hidden"
                   aria-label="Open menu"
                 >
                   <Menu className="h-4 w-4" />
@@ -193,28 +193,38 @@ function DashboardPage() {
                 </Link>
               </div>
 
-              <motion.button
-                onClick={() => setSearchOpen(true)}
-                data-tour="search"
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.985 }}
-                transition={{ type: "spring", stiffness: 400, damping: 24 }}
-                className="group relative flex h-9 w-full max-w-md items-center gap-2 overflow-hidden rounded-lg border border-border bg-surface/60 px-3 text-left text-[12.5px] text-muted-foreground transition-all duration-300 hover:border-primary/30 hover:text-foreground hover:shadow-[0_0_0_3px_color-mix(in_oklab,var(--primary)_8%,transparent)]"
-              >
-                <Search className="h-3.5 w-3.5 transition-colors group-hover:text-primary" />
-                <span className="flex-1 truncate">Search services…</span>
-                <kbd className="hidden rounded border border-border bg-background/60 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-block">
-                  ⌘K
-                </kbd>
-              </motion.button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.button
+                    onClick={() => setSearchOpen(true)}
+                    data-tour="search"
+                    whileHover={{ scale: 1.005 }}
+                    whileTap={{ scale: 0.99 }}
+                    transition={{ type: "spring", stiffness: 420, damping: 28 }}
+                    className="group relative flex h-10 w-full max-w-lg items-center gap-2.5 overflow-hidden rounded-xl border border-border bg-surface/60 px-3.5 text-left text-[13px] text-muted-foreground transition-all duration-300 hover:border-primary/30 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 hover:shadow-[0_0_0_3px_color-mix(in_oklab,var(--primary)_8%,transparent)]"
+                  >
+                    <Search className="h-4 w-4 transition-colors group-hover:text-primary" />
+                    <span className="flex-1 truncate">Search services…</span>
+                    <kbd className="hidden rounded-md border border-border bg-background/60 px-1.5 py-0.5 text-[10.5px] font-medium text-muted-foreground transition-colors group-hover:border-primary/30 group-hover:text-foreground sm:inline-block">
+                      ⌘K
+                    </kbd>
+                  </motion.button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" sideOffset={8}>Search subscriptions and services</TooltipContent>
+              </Tooltip>
 
-              <div className="flex items-center gap-2">
-                <button
-                  className="hidden h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface/60 text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
-                  aria-label="Notifications"
-                >
-                  <Bell className="h-4 w-4" />
-                </button>
+              <div className="flex items-center gap-2.5">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      className="hidden h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface/60 text-muted-foreground transition-all hover:text-foreground hover:border-muted-foreground/30 sm:inline-flex"
+                      aria-label="Notifications"
+                    >
+                      <Bell className="h-4 w-4" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="bottom" sideOffset={8}>Notifications</TooltipContent>
+                </Tooltip>
                 <UserBadge user={user} loading={loadingMe} />
               </div>
             </div>
