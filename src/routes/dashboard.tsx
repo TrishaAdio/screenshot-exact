@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, LayoutGroup } from "framer-motion";
 import {
   Bell,
   Code2,
@@ -14,15 +15,14 @@ import {
   Package,
   Search,
   Settings as SettingsIcon,
-  ShieldCheck,
   ShoppingBag,
   Sparkles,
   Tv,
   Wallet,
   X,
   Zap,
-  Lock,
   ArrowUpRight,
+  ArrowRight,
 } from "lucide-react";
 import {
   type AuthUser,
@@ -121,6 +121,18 @@ function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // ⌘K / Ctrl+K to open search
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const confirmLogout = () => {
     setLogoutOpen(false);
     clearSession();
@@ -142,12 +154,8 @@ function DashboardPage() {
     });
   }, [products, selectedCategory, searchQuery]);
 
-  // Quick stats — derived from product list / user
-  const stats = [
-    { label: "Active Orders", value: "0", Icon: ShoppingBag },
-    { label: "Wallet Balance", value: "₹0", Icon: Wallet },
-    { label: "Total Purchases", value: "0", Icon: Package },
-  ];
+  const quickAccess = CATEGORY_TABS.filter((t) => t.key !== "All").slice(0, 4);
+
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
@@ -178,17 +186,20 @@ function DashboardPage() {
                 </Link>
               </div>
 
-              <button
+              <motion.button
                 onClick={() => setSearchOpen(true)}
                 data-tour="search"
-                className="group flex h-9 w-full max-w-md items-center gap-2 rounded-lg border border-border bg-surface/60 px-3 text-left text-[12.5px] text-muted-foreground transition-colors hover:border-muted-foreground/30 hover:text-foreground"
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.985 }}
+                transition={{ type: "spring", stiffness: 400, damping: 24 }}
+                className="group relative flex h-9 w-full max-w-md items-center gap-2 overflow-hidden rounded-lg border border-border bg-surface/60 px-3 text-left text-[12.5px] text-muted-foreground transition-all duration-300 hover:border-primary/30 hover:text-foreground hover:shadow-[0_0_0_3px_color-mix(in_oklab,var(--primary)_8%,transparent)]"
               >
-                <Search className="h-3.5 w-3.5" />
+                <Search className="h-3.5 w-3.5 transition-colors group-hover:text-primary" />
                 <span className="flex-1 truncate">Search services…</span>
                 <kbd className="hidden rounded border border-border bg-background/60 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-block">
                   ⌘K
                 </kbd>
-              </button>
+              </motion.button>
 
               <div className="flex items-center gap-2">
                 <button
@@ -211,7 +222,7 @@ function DashboardPage() {
               />
             )}
 
-            {/* Welcome + quick stats */}
+            {/* Welcome + single stat + quick access */}
             <section className="grid gap-6 lg:grid-cols-12 lg:items-end">
               <div className="lg:col-span-5 animate-fade-up">
                 <div className="label-uppercase">Overview</div>
@@ -223,21 +234,16 @@ function DashboardPage() {
                   )}
                 </h1>
                 <p className="mt-1.5 text-[13.5px] text-muted-foreground">
-                  Browse premium services and access them instantly.
+                  Pick up where you left off.
                 </p>
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3 lg:col-span-7">
-                {stats.map((s, i) => (
-                  <StatCard
-                    key={s.label}
-                    label={s.label}
-                    value={s.value}
-                    Icon={s.Icon}
-                    delay={i * 0.04}
-                    loading={loadingMe}
-                  />
-                ))}
+                <ActiveOrdersCard loading={loadingMe} />
+                <QuickAccessCard
+                  items={quickAccess}
+                  onSelect={(key) => setSelectedCategory(key)}
+                />
               </div>
             </section>
 
@@ -251,30 +257,41 @@ function DashboardPage() {
                   {loadingProducts ? "—" : `${filteredProducts.length} services`}
                 </span>
               </div>
-              <div
-                className="mt-4 -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                role="tablist"
-              >
-                {CATEGORY_TABS.map(({ key, label, Icon }) => {
-                  const active = selectedCategory === key;
-                  return (
-                    <button
-                      key={key}
-                      role="tab"
-                      aria-selected={active}
-                      onClick={() => setSelectedCategory(key)}
-                      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium tracking-tight transition-all duration-200 ${
-                        active
-                          ? "border-foreground bg-foreground text-background"
-                          : "border-border bg-surface/60 text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground"
-                      }`}
-                    >
-                      <Icon className="h-3.5 w-3.5" />
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
+              <LayoutGroup id="category-pills">
+                <div
+                  className="mt-4 -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                  role="tablist"
+                >
+                  {CATEGORY_TABS.map(({ key, label, Icon }) => {
+                    const active = selectedCategory === key;
+                    return (
+                      <motion.button
+                        key={key}
+                        role="tab"
+                        aria-selected={active}
+                        onClick={() => setSelectedCategory(key)}
+                        whileTap={{ scale: 0.94 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 26 }}
+                        className={`relative inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium tracking-tight transition-colors ${
+                          active
+                            ? "border-transparent text-background"
+                            : "border-border bg-surface/60 text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground"
+                        }`}
+                      >
+                        {active && (
+                          <motion.span
+                            layoutId="category-pill-active"
+                            className="absolute inset-0 rounded-full bg-foreground"
+                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                          />
+                        )}
+                        <Icon className="relative h-3.5 w-3.5" />
+                        <span className="relative">{label}</span>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </LayoutGroup>
             </section>
 
             {/* Product grid */}
@@ -313,13 +330,6 @@ function DashboardPage() {
               )}
             </section>
 
-            {/* Trust strip */}
-            <section className="mt-14 grid gap-3 rounded-2xl border border-border bg-surface/40 p-4 sm:grid-cols-4 sm:p-5">
-              <TrustChip Icon={ShieldCheck} label="Secure Checkout" />
-              <TrustChip Icon={Zap} label="Instant Delivery" />
-              <TrustChip Icon={Lock} label="Encrypted Sessions" />
-              <TrustChip Icon={Headphones} label="24/7 Support" />
-            </section>
           </main>
         </div>
       </div>
@@ -395,36 +405,47 @@ function DesktopSidebar({
         </Link>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-3 py-5">
-        <div className="px-2 pb-2 text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted-foreground/70">
+      <nav className="flex-1 overflow-y-auto px-3 py-4">
+        <div className="px-2 pb-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground/70">
           Workspace
         </div>
-        <ul className="space-y-0.5">
-          {SIDEBAR_ITEMS.map((item) => {
-            const Icon = item.Icon;
-            const active = path === item.to;
-            return (
-              <li key={item.label}>
-                <Link
-                  to={item.to}
-                  className={`group flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${
-                    active
-                      ? "bg-surface-elevated text-foreground"
-                      : "text-muted-foreground hover:bg-surface/60 hover:text-foreground"
-                  }`}
-                >
-                  <Icon
-                    className={`h-3.5 w-3.5 ${active ? "text-primary" : ""}`}
-                  />
-                  {item.label}
-                  {active && (
-                    <span className="ml-auto h-1 w-1 rounded-full bg-primary" />
-                  )}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <LayoutGroup id="sidebar-nav">
+          <ul className="space-y-px">
+            {SIDEBAR_ITEMS.map((item, idx) => {
+              const Icon = item.Icon;
+              const firstMatchIdx = SIDEBAR_ITEMS.findIndex((i) => i.to === path);
+              const active = idx === firstMatchIdx;
+              return (
+                <li key={item.label}>
+                  <Link
+                    to={item.to}
+                    className={`group relative flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-[12.5px] font-medium transition-colors duration-200 ${
+                      active
+                        ? "text-foreground"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="sidebar-active"
+                        className="absolute inset-0 rounded-lg bg-surface-elevated"
+                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                      />
+                    )}
+                    <span
+                      aria-hidden
+                      className={`relative h-3.5 w-px rounded-full transition-colors ${
+                        active ? "bg-primary" : "bg-transparent"
+                      }`}
+                    />
+                    <Icon className="relative h-3.5 w-3.5" />
+                    <span className="relative">{item.label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </LayoutGroup>
       </nav>
 
       <div className="border-t border-border p-3">
@@ -614,55 +635,82 @@ function UserBadge({ user, loading }: { user: AuthUser | null; loading: boolean 
   );
 }
 
-function StatCard({
-  label,
-  value,
-  Icon,
-  delay,
-  loading,
-}: {
-  label: string;
-  value: string;
-  Icon: typeof Wallet;
-  delay: number;
-  loading: boolean;
-}) {
+function ActiveOrdersCard({ loading }: { loading: boolean }) {
   return (
-    <div
-      className="hover-lift group relative overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur shadow-card animate-fade-up"
-      style={{ animationDelay: `${delay}s` }}
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="group relative overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur shadow-card"
     >
       <div className="flex items-center justify-between">
-        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-          {label}
+        <span className="text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+          Active Orders
         </span>
         <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background/60">
-          <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+          <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground" />
         </div>
       </div>
-      <div className="mt-3 font-display text-[1.4rem] font-semibold tracking-tight text-foreground">
-        {loading ? <span className="text-muted-foreground/40">—</span> : value}
+      <div className="mt-3 flex items-baseline gap-2">
+        <span className="font-display text-[1.6rem] font-semibold tracking-tight text-foreground">
+          {loading ? <span className="text-muted-foreground/40">—</span> : "0"}
+        </span>
+        <Link
+          to="/orders"
+          className="group/link inline-flex items-center gap-0.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          View all
+          <ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-0.5" />
+        </Link>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
-function TrustChip({
-  Icon,
-  label,
+function QuickAccessCard({
+  items,
+  onSelect,
 }: {
-  Icon: typeof ShieldCheck;
-  label: string;
+  items: { key: CategoryFilter; label: string; Icon: typeof Grid3x3 }[];
+  onSelect: (key: CategoryFilter) => void;
 }) {
   return (
-    <div className="flex items-center gap-2.5">
-      <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background/60">
-        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.05, ease: [0.22, 1, 0.36, 1] }}
+      className="relative overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur shadow-card sm:col-span-2"
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+          Quick Access
+        </span>
+        <Sparkles className="h-3.5 w-3.5 text-muted-foreground" />
       </div>
-      <span className="text-[12px] font-medium text-foreground/85">
-        {label}
-      </span>
-    </div>
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {items.map(({ key, label, Icon }) => (
+          <motion.button
+            key={key}
+            type="button"
+            onClick={() => {
+              onSelect(key);
+              if (typeof window !== "undefined") {
+                window.scrollTo({ top: 320, behavior: "smooth" });
+              }
+            }}
+            whileHover={{ y: -2 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 380, damping: 24 }}
+            className="group flex flex-col items-start gap-1.5 rounded-xl border border-border bg-background/40 p-2.5 text-left transition-colors hover:border-muted-foreground/30 hover:bg-background/70"
+          >
+            <Icon className="h-3.5 w-3.5 text-muted-foreground transition-colors group-hover:text-foreground" />
+            <span className="text-[11.5px] font-medium tracking-tight text-foreground/85 group-hover:text-foreground">
+              {label}
+            </span>
+          </motion.button>
+        ))}
+      </div>
+    </motion.div>
   );
 }
 
@@ -674,33 +722,40 @@ function VerifyBanner({
   onDismiss: () => void;
 }) {
   return (
-    <div className="mb-7 animate-fade-up">
-      <div className="relative flex items-center gap-3 overflow-hidden rounded-xl border border-border bg-surface/60 py-2.5 pl-4 pr-2 backdrop-blur">
-        <span
-          aria-hidden
-          className="absolute left-0 top-2 bottom-2 w-[2px] rounded-full bg-primary"
-        />
-        <Mail className="h-3.5 w-3.5 text-primary" />
-        <p className="flex-1 text-[12.5px] font-medium text-foreground">
+    <motion.div
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      className="mb-6"
+    >
+      <div className="relative flex items-center gap-2.5 overflow-hidden rounded-lg border border-primary/15 bg-primary/[0.04] py-1.5 pl-3 pr-1.5">
+        <span aria-hidden className="flex h-5 w-5 items-center justify-center rounded-md bg-primary/10">
+          <Mail className="h-3 w-3 text-primary" />
+        </span>
+        <p className="flex-1 text-[12px] font-medium text-foreground/90">
           Verify your email to unlock offers and faster service.
         </p>
-        <button
+        <motion.button
           type="button"
           onClick={onVerify}
-          className="inline-flex h-7 items-center justify-center rounded-md border border-border bg-background/60 px-3 text-[11.5px] font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-surface-elevated hover:text-primary"
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 22 }}
+          className="inline-flex h-6 items-center justify-center rounded-md bg-primary/90 px-2.5 text-[10.5px] font-semibold tracking-tight text-primary-foreground shadow-sm transition-colors hover:bg-primary"
         >
-          Verify Email
-        </button>
-        <button
+          Verify
+        </motion.button>
+        <motion.button
           type="button"
           onClick={onDismiss}
           aria-label="Dismiss"
-          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+          whileTap={{ scale: 0.9 }}
+          className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
         >
-          <X className="h-3.5 w-3.5" />
-        </button>
+          <X className="h-3 w-3" />
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -720,13 +775,37 @@ function ProductCard({
   const highest = plans.length > 1 ? plans[plans.length - 1] : null;
   const showOldPrice = highest && highest.price > (lowest?.price ?? 0);
 
+  const cardRef = useRef<HTMLElement>(null);
+  const handleMove = (e: React.MouseEvent<HTMLElement>) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+    el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+  };
+
   return (
-    <article
+    <motion.article
+      ref={cardRef}
       onClick={onOpen}
-      className="hover-lift group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur transition-colors hover:border-muted-foreground/25 hover:bg-surface-elevated/80"
+      onMouseMove={handleMove}
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.985 }}
+      transition={{ type: "spring", stiffness: 320, damping: 26 }}
+      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur transition-colors duration-300 hover:border-muted-foreground/30 hover:bg-surface-elevated/80 hover:shadow-elevated"
     >
-      <div className="flex items-start gap-3.5">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-background/60">
+      {/* cursor glow */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%)",
+        }}
+      />
+
+      <div className="relative flex items-start gap-3.5">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-background/70 transition-transform duration-300 group-hover:scale-[1.04]">
           <ProductImage
             src={product.image}
             alt={product.name}
@@ -739,7 +818,7 @@ function ProductCard({
             <h3 className="truncate font-display text-[14px] font-semibold tracking-tight text-foreground">
               {product.name}
             </h3>
-            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
           </div>
           <div className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
             {product.category || "Service"}
@@ -758,7 +837,7 @@ function ProductCard({
         </div>
       </div>
 
-      <div className="mt-4 flex items-end justify-between border-t border-border pt-3">
+      <div className="relative mt-4 flex items-end justify-between border-t border-border pt-3">
         <div>
           <div className="text-[10.5px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
             From
@@ -774,18 +853,21 @@ function ProductCard({
             )}
           </div>
         </div>
-        <button
+        <motion.button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             onOpen();
           }}
-          className="inline-flex h-8 items-center justify-center rounded-full bg-foreground px-3.5 text-[11.5px] font-semibold tracking-tight text-background transition-all hover:bg-foreground/90"
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.92 }}
+          transition={{ type: "spring", stiffness: 420, damping: 22 }}
+          className="inline-flex h-8 items-center justify-center rounded-full bg-foreground px-4 text-[11.5px] font-semibold tracking-tight text-background shadow-sm transition-shadow hover:shadow-md"
         >
           Purchase
-        </button>
+        </motion.button>
       </div>
-    </article>
+    </motion.article>
   );
 }
 
