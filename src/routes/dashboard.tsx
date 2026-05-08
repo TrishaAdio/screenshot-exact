@@ -749,13 +749,37 @@ function ProductCard({
   const highest = plans.length > 1 ? plans[plans.length - 1] : null;
   const showOldPrice = highest && highest.price > (lowest?.price ?? 0);
 
+  const cardRef = useRef<HTMLElement>(null);
+  const handleMove = (e: React.MouseEvent<HTMLElement>) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    el.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+    el.style.setProperty("--my", `${e.clientY - rect.top}px`);
+  };
+
   return (
-    <article
+    <motion.article
+      ref={cardRef}
       onClick={onOpen}
-      className="hover-lift group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur transition-colors hover:border-muted-foreground/25 hover:bg-surface-elevated/80"
+      onMouseMove={handleMove}
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.985 }}
+      transition={{ type: "spring", stiffness: 320, damping: 26 }}
+      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur transition-colors duration-300 hover:border-muted-foreground/30 hover:bg-surface-elevated/80 hover:shadow-elevated"
     >
-      <div className="flex items-start gap-3.5">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-background/60">
+      {/* cursor glow */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%)",
+        }}
+      />
+
+      <div className="relative flex items-start gap-3.5">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-background/70 transition-transform duration-300 group-hover:scale-[1.04]">
           <ProductImage
             src={product.image}
             alt={product.name}
@@ -768,7 +792,7 @@ function ProductCard({
             <h3 className="truncate font-display text-[14px] font-semibold tracking-tight text-foreground">
               {product.name}
             </h3>
-            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
           </div>
           <div className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
             {product.category || "Service"}
@@ -787,7 +811,7 @@ function ProductCard({
         </div>
       </div>
 
-      <div className="mt-4 flex items-end justify-between border-t border-border pt-3">
+      <div className="relative mt-4 flex items-end justify-between border-t border-border pt-3">
         <div>
           <div className="text-[10.5px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
             From
@@ -803,18 +827,21 @@ function ProductCard({
             )}
           </div>
         </div>
-        <button
+        <motion.button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             onOpen();
           }}
-          className="inline-flex h-8 items-center justify-center rounded-full bg-foreground px-3.5 text-[11.5px] font-semibold tracking-tight text-background transition-all hover:bg-foreground/90"
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.92 }}
+          transition={{ type: "spring", stiffness: 420, damping: 22 }}
+          className="inline-flex h-8 items-center justify-center rounded-full bg-foreground px-4 text-[11.5px] font-semibold tracking-tight text-background shadow-sm transition-shadow hover:shadow-md"
         >
           Purchase
-        </button>
+        </motion.button>
       </div>
-    </article>
+    </motion.article>
   );
 }
 
