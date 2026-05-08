@@ -142,12 +142,8 @@ function DashboardPage() {
     });
   }, [products, selectedCategory, searchQuery]);
 
-  // Quick stats — derived from product list / user
-  const stats = [
-    { label: "Active Orders", value: "0", Icon: ShoppingBag },
-    { label: "Wallet Balance", value: "₹0", Icon: Wallet },
-    { label: "Total Purchases", value: "0", Icon: Package },
-  ];
+  const quickAccess = CATEGORY_TABS.filter((t) => t.key !== "All").slice(0, 4);
+
 
   return (
     <div className="relative min-h-screen bg-background text-foreground">
