@@ -120,7 +120,7 @@ function OrdersPage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-3xl px-5 py-10 sm:px-6 sm:py-12">
+      <main className="mx-auto max-w-3xl px-5 py-10 pb-32 sm:px-6 sm:py-12 lg:pb-12">
         <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1">
           <ShoppingBag className="h-3 w-3 text-primary" />
           <span className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
