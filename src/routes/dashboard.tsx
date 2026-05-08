@@ -804,9 +804,9 @@ function ProductCard({
 
       <div className="relative flex items-start gap-4">
         <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-background/70 transition-transform duration-300 group-hover:scale-[1.04]">
-          <ProductImage
+          <ServiceLogo
             src={product.image}
-            alt={product.name}
+            name={product.name}
             className="h-full w-full object-cover"
             iconClass="h-6 w-6"
           />
