@@ -510,13 +510,6 @@ function DesktopSidebar({
 
 /* ---------- Mobile bottom nav + drawer ---------- */
 
-const MOBILE_NAV = [
-  { to: "/dashboard", label: "Home", Icon: LayoutDashboard },
-  { to: "/orders", label: "Orders", Icon: ShoppingBag },
-  { to: "/myprofile", label: "Wallet", Icon: Wallet },
-  { to: "/support", label: "Help", Icon: Headphones },
-] as const;
-
 // MobileBottomNav now lives in @/components/MobileBottomNav (shared across pages).
 
 function MobileDrawer({
