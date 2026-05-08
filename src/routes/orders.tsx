@@ -6,7 +6,6 @@ import {
   type OrderStatus,
   fetchMyOrders,
   getToken,
-  resolveImageUrl,
   verifyOrderStatus,
 } from "@/lib/api";
 import symdealsLogo from "@/assets/symdeals-logo.png";
