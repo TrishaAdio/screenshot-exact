@@ -161,10 +161,10 @@ function DashboardPage() {
     });
   }, [products, selectedCategory, searchQuery]);
 
-  const quickAccess = CATEGORY_TABS.filter((t) => t.key !== "All").slice(0, 4);
-
+  const totalSaved = user?.totalSaved ?? 0;
 
   return (
+    <TooltipProvider delayDuration={350} skipDelayDuration={150}>
     <div className="relative min-h-screen bg-background text-foreground">
       {/* Background — matte black + subtle radial + grid */}
       <div className="pointer-events-none fixed inset-0 -z-10 mesh-bg opacity-60" />
