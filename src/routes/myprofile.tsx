@@ -3,6 +3,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { ArrowLeft, KeyRound, Mail, User as UserIcon } from "lucide-react";
 import { toast } from "sonner";
 import symdealsLogo from "@/assets/symdeals-logo.png";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 import {
   type AuthUser,
   clearSession,
