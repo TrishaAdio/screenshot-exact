@@ -10,6 +10,8 @@ import {
   verifyOrderStatus,
 } from "@/lib/api";
 import symdealsLogo from "@/assets/symdeals-logo.png";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { ServiceLogo } from "@/components/ServiceLogo";
 
 export const Route = createFileRoute("/orders")({
   component: OrdersPage,
