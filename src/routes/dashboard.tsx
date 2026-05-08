@@ -420,42 +420,59 @@ function DesktopSidebar({
         </Link>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-3 py-4">
-        <div className="px-2 pb-2 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground/70">
+      <nav className="flex-1 overflow-y-auto px-3 py-5">
+        <div className="px-2 pb-2.5 text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground/70">
           Workspace
         </div>
         <LayoutGroup id="sidebar-nav">
-          <ul className="space-y-px">
+          <ul className="space-y-0.5">
             {SIDEBAR_ITEMS.map((item, idx) => {
               const Icon = item.Icon;
               const firstMatchIdx = SIDEBAR_ITEMS.findIndex((i) => i.to === path);
               const active = idx === firstMatchIdx;
+              const hint =
+                item.label === "Dashboard"
+                  ? "Overview & catalog"
+                  : item.label === "Browse"
+                  ? "Browse all services"
+                  : item.label === "Orders"
+                  ? "View your active orders"
+                  : item.label === "Wallet"
+                  ? "Wallet & billing"
+                  : item.label === "Support"
+                  ? "Talk to support"
+                  : "Account settings";
               return (
                 <li key={item.label}>
-                  <Link
-                    to={item.to}
-                    className={`group relative flex items-center gap-2.5 rounded-lg px-3 py-1.5 text-[12.5px] font-medium transition-colors duration-200 ${
-                      active
-                        ? "text-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {active && (
-                      <motion.span
-                        layoutId="sidebar-active"
-                        className="absolute inset-0 rounded-lg bg-surface-elevated"
-                        transition={{ type: "spring", stiffness: 380, damping: 32 }}
-                      />
-                    )}
-                    <span
-                      aria-hidden
-                      className={`relative h-3.5 w-px rounded-full transition-colors ${
-                        active ? "bg-primary" : "bg-transparent"
-                      }`}
-                    />
-                    <Icon className="relative h-3.5 w-3.5" />
-                    <span className="relative">{item.label}</span>
-                  </Link>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        to={item.to}
+                        className={`group relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors duration-200 ${
+                          active
+                            ? "text-foreground"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {active && (
+                          <motion.span
+                            layoutId="sidebar-active"
+                            className="absolute inset-0 rounded-lg bg-surface-elevated"
+                            transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                          />
+                        )}
+                        <span
+                          aria-hidden
+                          className={`relative h-4 w-px rounded-full transition-colors ${
+                            active ? "bg-primary" : "bg-transparent"
+                          }`}
+                        />
+                        <Icon className="relative h-3.5 w-3.5" />
+                        <span className="relative">{item.label}</span>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" sideOffset={10}>{hint}</TooltipContent>
+                  </Tooltip>
                 </li>
               );
             })}
