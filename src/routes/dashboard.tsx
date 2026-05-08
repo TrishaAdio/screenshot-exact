@@ -517,33 +517,7 @@ const MOBILE_NAV = [
   { to: "/support", label: "Help", Icon: Headphones },
 ] as const;
 
-function MobileBottomNav() {
-  const path = useRouterState({ select: (r) => r.location.pathname });
-  return (
-    <nav className="fixed inset-x-3 bottom-3 z-40 lg:hidden">
-      <div className="glass-nav flex items-center justify-around rounded-2xl border border-border px-2 py-1.5 shadow-elevated">
-        {MOBILE_NAV.map((item) => {
-          const Icon = item.Icon;
-          const active = path === item.to;
-          return (
-            <Link
-              key={item.label}
-              to={item.to}
-              className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl px-2 py-2 text-[10.5px] font-medium transition-colors ${
-                active
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              <Icon className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
-              {item.label}
-            </Link>
-          );
-        })}
-      </div>
-    </nav>
-  );
-}
+// MobileBottomNav now lives in @/components/MobileBottomNav (shared across pages).
 
 function MobileDrawer({
   open,
