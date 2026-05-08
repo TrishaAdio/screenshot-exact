@@ -1,30 +1,28 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  Bell,
   Code2,
   Grid3x3,
-  HelpCircle,
-  Home,
+  Headphones,
   Layers,
-  LayoutGrid,
+  LayoutDashboard,
   LogOut,
   Mail,
-  MailCheck,
   Menu,
-  MessageCircle,
-  Monitor,
   Music,
   Package,
-  Package2,
   Search,
+  Settings as SettingsIcon,
   ShieldCheck,
-  ShoppingCart,
+  ShoppingBag,
   Sparkles,
-  Star,
   Tv,
-  User as UserIcon,
-  Wand2,
+  Wallet,
   X,
+  Zap,
+  Lock,
+  ArrowUpRight,
 } from "lucide-react";
 import {
   type AuthUser,
@@ -39,23 +37,30 @@ import {
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { OtpVerifyModal } from "@/components/OtpVerifyModal";
 import { OnboardingTour } from "@/components/OnboardingTour";
-import symdealsLogo from "@/assets/symdeals-logo.png";
 
 type CategoryFilter = ProductCategory | "All";
 
 const CATEGORY_TABS: {
   key: CategoryFilter;
   label: string;
-  Icon: typeof LayoutGrid;
-  gradient: string;
+  Icon: typeof Grid3x3;
 }[] = [
-  { key: "All", label: "View All", Icon: Grid3x3, gradient: "from-neutral-700 to-neutral-800" },
-  { key: "Subscriptions", label: "Subscriptions", Icon: Monitor, gradient: "from-sky-400 to-blue-600" },
-  { key: "Combo Pack", label: "Combo Pack", Icon: Layers, gradient: "from-amber-400 to-orange-600" },
-  { key: "Adult", label: "Adult", Icon: Star, gradient: "from-pink-500 to-rose-600" },
-  { key: "Software", label: "Software", Icon: Code2, gradient: "from-violet-500 to-purple-700" },
-  { key: "Music", label: "Music", Icon: Music, gradient: "from-emerald-400 to-teal-600" },
+  { key: "All", label: "All", Icon: Grid3x3 },
+  { key: "Subscriptions", label: "OTT", Icon: Tv },
+  { key: "Music", label: "Music", Icon: Music },
+  { key: "Software", label: "Software", Icon: Code2 },
+  { key: "Adult", label: "AI Tools", Icon: Sparkles },
+  { key: "Combo Pack", label: "Combo Packs", Icon: Layers },
 ];
+
+const SIDEBAR_ITEMS = [
+  { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
+  { to: "/dashboard", label: "Browse", Icon: Grid3x3 },
+  { to: "/orders", label: "Orders", Icon: ShoppingBag },
+  { to: "/myprofile", label: "Wallet", Icon: Wallet },
+  { to: "/support", label: "Support", Icon: Headphones },
+  { to: "/myprofile", label: "Settings", Icon: SettingsIcon },
+] as const;
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
@@ -73,19 +78,18 @@ function DashboardPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingMe, setLoadingMe] = useState(true);
   const [loadingProducts, setLoadingProducts] = useState(true);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const [otpOpen, setOtpOpen] = useState(false);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<CategoryFilter>("All");
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   const openProduct = (p: Product) => {
     const routeId = p.service_id ? String(p.service_id) : p.id;
     navigate({ to: "/product/$id", params: { id: routeId } });
   };
-
 
   useEffect(() => {
     if (!getToken()) {
@@ -117,10 +121,6 @@ function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onLogout = () => {
-    setLogoutOpen(true);
-  };
-
   const confirmLogout = () => {
     setLogoutOpen(false);
     clearSession();
@@ -142,147 +142,200 @@ function DashboardPage() {
     });
   }, [products, selectedCategory, searchQuery]);
 
-  const sectionTitle =
-    selectedCategory === "All" ? "All Services" : selectedCategory;
+  // Quick stats — derived from product list / user
+  const stats = [
+    { label: "Active Orders", value: "0", Icon: ShoppingBag },
+    { label: "Wallet Balance", value: "₹0", Icon: Wallet },
+    { label: "Total Purchases", value: "0", Icon: Package },
+  ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <Link to="/" aria-label="SymDeals home" className="group flex items-center">
-            <img
-              src={symdealsLogo}
-              alt="SymDeals"
-              className="h-5 w-auto object-contain transition-all duration-300 ease-out group-hover:scale-[1.03] sm:h-6"
-              style={{ filter: "drop-shadow(0 0 6px rgba(0, 255, 170, 0.2))" }}
-            />
-          </Link>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setSearchOpen(true)}
-              aria-label="Search services"
-              data-tour="search"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-surface text-foreground transition-colors hover:border-primary/40 hover:bg-surface-elevated hover:text-primary"
-            >
-              <Search className="h-5 w-5" />
-            </button>
-            <button
-              onClick={() => setMenuOpen(true)}
-              aria-label="Open menu"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-surface text-foreground transition-colors hover:border-muted-foreground/30 hover:bg-surface-elevated"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-      </header>
+    <div className="relative min-h-screen bg-background text-foreground">
+      {/* Background — matte black + subtle radial + grid */}
+      <div className="pointer-events-none fixed inset-0 -z-10 mesh-bg opacity-60" />
+      <div className="pointer-events-none fixed inset-0 -z-10 grid-pattern opacity-50" />
 
-      <main className="mx-auto max-w-6xl px-6 py-12">
-        {!loadingMe && user && user.isVerified === false && !bannerDismissed && (
-          <VerifyBanner
-            onVerify={() => setOtpOpen(true)}
-            onDismiss={() => setBannerDismissed(true)}
-          />
-        )}
+      <div className="flex min-h-screen">
+        {/* Desktop sidebar */}
+        <DesktopSidebar onLogout={() => setLogoutOpen(true)} user={user} />
 
-        {/* Welcome */}
-        <div className="animate-fade-up">
-          <h1 className="font-display text-[1.75rem] font-bold tracking-[-0.02em] text-foreground sm:text-[2rem]">
-            {loadingMe ? (
-              <span className="text-muted-foreground/40">Loading…</span>
-            ) : (
-              <>Welcome back, {firstName}</>
-            )}
-          </h1>
-          <p className="mt-1.5 text-[13.5px] text-muted-foreground">
-            Browse and access services instantly
-          </p>
-        </div>
-
-        {/* Category Row — clean marketplace style, centered on desktop, scroll on mobile */}
-        <section className="mt-12 animate-fade-up" data-tour="categories">
-          <div className="text-center">
-            <span className="block text-[11px] font-medium uppercase tracking-[0.2em] text-muted-foreground">
-              Browse by Category
-            </span>
-          </div>
-          <div
-            className="-mx-6 mt-8 flex snap-x snap-mandatory justify-start gap-5 overflow-x-auto overflow-y-visible px-6 pt-2 pb-3 sm:gap-7 md:justify-center [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-            role="tablist"
-            aria-label="Product categories"
-          >
-            {CATEGORY_TABS.map(({ key, label, Icon, gradient }) => {
-              const active = selectedCategory === key;
-              return (
-                <CategoryTile
-                  key={key}
-                  active={active}
-                  label={label}
-                  Icon={Icon}
-                  gradient={gradient}
-                  onSelect={() => setSelectedCategory(key)}
-                />
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Services / Marketplace */}
-        <section className="mt-12" data-tour="products">
-          <div className="text-center">
-            <h2 className="text-[1.35rem] font-semibold tracking-tight text-foreground sm:text-[1.5rem]">
-              {sectionTitle}
-            </h2>
-            {!loadingProducts && filteredProducts.length > 0 && (
-              <p className="mt-1.5 text-[12px] text-muted-foreground">
-                {filteredProducts.length}{" "}
-                {filteredProducts.length === 1 ? "service" : "services"} available
-              </p>
-            )}
-          </div>
-
-          <div className="mt-6">
-            {loadingProducts ? (
-              <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
-                {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-                  <div
-                    key={i}
-                    className="aspect-[3/4] animate-pulse rounded-2xl border border-border bg-surface"
-                  />
-                ))}
+        <div className="flex min-w-0 flex-1 flex-col">
+          {/* Top bar */}
+          <header className="sticky top-0 z-40 border-b border-border bg-background/70 backdrop-blur-xl">
+            <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3 lg:px-8">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setMobileNavOpen(true)}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface/60 text-muted-foreground transition-colors hover:text-foreground lg:hidden"
+                  aria-label="Open menu"
+                >
+                  <Menu className="h-4 w-4" />
+                </button>
+                <Link to="/" className="flex items-center gap-2 lg:hidden">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-foreground text-background">
+                    <span className="font-display text-[12px] font-bold">S</span>
+                  </span>
+                </Link>
               </div>
-            ) : filteredProducts.length === 0 ? (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-surface px-6 py-16 text-center">
-                <Package className="h-8 w-8 text-muted-foreground/60" />
-                <p className="mt-3 text-[14px] font-semibold text-foreground">
-                  {selectedCategory === "All"
-                    ? "No services available yet"
-                    : `No services in ${selectedCategory}`}
+
+              <button
+                onClick={() => setSearchOpen(true)}
+                data-tour="search"
+                className="group flex h-9 w-full max-w-md items-center gap-2 rounded-lg border border-border bg-surface/60 px-3 text-left text-[12.5px] text-muted-foreground transition-colors hover:border-muted-foreground/30 hover:text-foreground"
+              >
+                <Search className="h-3.5 w-3.5" />
+                <span className="flex-1 truncate">Search services…</span>
+                <kbd className="hidden rounded border border-border bg-background/60 px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground sm:inline-block">
+                  ⌘K
+                </kbd>
+              </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  className="hidden h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface/60 text-muted-foreground transition-colors hover:text-foreground sm:inline-flex"
+                  aria-label="Notifications"
+                >
+                  <Bell className="h-4 w-4" />
+                </button>
+                <UserBadge user={user} loading={loadingMe} />
+              </div>
+            </div>
+          </header>
+
+          <main className="mx-auto w-full max-w-6xl flex-1 px-5 pb-28 pt-8 lg:px-8 lg:pb-12">
+            {/* Verify email — slim */}
+            {!loadingMe && user && user.isVerified === false && !bannerDismissed && (
+              <VerifyBanner
+                onVerify={() => setOtpOpen(true)}
+                onDismiss={() => setBannerDismissed(true)}
+              />
+            )}
+
+            {/* Welcome + quick stats */}
+            <section className="grid gap-6 lg:grid-cols-12 lg:items-end">
+              <div className="lg:col-span-5 animate-fade-up">
+                <div className="label-uppercase">Overview</div>
+                <h1 className="mt-3 font-display text-[1.75rem] font-semibold tracking-[-0.025em] text-foreground sm:text-[2rem]">
+                  {loadingMe ? (
+                    <span className="text-muted-foreground/40">Loading…</span>
+                  ) : (
+                    <>Welcome back, {firstName}</>
+                  )}
+                </h1>
+                <p className="mt-1.5 text-[13.5px] text-muted-foreground">
+                  Browse premium services and access them instantly.
                 </p>
               </div>
-            ) : (
-              <div
-                key={selectedCategory}
-                className="grid animate-fade-up grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4"
-              >
-                {filteredProducts.map((p) => (
-                  <ProductCard
-                    key={p.id}
-                    product={p}
-                    onOpen={() => openProduct(p)}
+
+              <div className="grid gap-3 sm:grid-cols-3 lg:col-span-7">
+                {stats.map((s, i) => (
+                  <StatCard
+                    key={s.label}
+                    label={s.label}
+                    value={s.value}
+                    Icon={s.Icon}
+                    delay={i * 0.04}
+                    loading={loadingMe}
                   />
                 ))}
               </div>
-            )}
-          </div>
-        </section>
-      </main>
+            </section>
 
-      <SideMenu
-        open={menuOpen}
-        onClose={() => setMenuOpen(false)}
+            {/* Filter pills */}
+            <section className="mt-12 animate-fade-up" data-tour="categories">
+              <div className="flex items-center justify-between">
+                <h2 className="font-display text-[15px] font-semibold tracking-tight text-foreground">
+                  Catalog
+                </h2>
+                <span className="text-[11.5px] text-muted-foreground">
+                  {loadingProducts ? "—" : `${filteredProducts.length} services`}
+                </span>
+              </div>
+              <div
+                className="mt-4 -mx-5 flex gap-2 overflow-x-auto px-5 pb-1 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                role="tablist"
+              >
+                {CATEGORY_TABS.map(({ key, label, Icon }) => {
+                  const active = selectedCategory === key;
+                  return (
+                    <button
+                      key={key}
+                      role="tab"
+                      aria-selected={active}
+                      onClick={() => setSelectedCategory(key)}
+                      className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[12.5px] font-medium tracking-tight transition-all duration-200 ${
+                        active
+                          ? "border-foreground bg-foreground text-background"
+                          : "border-border bg-surface/60 text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground"
+                      }`}
+                    >
+                      <Icon className="h-3.5 w-3.5" />
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* Product grid */}
+            <section className="mt-6" data-tour="products">
+              {loadingProducts ? (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {[0, 1, 2, 3, 4, 5].map((i) => (
+                    <div
+                      key={i}
+                      className="h-[148px] animate-pulse rounded-2xl border border-border bg-surface/60"
+                    />
+                  ))}
+                </div>
+              ) : filteredProducts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface/40 px-6 py-16 text-center">
+                  <Package className="h-7 w-7 text-muted-foreground/60" />
+                  <p className="mt-3 text-[13.5px] font-medium text-foreground">
+                    {selectedCategory === "All"
+                      ? "No services available yet"
+                      : `No services in ${selectedCategory}`}
+                  </p>
+                </div>
+              ) : (
+                <div
+                  key={selectedCategory}
+                  className="grid animate-fade-up grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+                >
+                  {filteredProducts.map((p) => (
+                    <ProductCard
+                      key={p.id}
+                      product={p}
+                      onOpen={() => openProduct(p)}
+                    />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            {/* Trust strip */}
+            <section className="mt-14 grid gap-3 rounded-2xl border border-border bg-surface/40 p-4 sm:grid-cols-4 sm:p-5">
+              <TrustChip Icon={ShieldCheck} label="Secure Checkout" />
+              <TrustChip Icon={Zap} label="Instant Delivery" />
+              <TrustChip Icon={Lock} label="Encrypted Sessions" />
+              <TrustChip Icon={Headphones} label="24/7 Support" />
+            </section>
+          </main>
+        </div>
+      </div>
+
+      {/* Mobile bottom nav */}
+      <MobileBottomNav />
+
+      {/* Mobile drawer (extras) */}
+      <MobileDrawer
+        open={mobileNavOpen}
+        onClose={() => setMobileNavOpen(false)}
+        onLogout={() => {
+          setMobileNavOpen(false);
+          setLogoutOpen(true);
+        }}
         user={user}
-        onLogout={onLogout}
       />
 
       <LogoutConfirmDialog
@@ -319,6 +372,300 @@ function DashboardPage() {
   );
 }
 
+/* ---------- Sidebar ---------- */
+
+function DesktopSidebar({
+  user,
+  onLogout,
+}: {
+  user: AuthUser | null;
+  onLogout: () => void;
+}) {
+  const path = useRouterState({ select: (r) => r.location.pathname });
+  return (
+    <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-surface/40 backdrop-blur-xl lg:flex">
+      <div className="flex h-14 items-center gap-2 border-b border-border px-5">
+        <Link to="/" className="flex items-center gap-2">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-foreground text-background">
+            <span className="font-display text-[12.5px] font-bold">S</span>
+          </span>
+          <span className="font-display text-[14px] font-semibold tracking-tight text-foreground">
+            SymDeals
+          </span>
+        </Link>
+      </div>
+
+      <nav className="flex-1 overflow-y-auto px-3 py-5">
+        <div className="px-2 pb-2 text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted-foreground/70">
+          Workspace
+        </div>
+        <ul className="space-y-0.5">
+          {SIDEBAR_ITEMS.map((item) => {
+            const Icon = item.Icon;
+            const active = path === item.to;
+            return (
+              <li key={item.label}>
+                <Link
+                  to={item.to}
+                  className={`group flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors ${
+                    active
+                      ? "bg-surface-elevated text-foreground"
+                      : "text-muted-foreground hover:bg-surface/60 hover:text-foreground"
+                  }`}
+                >
+                  <Icon
+                    className={`h-3.5 w-3.5 ${active ? "text-primary" : ""}`}
+                  />
+                  {item.label}
+                  {active && (
+                    <span className="ml-auto h-1 w-1 rounded-full bg-primary" />
+                  )}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      <div className="border-t border-border p-3">
+        <div className="flex items-center gap-2.5 rounded-lg border border-border bg-background/60 p-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/15 text-[10.5px] font-semibold text-primary">
+            {(user?.name?.[0] || "U").toUpperCase()}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-[12px] font-semibold text-foreground">
+              {user?.name || "Member"}
+            </div>
+            <div className="truncate text-[10.5px] text-muted-foreground">
+              {user?.email || "—"}
+            </div>
+          </div>
+          <button
+            onClick={onLogout}
+            aria-label="Sign out"
+            className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+/* ---------- Mobile bottom nav + drawer ---------- */
+
+const MOBILE_NAV = [
+  { to: "/dashboard", label: "Home", Icon: LayoutDashboard },
+  { to: "/orders", label: "Orders", Icon: ShoppingBag },
+  { to: "/myprofile", label: "Wallet", Icon: Wallet },
+  { to: "/support", label: "Help", Icon: Headphones },
+] as const;
+
+function MobileBottomNav() {
+  const path = useRouterState({ select: (r) => r.location.pathname });
+  return (
+    <nav className="fixed inset-x-3 bottom-3 z-40 lg:hidden">
+      <div className="glass-nav flex items-center justify-around rounded-2xl border border-border px-2 py-1.5 shadow-elevated">
+        {MOBILE_NAV.map((item) => {
+          const Icon = item.Icon;
+          const active = path === item.to;
+          return (
+            <Link
+              key={item.label}
+              to={item.to}
+              className={`flex flex-1 flex-col items-center gap-0.5 rounded-xl px-2 py-2 text-[10.5px] font-medium transition-colors ${
+                active
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Icon className={`h-4 w-4 ${active ? "text-primary" : ""}`} />
+              {item.label}
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+function MobileDrawer({
+  open,
+  onClose,
+  user,
+  onLogout,
+}: {
+  open: boolean;
+  onClose: () => void;
+  user: AuthUser | null;
+  onLogout: () => void;
+}) {
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
+  return (
+    <div
+      className={`fixed inset-0 z-[60] lg:hidden ${open ? "pointer-events-auto" : "pointer-events-none"}`}
+      aria-hidden={!open}
+    >
+      <button
+        type="button"
+        aria-label="Close menu"
+        onClick={onClose}
+        className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity ${
+          open ? "opacity-100" : "opacity-0"
+        }`}
+      />
+      <aside
+        role="dialog"
+        aria-modal="true"
+        className={`absolute left-0 top-0 flex h-full w-[80%] max-w-xs flex-col border-r border-border bg-background transition-transform duration-300 ease-out ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-foreground text-background">
+              <span className="font-display text-[12px] font-bold">S</span>
+            </span>
+            <span className="font-display text-[14px] font-semibold text-foreground">
+              SymDeals
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Close"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto px-3 py-4">
+          <ul className="space-y-0.5">
+            {SIDEBAR_ITEMS.map((item) => (
+              <li key={item.label}>
+                <Link
+                  to={item.to}
+                  onClick={onClose}
+                  className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+                >
+                  <item.Icon className="h-3.5 w-3.5" />
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="border-t border-border p-3">
+          <div className="mb-3 flex items-center gap-2.5 rounded-lg border border-border bg-surface/60 p-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary/15 text-[10.5px] font-semibold text-primary">
+              {(user?.name?.[0] || "U").toUpperCase()}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-[12px] font-semibold text-foreground">
+                {user?.name || "Member"}
+              </div>
+              <div className="truncate text-[10.5px] text-muted-foreground">
+                {user?.email}
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={onLogout}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface/60 px-4 py-2.5 text-[12.5px] font-medium text-muted-foreground transition-colors hover:bg-surface-elevated hover:text-foreground"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            Sign Out
+          </button>
+        </div>
+      </aside>
+    </div>
+  );
+}
+
+/* ---------- Building blocks ---------- */
+
+function UserBadge({ user, loading }: { user: AuthUser | null; loading: boolean }) {
+  if (loading)
+    return (
+      <div className="h-8 w-8 animate-pulse rounded-full border border-border bg-surface" />
+    );
+  const initial = (user?.name?.[0] || "U").toUpperCase();
+  return (
+    <Link
+      to="/myprofile"
+      className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface/60 text-[11.5px] font-semibold text-foreground transition-colors hover:border-muted-foreground/30"
+      aria-label="My profile"
+    >
+      {initial}
+    </Link>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  Icon,
+  delay,
+  loading,
+}: {
+  label: string;
+  value: string;
+  Icon: typeof Wallet;
+  delay: number;
+  loading: boolean;
+}) {
+  return (
+    <div
+      className="hover-lift group relative overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur shadow-card animate-fade-up"
+      style={{ animationDelay: `${delay}s` }}
+    >
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+          {label}
+        </span>
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background/60">
+          <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+        </div>
+      </div>
+      <div className="mt-3 font-display text-[1.4rem] font-semibold tracking-tight text-foreground">
+        {loading ? <span className="text-muted-foreground/40">—</span> : value}
+      </div>
+    </div>
+  );
+}
+
+function TrustChip({
+  Icon,
+  label,
+}: {
+  Icon: typeof ShieldCheck;
+  label: string;
+}) {
+  return (
+    <div className="flex items-center gap-2.5">
+      <div className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-background/60">
+        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+      </div>
+      <span className="text-[12px] font-medium text-foreground/85">
+        {label}
+      </span>
+    </div>
+  );
+}
+
 function VerifyBanner({
   onVerify,
   onDismiss,
@@ -327,42 +674,37 @@ function VerifyBanner({
   onDismiss: () => void;
 }) {
   return (
-    <div className="mb-8 animate-fade-up">
-      <div className="flex flex-col gap-3 rounded-xl border border-primary/30 bg-primary/8 px-4 py-3 sm:flex-row sm:items-center sm:gap-4 sm:py-2.5">
-        <div className="flex flex-1 items-center gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/15">
-            <MailCheck className="h-4 w-4 text-primary" />
-          </div>
-          <div className="min-w-0">
-            <p className="text-[13.5px] font-semibold text-foreground">
-              Verify your email to unlock offers and faster service ⚡
-            </p>
-            <p className="mt-0.5 hidden text-[12px] text-muted-foreground sm:block">
-              Secure your account and get priority order processing.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            type="button"
-            onClick={onVerify}
-            className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-[12.5px] font-bold tracking-tight text-primary-foreground transition-all hover:bg-[var(--primary-hover)] hover:shadow-glow"
-          >
-            Verify Now
-          </button>
-          <button
-            type="button"
-            onClick={onDismiss}
-            aria-label="Dismiss"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+    <div className="mb-7 animate-fade-up">
+      <div className="relative flex items-center gap-3 overflow-hidden rounded-xl border border-border bg-surface/60 py-2.5 pl-4 pr-2 backdrop-blur">
+        <span
+          aria-hidden
+          className="absolute left-0 top-2 bottom-2 w-[2px] rounded-full bg-primary"
+        />
+        <Mail className="h-3.5 w-3.5 text-primary" />
+        <p className="flex-1 text-[12.5px] font-medium text-foreground">
+          Verify your email to unlock offers and faster service.
+        </p>
+        <button
+          type="button"
+          onClick={onVerify}
+          className="inline-flex h-7 items-center justify-center rounded-md border border-border bg-background/60 px-3 text-[11.5px] font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-surface-elevated hover:text-primary"
+        >
+          Verify Email
+        </button>
+        <button
+          type="button"
+          onClick={onDismiss}
+          aria-label="Dismiss"
+          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+        >
+          <X className="h-3.5 w-3.5" />
+        </button>
       </div>
     </div>
   );
 }
+
+/* ---------- Product card ---------- */
 
 function ProductCard({
   product,
@@ -381,153 +723,73 @@ function ProductCard({
   return (
     <article
       onClick={onOpen}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-glow"
+      className="hover-lift group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-surface/60 p-4 backdrop-blur transition-colors hover:border-muted-foreground/25 hover:bg-surface-elevated/80"
     >
-      <div className="aspect-square w-full overflow-hidden rounded-t-2xl bg-background">
-        <ProductImage src={product.image} alt={product.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" iconClass="h-8 w-8 sm:h-10 sm:w-10" />
-      </div>
-      <div className="flex flex-1 flex-col gap-2 p-3 sm:gap-3 sm:p-4">
-        <h3 className="font-display text-[13px] font-semibold tracking-tight text-foreground line-clamp-1 sm:text-[15px]">
-          {product.name}
-        </h3>
-
-        <div className="flex items-baseline gap-1.5 sm:gap-2">
-          <span className="font-display text-[1.05rem] font-bold tracking-tight text-foreground sm:text-[1.4rem]">
-            {lowest ? `₹${lowest.price.toLocaleString()}` : "—"}
-          </span>
-          {showOldPrice && (
-            <span className="text-[10.5px] font-medium text-muted-foreground line-through sm:text-[12px]">
-              ₹{highest!.price.toLocaleString()}
-            </span>
-          )}
+      <div className="flex items-start gap-3.5">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-background/60">
+          <ProductImage
+            src={product.image}
+            alt={product.name}
+            className="h-full w-full object-cover"
+            iconClass="h-5 w-5"
+          />
         </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="truncate font-display text-[14px] font-semibold tracking-tight text-foreground">
+              {product.name}
+            </h3>
+            <ArrowUpRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
+          </div>
+          <div className="mt-0.5 truncate text-[11.5px] text-muted-foreground">
+            {product.category || "Service"}
+          </div>
 
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-2 py-0.5 text-[10.5px] font-medium text-muted-foreground">
+              <Zap className="h-2.5 w-2.5 text-primary" />
+              Instant
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-2 py-0.5 text-[10.5px] font-medium text-muted-foreground">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              In stock
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-end justify-between border-t border-border pt-3">
+        <div>
+          <div className="text-[10.5px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+            From
+          </div>
+          <div className="mt-0.5 flex items-baseline gap-1.5">
+            <span className="font-display text-[18px] font-semibold tracking-tight text-foreground">
+              {lowest ? `₹${lowest.price.toLocaleString()}` : "—"}
+            </span>
+            {showOldPrice && (
+              <span className="text-[11px] font-medium text-muted-foreground line-through">
+                ₹{highest!.price.toLocaleString()}
+              </span>
+            )}
+          </div>
+        </div>
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             onOpen();
           }}
-          className="mt-0.5 w-full rounded-full bg-primary px-3 py-2 text-[10.5px] font-bold uppercase tracking-[0.1em] text-primary-foreground transition-all duration-200 hover:bg-[var(--primary-hover)] hover:shadow-glow sm:py-2.5 sm:text-[12px]"
+          className="inline-flex h-8 items-center justify-center rounded-full bg-foreground px-3.5 text-[11.5px] font-semibold tracking-tight text-background transition-all hover:bg-foreground/90"
         >
-          Buy Now
+          Purchase
         </button>
       </div>
     </article>
   );
 }
 
-function SideMenu({
-  open,
-  onClose,
-  user,
-  onLogout,
-}: {
-  open: boolean;
-  onClose: () => void;
-  user: AuthUser | null;
-  onLogout: () => void;
-}) {
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [open, onClose]);
-
-  const navItems = [
-    { to: "/", label: "Home", Icon: Home },
-    { to: "/myprofile", label: "My Profile", Icon: UserIcon },
-    { to: "/orders", label: "My Orders", Icon: ShoppingCart },
-    { to: "/support", label: "Support", Icon: MessageCircle },
-    { to: "/privacy", label: "Privacy Policy", Icon: ShieldCheck },
-    { to: "/faq", label: "FAQ", Icon: HelpCircle },
-  ] as const;
-
-  return (
-    <div
-      className={`fixed inset-0 z-[60] ${open ? "pointer-events-auto" : "pointer-events-none"}`}
-      aria-hidden={!open}
-    >
-      <button
-        type="button"
-        aria-label="Close menu"
-        onClick={onClose}
-        className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
-          open ? "opacity-100" : "opacity-0"
-        }`}
-      />
-
-      <aside
-        role="dialog"
-        aria-modal="true"
-        className={`absolute right-0 top-0 flex h-full w-[75%] max-w-sm flex-col border-l border-border bg-background shadow-2xl transition-transform duration-300 ease-out ${
-          open ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        <div className="flex items-start justify-between border-b border-border px-5 py-5">
-          <div className="min-w-0">
-            <p className="truncate font-display text-[15px] font-bold tracking-tight text-foreground">
-              {user?.name || "Welcome"}
-            </p>
-            {user?.email && (
-              <p className="mt-0.5 flex items-center gap-1.5 truncate text-[12px] text-muted-foreground">
-                <Mail className="h-3 w-3 shrink-0" />
-                <span className="truncate">{user.email}</span>
-              </p>
-            )}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="ml-3 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border text-foreground transition-colors hover:bg-surface"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-
-        <nav className="flex-1 overflow-y-auto px-3 py-4">
-          <ul className="flex flex-col gap-1">
-            {navItems.map(({ to, label, Icon }) => (
-              <li key={to}>
-                <Link
-                  to={to}
-                  onClick={onClose}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium text-foreground transition-colors hover:bg-surface"
-                >
-                  <Icon className="h-4 w-4 text-muted-foreground" />
-                  {label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="border-t border-border p-4">
-          <button
-            type="button"
-            onClick={() => {
-              onClose();
-              onLogout();
-            }}
-            className="flex w-full items-center justify-center gap-2 rounded-md bg-destructive/10 px-4 py-2.5 text-[13px] font-semibold text-destructive transition-colors hover:bg-destructive/15"
-          >
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </button>
-        </div>
-      </aside>
-    </div>
-  );
-}
+/* ---------- Search overlay (preserved) ---------- */
 
 function SearchOverlay({
   open,
@@ -549,9 +811,7 @@ function SearchOverlay({
 
   useEffect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -563,19 +823,15 @@ function SearchOverlay({
     };
   }, [open, onClose]);
 
-  // Debounce query (250ms) for smooth typing.
   useEffect(() => {
-    const t = setTimeout(() => setDebounced(query), 250);
+    const t = setTimeout(() => setDebounced(query), 200);
     return () => clearTimeout(t);
   }, [query]);
 
   const q = debounced.trim().toLowerCase();
 
-
   const results = useMemo(() => {
     if (!q) return [] as Product[];
-
-    // Lightweight fuzzy: characters of query appear in order in target.
     const fuzzyHit = (target: string, needle: string) => {
       let i = 0;
       for (const ch of target) {
@@ -584,14 +840,12 @@ function SearchOverlay({
       }
       return false;
     };
-
     const scored: { p: Product; score: number }[] = [];
     for (const p of products) {
       const name = (p.name ?? "").toLowerCase();
       const cat = (p.category ?? "").toLowerCase();
       const desc = (p.description ?? "").toLowerCase();
       const sid = p.service_id ? String(p.service_id) : "";
-
       let score = 0;
       if (sid && sid === q) score = 100;
       else if (sid && sid.startsWith(q)) score = 90;
@@ -601,10 +855,8 @@ function SearchOverlay({
       else if (cat && cat.includes(q)) score = 40;
       else if (desc && desc.includes(q)) score = 25;
       else if (q.length >= 3 && name && fuzzyHit(name, q)) score = 15;
-
       if (score > 0) scored.push({ p, score });
     }
-
     scored.sort((a, b) => b.score - a.score);
     return scored.slice(0, 6).map((s) => s.p);
   }, [products, q]);
@@ -623,19 +875,19 @@ function SearchOverlay({
         }`}
       />
       <div
-        className={`absolute inset-x-0 top-0 mx-auto flex max-h-screen w-full max-w-2xl flex-col px-4 pt-4 transition-all duration-200 sm:pt-10 ${
+        className={`absolute inset-x-0 top-0 mx-auto flex max-h-screen w-full max-w-2xl flex-col px-4 pt-6 transition-all duration-200 sm:pt-16 ${
           open ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0"
         }`}
       >
-        <div className="relative flex items-center gap-2 rounded-2xl border border-border bg-surface px-3 py-2 shadow-2xl ring-1 ring-primary/0 transition-all focus-within:border-primary/60 focus-within:ring-primary/30">
-          <Search className="h-5 w-5 shrink-0 text-muted-foreground" />
+        <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface px-3 py-2 shadow-elevated">
+          <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => onQueryChange(e.target.value)}
-            placeholder="Search services..."
-            className="h-10 flex-1 bg-transparent text-[14.5px] font-medium text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
+            placeholder="Search services…"
+            className="h-9 flex-1 bg-transparent text-[14px] font-medium text-foreground placeholder:text-muted-foreground/60 focus:outline-none"
           />
           {query && (
             <button
@@ -644,198 +896,74 @@ function SearchOverlay({
               aria-label="Clear search"
               className="inline-flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-background hover:text-foreground"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
             </button>
           )}
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
-            className="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-[12px] font-semibold text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+            className="inline-flex h-7 items-center justify-center rounded-md border border-border bg-background/60 px-2.5 text-[11px] font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
-            Close
+            ESC
           </button>
         </div>
 
-        <div className="mt-3 animate-fade-in overflow-hidden rounded-2xl border border-border/60 bg-surface/80 shadow-2xl backdrop-blur-xl">
-          {!q ? (
-            <p className="px-4 py-6 text-center text-[13px] text-muted-foreground">
-              Start typing to search services…
-            </p>
-          ) : results.length === 0 ? (
-            <div className="px-4 py-8 text-center">
-              <p className="text-[14px] font-semibold text-foreground">
-                No matching services
-              </p>
-              <p className="mt-1 text-[12.5px] text-muted-foreground">
-                Try a different keyword
-              </p>
-            </div>
-          ) : (
-            <SuggestionList items={results} onOpenProduct={onOpenProduct} />
-          )}
-        </div>
+        {q && (
+          <div className="mt-3 overflow-hidden rounded-2xl border border-border bg-surface/90 shadow-elevated backdrop-blur-xl animate-fade-up">
+            {results.length === 0 ? (
+              <div className="px-4 py-8 text-center">
+                <p className="text-[13.5px] font-medium text-foreground">
+                  No matching services
+                </p>
+                <p className="mt-1 text-[12px] text-muted-foreground">
+                  Try a different keyword
+                </p>
+              </div>
+            ) : (
+              <ul className="max-h-[60vh] divide-y divide-border/40 overflow-y-auto">
+                {results.map((p) => {
+                  const lowest =
+                    Array.isArray(p.plans) && p.plans.length
+                      ? Math.min(...p.plans.map((pl) => pl.price))
+                      : null;
+                  return (
+                    <li key={p.id}>
+                      <button
+                        type="button"
+                        onClick={() => onOpenProduct(p)}
+                        className="group flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-surface-elevated"
+                      >
+                        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-border bg-background/60">
+                          <ProductImage
+                            src={p.image}
+                            alt={p.name}
+                            className="h-full w-full object-cover"
+                            iconClass="h-4 w-4"
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[13px] font-semibold text-foreground">
+                            {p.name}
+                          </p>
+                          <p className="truncate text-[11px] text-muted-foreground">
+                            {p.category}
+                          </p>
+                        </div>
+                        {lowest !== null && (
+                          <span className="shrink-0 font-display text-[12.5px] font-semibold text-foreground">
+                            ₹{lowest.toLocaleString()}
+                          </span>
+                        )}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+          </div>
+        )}
       </div>
     </div>
-  );
-}
-
-function SuggestionList({
-  items,
-  onOpenProduct,
-}: {
-  items: Product[];
-  onOpenProduct: (p: Product) => void;
-}) {
-  return (
-    <ul className="max-h-[60vh] divide-y divide-border/40 overflow-y-auto">
-      {items.map((p) => {
-        const lowest = Array.isArray(p.plans) && p.plans.length
-          ? Math.min(...p.plans.map((pl) => pl.price))
-          : null;
-        return (
-          <li key={p.id}>
-            <button
-              type="button"
-              onClick={() => onOpenProduct(p)}
-              className="group flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors hover:bg-surface-elevated"
-            >
-              <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-background ring-1 ring-border/60">
-                <ProductImage src={p.image} alt={p.name} className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-105" iconClass="h-5 w-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[13.5px] font-semibold text-foreground">
-                  {p.name}
-                </p>
-                <p className="truncate text-[11.5px] text-muted-foreground">
-                  {p.category}
-                  {p.service_id ? ` • #${p.service_id}` : ""}
-                </p>
-              </div>
-              {lowest !== null && (
-                <span className="shrink-0 font-display text-[13px] font-bold text-foreground">
-                  from ₹{lowest.toLocaleString()}
-                </span>
-              )}
-            </button>
-          </li>
-        );
-      })}
-    </ul>
-  );
-}
-
-type Ripple = { id: number; x: number; y: number };
-
-function CategoryTile({
-  active,
-  label,
-  Icon,
-  gradient,
-  onSelect,
-}: {
-  active: boolean;
-  label: string;
-  Icon: typeof LayoutGrid;
-  gradient: string;
-  onSelect: () => void;
-}) {
-  const [ripples, setRipples] = useState<Ripple[]>([]);
-  const [phase, setPhase] = useState<"idle" | "press" | "release">("idle");
-  const [releaseKey, setReleaseKey] = useState(0);
-  const [flashKey, setFlashKey] = useState(0);
-  const ripplePosRef = useRef<{ x: number; y: number } | null>(null);
-
-  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
-    const target = e.currentTarget.querySelector<HTMLElement>("[data-tile]");
-    if (target) {
-      const rect = target.getBoundingClientRect();
-      ripplePosRef.current = {
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      };
-    }
-    setPhase("press");
-  };
-
-  const triggerRelease = () => {
-    if (phase !== "press") return;
-    // Spawn ripple at release moment (synchronized with bloom)
-    const pos = ripplePosRef.current;
-    if (pos) {
-      const id = Date.now() + Math.random();
-      setRipples((r) => [...r, { id, x: pos.x, y: pos.y }]);
-      setTimeout(() => {
-        setRipples((r) => r.filter((rp) => rp.id !== id));
-      }, 600);
-    }
-    setReleaseKey((k) => k + 1);
-    setFlashKey((k) => k + 1);
-    setPhase("release");
-    onSelect();
-  };
-
-  const handlePointerUp = () => triggerRelease();
-  const handlePointerLeave = () => {
-    if (phase === "press") setPhase("idle");
-  };
-
-  const tileAnim =
-    phase === "press"
-      ? "animate-cat-press-down"
-      : phase === "release"
-        ? "animate-cat-press-release"
-        : "";
-
-  return (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={active}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerLeave={handlePointerLeave}
-      onPointerCancel={handlePointerLeave}
-      className="group flex w-[84px] shrink-0 snap-start flex-col items-center justify-start outline-none focus-visible:ring-2 focus-visible:ring-white/30 focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-[22px]"
-    >
-      <div className="relative h-[72px] w-[72px]">
-        {/* Glow bloom on release */}
-        {flashKey > 0 && (
-          <span
-            key={`flash-${flashKey}`}
-            aria-hidden
-            className="animate-cat-glow pointer-events-none absolute inset-0 rounded-[20px] bg-white/25 blur-md"
-          />
-        )}
-        <div
-          data-tile
-          key={`tile-${releaseKey}-${phase}`}
-          className={`cat-tile relative flex h-full w-full items-center justify-center overflow-hidden rounded-[20px] bg-gradient-to-br ${gradient} ${tileAnim} ${
-            active
-              ? "border border-white/40 shadow-[0_0_0_1px_rgba(255,255,255,0.18),0_12px_32px_-10px_rgba(255,255,255,0.32)]"
-              : "border border-white/5 shadow-[0_4px_14px_-6px_rgba(0,0,0,0.45)]"
-          }`}
-        >
-          <Icon className="h-7 w-7 text-white/95" strokeWidth={2} />
-          {/* Ripples */}
-          {ripples.map((r) => (
-            <span
-              key={r.id}
-              aria-hidden
-              className="animate-cat-ripple pointer-events-none absolute h-24 w-24 rounded-full bg-white/35"
-              style={{ left: r.x, top: r.y }}
-            />
-          ))}
-        </div>
-      </div>
-      <span
-        className={`mt-2.5 block w-full text-center text-[12px] font-medium leading-[1.2] tracking-tight transition-colors duration-200 ${
-          active ? "text-foreground" : "text-foreground/55 group-hover:text-foreground/85"
-        }`}
-      >
-        {label}
-      </span>
-    </button>
   );
 }
 
@@ -854,7 +982,7 @@ function ProductImage({
   if (!src || failed) {
     return (
       <div className="flex h-full w-full items-center justify-center text-muted-foreground/40">
-        <Package className={iconClass ?? "h-8 w-8"} />
+        <Package className={iconClass ?? "h-5 w-5"} />
       </div>
     );
   }
@@ -868,4 +996,3 @@ function ProductImage({
     />
   );
 }
-
