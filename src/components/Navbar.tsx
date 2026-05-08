@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, LayoutDashboard, ShoppingBag, User, LogOut } from "lucide-react";
-import { isLoggedIn, getUser, logout } from "@/lib/api";
+import { isLoggedIn, clearSession, type AuthUser } from "@/lib/api";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
