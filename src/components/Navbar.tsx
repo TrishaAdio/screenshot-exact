@@ -43,9 +43,17 @@ export function Navbar() {
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
 
-  const user = authed ? getUser() : null;
+  const user: AuthUser | null = (() => {
+    if (!authed || typeof window === "undefined") return null;
+    try {
+      const raw = window.localStorage.getItem("symdeals.user");
+      return raw ? (JSON.parse(raw) as AuthUser) : null;
+    } catch {
+      return null;
+    }
+  })();
   const initials = user?.name
-    ? user.name.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()
+    ? user.name.split(" ").map((p: string) => p[0]).slice(0, 2).join("").toUpperCase()
     : "U";
 
   return (
