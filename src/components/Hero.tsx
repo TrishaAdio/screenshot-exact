@@ -104,7 +104,7 @@ export function Hero() {
 
           {/* Trust micro */}
           <div
-            className="mx-auto mt-10 grid max-w-md grid-cols-3 items-center justify-items-center gap-x-4 gap-y-3 sm:mt-12 sm:flex sm:max-w-2xl sm:flex-wrap sm:gap-x-8 animate-fade-up"
+            className="mx-auto mt-10 grid max-w-md grid-cols-3 items-center justify-items-center gap-x-4 gap-y-3 sm:mt-12 sm:flex sm:max-w-2xl sm:flex-wrap sm:justify-center sm:gap-x-8 animate-fade-up"
             style={{ animationDelay: "0.25s" }}
           >
             <TrustItem icon={Zap} label="Instant" />
