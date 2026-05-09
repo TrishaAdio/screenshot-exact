@@ -287,6 +287,7 @@ function PayPage() {
               setOrderId(r.order.orderId);
               toast.success("Order placed", {
                 description: `Order ID: ${r.order.orderId}`,
+                duration: 2800,
               });
             })
             .catch((err) => {
