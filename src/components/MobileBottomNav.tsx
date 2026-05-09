@@ -105,6 +105,11 @@ export function MobileBottomNav() {
               ref={(el) => { tabRefs.current[idx] = el; }}
               aria-label={item.label}
               aria-current={active ? "page" : undefined}
+              onClick={(e) => {
+                if (active && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                  e.preventDefault();
+                }
+              }}
               onPointerDown={() => setPressedIdx(idx)}
               onPointerUp={() => setPressedIdx(null)}
               onPointerLeave={() => setPressedIdx((p) => (p === idx ? null : p))}
