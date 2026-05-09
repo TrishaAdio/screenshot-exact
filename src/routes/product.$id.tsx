@@ -254,7 +254,7 @@ function ProductPage() {
                     </span>
                     {showOldPrice && (
                       <span className="text-[14px] font-medium text-muted-foreground line-through">
-                        ₹{highest!.price.toLocaleString()}
+                        ₹{realPrice!.toLocaleString()}
                       </span>
                     )}
                     {selectedPlan && (
@@ -268,6 +268,11 @@ function ProductPage() {
                       </span>
                     )}
                   </div>
+                  {savedAmount > 0 && (
+                    <p className="-mt-1 text-[12.5px] font-medium text-emerald-300/90">
+                      You save ₹{savedAmount.toLocaleString()}
+                    </p>
+                  )}
 
                   {/* Duration */}
                   {plans.length > 0 && (
