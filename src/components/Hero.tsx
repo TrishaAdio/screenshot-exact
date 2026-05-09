@@ -40,7 +40,7 @@ export function Hero() {
   const ordersTo = authed ? "/orders" : "/login";
 
   return (
-    <section className="relative overflow-hidden pt-36 pb-24 md:pt-44 md:pb-32">
+    <section className="relative overflow-hidden pt-28 pb-16 sm:pt-36 sm:pb-24 md:pt-44 md:pb-32">
       {/* Background layers — subtle gradient mesh + grid + particles */}
       <div className="pointer-events-none absolute inset-0 mesh-bg" />
       <div className="pointer-events-none absolute inset-0 grid-pattern opacity-60" />
@@ -48,24 +48,22 @@ export function Hero() {
       {/* Edge fade */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-background" />
 
-      <div className="relative mx-auto max-w-6xl px-6">
+      <div className="relative mx-auto max-w-6xl px-5 sm:px-6">
         <div className="mx-auto max-w-3xl text-center">
           {/* Status pill */}
-          <div
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 backdrop-blur animate-fade-up"
-          >
+          <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 backdrop-blur animate-fade-up">
             <span className="relative flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-primary" />
             </span>
-            <span className="text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-              New · Instant Automated Delivery
+            <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground sm:text-[10.5px]">
+              Instant Automated Delivery
             </span>
           </div>
 
           {/* Headline */}
           <h1
-            className="mt-7 font-display text-[2.4rem] font-semibold leading-[1.05] tracking-[-0.035em] text-foreground sm:text-5xl md:text-6xl lg:text-[4.25rem] animate-fade-up"
+            className="mt-6 font-display text-[2rem] font-semibold leading-[1.08] tracking-[-0.03em] text-foreground sm:mt-7 sm:text-5xl sm:leading-[1.05] sm:tracking-[-0.035em] md:text-6xl lg:text-[4.25rem] animate-fade-up"
             style={{ animationDelay: "0.05s" }}
           >
             <span className="text-gradient">Premium Digital Access.</span>
@@ -75,7 +73,7 @@ export function Hero() {
 
           {/* Subhead */}
           <p
-            className="mx-auto mt-6 max-w-xl text-[15px] leading-[1.65] text-muted-foreground md:text-[16px] animate-fade-up"
+            className="mx-auto mt-5 max-w-[22rem] text-[14px] leading-[1.6] text-muted-foreground sm:mt-6 sm:max-w-xl sm:text-[15px] sm:leading-[1.65] md:text-[16px] animate-fade-up"
             style={{ animationDelay: "0.1s" }}
           >
             Subscriptions, software, and premium services with instant
@@ -84,21 +82,21 @@ export function Hero() {
 
           {/* CTAs */}
           <div
-            className={`mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row animate-fade-up transition-opacity duration-300 ${
+            className={`mt-8 flex w-full flex-col items-stretch justify-center gap-2.5 sm:mt-9 sm:w-auto sm:flex-row sm:items-center sm:gap-3 animate-fade-up transition-opacity duration-300 ${
               authReady ? "opacity-100" : "opacity-0"
             }`}
             style={{ animationDelay: "0.15s" }}
           >
             <Link
               to={browseTo}
-              className="group inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-[13.5px] font-semibold tracking-tight text-background transition-all hover:bg-foreground/90"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3.5 text-[14px] font-semibold tracking-tight text-background transition-all hover:bg-foreground/90 active:scale-[0.98] sm:py-3 sm:text-[13.5px]"
             >
               Browse Services
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
               to={ordersTo}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-6 py-3 text-[13.5px] font-medium tracking-tight text-foreground backdrop-blur transition-all hover:border-muted-foreground/40 hover:bg-surface-elevated"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-surface/60 px-6 py-3.5 text-[14px] font-medium tracking-tight text-foreground backdrop-blur transition-all hover:border-muted-foreground/40 hover:bg-surface-elevated active:scale-[0.98] sm:py-3 sm:text-[13.5px]"
             >
               My Orders
             </Link>
@@ -106,18 +104,18 @@ export function Hero() {
 
           {/* Trust micro */}
           <div
-            className="mx-auto mt-12 flex max-w-2xl flex-wrap items-center justify-center gap-x-8 gap-y-3 animate-fade-up"
+            className="mx-auto mt-10 grid max-w-md grid-cols-3 items-center justify-items-center gap-x-4 gap-y-3 sm:mt-12 sm:flex sm:max-w-2xl sm:flex-wrap sm:gap-x-8 animate-fade-up"
             style={{ animationDelay: "0.25s" }}
           >
-            <TrustItem icon={Zap} label="Instant Delivery" />
-            <TrustItem icon={ShieldCheck} label="Warranty Included" />
-            <TrustItem icon={Lock} label="Encrypted Sessions" />
+            <TrustItem icon={Zap} label="Instant" />
+            <TrustItem icon={ShieldCheck} label="Warranty" />
+            <TrustItem icon={Lock} label="Encrypted" />
           </div>
         </div>
 
         {/* Live catalog panel */}
         <div
-          className="relative mx-auto mt-20 max-w-4xl animate-fade-up"
+          className="relative mx-auto mt-14 max-w-4xl animate-fade-up sm:mt-20"
           style={{ animationDelay: "0.3s" }}
         >
           <div className="pointer-events-none absolute -inset-8 rounded-[28px] bg-primary/5 blur-3xl" />
@@ -175,27 +173,27 @@ function OttPanel() {
         </span>
       </div>
 
-      <div className="marquee-pause relative h-[320px] overflow-hidden mask-fade-y">
+      <div className="marquee-pause relative h-[300px] overflow-hidden mask-fade-y sm:h-[320px]">
         <div className="animate-marquee-y flex flex-col">
           {loop.map((p, i) => (
             <div
               key={`${p.name}-${i}`}
-              className="flex items-center justify-between border-b border-border/60 px-5 py-3.5 transition-colors hover:bg-surface-elevated/40"
+              className="flex items-center justify-between border-b border-border/60 px-4 py-3 transition-colors hover:bg-surface-elevated/40 sm:px-5 sm:py-3.5"
             >
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 shrink-0 overflow-hidden rounded-lg">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg sm:h-9 sm:w-9">
                   <p.Logo className="h-full w-full" />
                 </div>
                 <div className="min-w-0">
-                  <div className="truncate text-[13px] font-semibold text-foreground">
+                  <div className="truncate text-[13.5px] font-semibold text-foreground sm:text-[13px]">
                     {p.name}
                   </div>
-                  <div className="text-[11px] text-muted-foreground">
+                  <div className="truncate text-[11px] text-muted-foreground">
                     {p.plan}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center gap-2 pl-2">
                 <div className="text-right">
                   <div className="font-mono text-[12.5px] font-semibold text-primary">
                     -{p.savings}

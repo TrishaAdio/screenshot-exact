@@ -58,18 +58,18 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed left-1/2 top-3 z-50 w-[calc(100%-1.5rem)] max-w-6xl -translate-x-1/2 rounded-full transition-all duration-500 ${
+      className={`fixed left-1/2 top-3 z-50 w-[calc(100%-1rem)] max-w-6xl -translate-x-1/2 rounded-full transition-all duration-500 sm:w-[calc(100%-1.5rem)] ${
         scrolled
           ? "glass-nav border border-border/70 shadow-soft"
           : "border border-transparent"
       }`}
     >
-      <nav className="flex items-center justify-between px-5 py-2.5">
+      <nav className="flex items-center justify-between px-4 py-2 sm:px-5 sm:py-2.5">
         <Link to="/" aria-label="SymDeals home" className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-foreground text-background">
-            <span className="font-display text-[13px] font-bold tracking-tight">S</span>
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground text-background sm:h-7 sm:w-7">
+            <span className="font-display text-[14px] font-bold tracking-tight sm:text-[13px]">S</span>
           </span>
-          <span className="font-display text-[14px] font-semibold tracking-tight text-foreground">
+          <span className="font-display text-[15px] font-semibold tracking-tight text-foreground sm:text-[14px]">
             SymDeals
           </span>
         </Link>
@@ -148,7 +148,7 @@ export function Navbar() {
                 </Link>
                 <Link
                   to="/signup"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-3.5 py-1.5 text-[12px] font-semibold tracking-tight text-background transition-all hover:bg-foreground/90"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-[12.5px] font-semibold tracking-tight text-background transition-all hover:bg-foreground/90 sm:px-3.5 sm:py-1.5 sm:text-[12px]"
                 >
                   Get Started
                 </Link>
