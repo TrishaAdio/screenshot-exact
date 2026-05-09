@@ -454,6 +454,8 @@ export type Order = {
   productName: string;
   productImage: string;
   amount: number;
+  realPrice?: number;
+  savings?: number;
   status: OrderStatus;
   invoiceId?: string;
   createdAt?: string;
@@ -464,6 +466,7 @@ export function createOrder(input: {
   service: string;
   promoCode?: string;
   value: number;
+  realPrice?: number;
   productName: string;
   productImage?: string;
   invoiceId?: string;
