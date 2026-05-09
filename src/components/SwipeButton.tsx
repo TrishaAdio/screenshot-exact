@@ -26,6 +26,7 @@ export function SwipeButton({
   resetSignal?: number;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const shakeRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [state, setState] = useState<SwipeState>("idle");
   const [dragging, setDragging] = useState(false);
@@ -36,7 +37,6 @@ export function SwipeButton({
   const draggingRef = useRef(false);
   const loadingTimerRef = useRef<number | null>(null);
   const confirmTimerRef = useRef<number | null>(null);
-  const [shakeKey, setShakeKey] = useState(0);
 
   const updateProgress = useCallback((next: number) => {
     progressRef.current = next;
@@ -44,7 +44,19 @@ export function SwipeButton({
   }, []);
 
   useEffect(() => {
-    if (shake) setShakeKey((k) => k + 1);
+    if (!shake || !shakeRef.current) return;
+    const animation = shakeRef.current.animate(
+      [
+        { transform: "translateX(0)" },
+        { transform: "translateX(-7px)" },
+        { transform: "translateX(7px)" },
+        { transform: "translateX(-5px)" },
+        { transform: "translateX(5px)" },
+        { transform: "translateX(0)" },
+      ],
+      { duration: 400, easing: "ease-in-out" },
+    );
+    return () => animation.cancel();
   }, [shake]);
 
   // Reset back to idle when parent signals (e.g. registration failed).
@@ -140,12 +152,13 @@ export function SwipeButton({
               ? "COMPLETE FORM TO CONTINUE"
               : label}
       </div>
-      <div
-        key={shakeKey}
-        className={shake ? "animate-[shake_0.4s_ease-in-out]" : ""}
-      >
+      <div ref={shakeRef}>
         <div
           ref={trackRef}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
           className={`relative h-12 w-full select-none overflow-hidden rounded-md border bg-input px-0.5 py-0.5 transition-colors duration-300 ${
             disabled ? "border-border" : "border-primary/40"
           }`}
@@ -190,11 +203,8 @@ export function SwipeButton({
           <button
             type="button"
             aria-label="Slide to confirm"
-            disabled={state !== "idle" || disabled}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
+            aria-disabled={state !== "idle" || disabled}
+            tabIndex={state === "idle" && !disabled ? 0 : -1}
             className={`absolute top-0.5 left-0.5 flex h-11 w-12 touch-none items-center justify-center rounded-[5px] text-primary-foreground transition-all duration-300 active:cursor-grabbing disabled:cursor-not-allowed ${
               disabled
                 ? "cursor-not-allowed bg-muted-foreground/40"
