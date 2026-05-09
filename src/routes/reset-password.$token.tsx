@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { resetPassword, verifyResetToken } from "@/lib/api";
+import { InlineErrorBanner } from "@/components/InlineErrorBanner";
 import symdealsLogo from "@/assets/symdeals-logo.png";
 
 export const Route = createFileRoute("/reset-password/$token")({
