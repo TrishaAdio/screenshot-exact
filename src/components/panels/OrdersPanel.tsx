@@ -279,6 +279,12 @@ function OrderCard({
                 label="Amount"
                 value={`₹${order.amount.toLocaleString()}`}
               />
+              {(order.savings ?? 0) > 0 && (
+                <DetailRow
+                  label="You saved"
+                  value={`₹${order.savings!.toLocaleString()}`}
+                />
+              )}
             </div>
 
             <div
