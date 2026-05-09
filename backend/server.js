@@ -26,6 +26,7 @@ const productRoutes = require("./routes/products");
 const userRoutes = require("./routes/user");
 const paymentRoutes = require("./routes/payments");
 const orderRoutes = require("./routes/orders");
+const noticeRoutes = require("./routes/notices");
 
 function getTrustProxySetting() {
   const value = (process.env.TRUST_PROXY || "1").trim();
