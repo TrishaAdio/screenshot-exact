@@ -146,6 +146,10 @@ export function SwipeButton({
       >
         <div
           ref={trackRef}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
           className={`relative h-12 w-full select-none overflow-hidden rounded-md border bg-input px-0.5 py-0.5 transition-colors duration-300 ${
             disabled ? "border-border" : "border-primary/40"
           }`}
@@ -190,11 +194,8 @@ export function SwipeButton({
           <button
             type="button"
             aria-label="Slide to confirm"
-            disabled={state !== "idle" || disabled}
-            onPointerDown={onPointerDown}
-            onPointerMove={onPointerMove}
-            onPointerUp={onPointerUp}
-            onPointerCancel={onPointerUp}
+            aria-disabled={state !== "idle" || disabled}
+            tabIndex={state === "idle" && !disabled ? 0 : -1}
             className={`absolute top-0.5 left-0.5 flex h-11 w-12 touch-none items-center justify-center rounded-[5px] text-primary-foreground transition-all duration-300 active:cursor-grabbing disabled:cursor-not-allowed ${
               disabled
                 ? "cursor-not-allowed bg-muted-foreground/40"
