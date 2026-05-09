@@ -866,6 +866,95 @@ function VerifyBanner({
   );
 }
 
+/* ---------- Inline admin notice (replaces verify banner when active) ---------- */
+
+const NOTICE_STYLES: Record<
+  NoticeType,
+  { ring: string; bg: string; iconBg: string; iconColor: string; chip: string; dot: string }
+> = {
+  info: {
+    ring: "border-sky-400/20",
+    bg: "bg-sky-500/[0.05]",
+    iconBg: "bg-sky-400/10",
+    iconColor: "text-sky-300",
+    chip: "text-sky-300",
+    dot: "bg-sky-400/80",
+  },
+  success: {
+    ring: "border-emerald-400/20",
+    bg: "bg-emerald-500/[0.05]",
+    iconBg: "bg-emerald-400/10",
+    iconColor: "text-emerald-300",
+    chip: "text-emerald-300",
+    dot: "bg-emerald-400/80",
+  },
+  warning: {
+    ring: "border-amber-400/20",
+    bg: "bg-amber-500/[0.05]",
+    iconBg: "bg-amber-400/10",
+    iconColor: "text-amber-300",
+    chip: "text-amber-300",
+    dot: "bg-amber-400/80",
+  },
+  urgent: {
+    ring: "border-rose-500/25",
+    bg: "bg-rose-500/[0.06]",
+    iconBg: "bg-rose-500/15",
+    iconColor: "text-rose-300",
+    chip: "text-rose-300",
+    dot: "bg-rose-400/90",
+  },
+};
+
+const NOTICE_LABEL: Record<NoticeType, string> = {
+  info: "Update",
+  success: "Notice",
+  warning: "Warning",
+  urgent: "Important",
+};
+
+function InlineNoticeBanner({
+  notice,
+  onDismiss,
+}: {
+  notice: Notice;
+  onDismiss: () => void;
+}) {
+  const style = NOTICE_STYLES[notice.type] ?? NOTICE_STYLES.info;
+  const label = notice.title?.trim() || NOTICE_LABEL[notice.type];
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+      className="mb-6"
+    >
+      <div
+        className={`relative flex items-center gap-2.5 overflow-hidden rounded-lg border ${style.ring} ${style.bg} py-1.5 pl-3 pr-1.5 backdrop-blur-sm`}
+      >
+        <span aria-hidden className={`flex h-5 w-5 items-center justify-center rounded-md ${style.iconBg}`}>
+          <Bell className={`h-3 w-3 ${style.iconColor}`} />
+        </span>
+        <p className="flex-1 truncate text-[12px] font-medium text-foreground/90">
+          <span className={`font-semibold ${style.chip}`}>{label}</span>
+          <span aria-hidden className={`mx-2 inline-block h-1 w-1 rounded-full align-middle ${style.dot}`} />
+          <span className="text-foreground/85">{notice.message}</span>
+        </p>
+        <motion.button
+          type="button"
+          onClick={onDismiss}
+          aria-label="Dismiss"
+          whileTap={{ scale: 0.9 }}
+          className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+        >
+          <X className="h-3 w-3" />
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ---------- Product card ---------- */
 
 function ProductCard({
