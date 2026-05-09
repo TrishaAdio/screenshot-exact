@@ -300,13 +300,22 @@ function DashboardPage() {
           </header>
 
           <main className="mx-auto w-full max-w-7xl flex-1 px-6 pb-28 pt-10 lg:px-10 lg:pb-16">
-            {/* Verify email — slim */}
-            {!loadingMe && user && user.isVerified === false && !bannerDismissed && (
-              <VerifyBanner
-                onVerify={() => setOtpOpen(true)}
-                onDismiss={() => setBannerDismissed(true)}
-              />
-            )}
+            {/* Inline banner — admin notice takes precedence over verify banner */}
+            <AnimatePresence mode="wait" initial={false}>
+              {visibleNotice ? (
+                <InlineNoticeBanner
+                  key={`notice-${visibleNotice.id}`}
+                  notice={visibleNotice}
+                  onDismiss={() => dismissNotice(visibleNotice.id)}
+                />
+              ) : !loadingMe && user && user.isVerified === false && !bannerDismissed ? (
+                <VerifyBanner
+                  key="verify-banner"
+                  onVerify={() => setOtpOpen(true)}
+                  onDismiss={() => setBannerDismissed(true)}
+                />
+              ) : null}
+            </AnimatePresence>
 
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
