@@ -518,7 +518,7 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
   const [fileName, setFileName] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [plans, setPlans] = useState<DraftPlan[]>([{ months: "1", price: "" }]);
+  const [plans, setPlans] = useState<DraftPlan[]>([{ months: "1", price: "", realPrice: "" }]);
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -585,7 +585,7 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
       toast.error("Maximum 12 plans allowed");
       return;
     }
-    setPlans((prev) => [...prev, { months: "", price: "" }]);
+    setPlans((prev) => [...prev, { months: "", price: "", realPrice: "" }]);
   };
   const removePlan = (i: number) => {
     if (plans.length === 1) {
@@ -658,7 +658,7 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
       setCategory("");
       setDescription("");
       resetImage();
-      setPlans([{ months: "1", price: "" }]);
+      setPlans([{ months: "1", price: "", realPrice: "" }]);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to add product");
     } finally {
