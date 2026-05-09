@@ -1,6 +1,10 @@
-import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, LayoutGroup } from "framer-motion";
+import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
+import { OrdersPanel } from "@/components/panels/OrdersPanel";
+import { SupportPanel } from "@/components/panels/SupportPanel";
+import { ProfilePanel } from "@/components/panels/ProfilePanel";
+import { WalletPanel } from "@/components/panels/WalletPanel";
 import {
   Bell,
   Code2,
