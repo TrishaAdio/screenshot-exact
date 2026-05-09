@@ -171,8 +171,41 @@ export function SupportPanel() {
   );
 }
 
+const ACCENTS: Record<
+  string,
+  {
+    text: string;
+    hoverBorder: string;
+    hoverBg: string;
+    dot: string;
+    ring: string;
+  }
+> = {
+  emerald: {
+    text: "text-emerald-300",
+    hoverBorder: "group-hover/ch:border-emerald-400/50",
+    hoverBg: "group-hover/ch:bg-emerald-400/10",
+    dot: "bg-emerald-400",
+    ring: "bg-emerald-400/60",
+  },
+  sky: {
+    text: "text-sky-300",
+    hoverBorder: "group-hover/ch:border-sky-400/50",
+    hoverBg: "group-hover/ch:bg-sky-400/10",
+    dot: "bg-sky-400",
+    ring: "bg-sky-400/60",
+  },
+  fuchsia: {
+    text: "text-fuchsia-300",
+    hoverBorder: "group-hover/ch:border-fuchsia-400/50",
+    hoverBg: "group-hover/ch:bg-fuchsia-400/10",
+    dot: "bg-fuchsia-400",
+    ring: "bg-fuchsia-400/60",
+  },
+};
+
 function ChannelCard({ channel: c }: { channel: Channel }) {
-  const styles = ACCENTS[c.accent];
+  const s = ACCENTS[c.accent];
 
   return (
     <a
@@ -182,14 +215,10 @@ function ChannelCard({ channel: c }: { channel: Channel }) {
       className={`group/ch relative isolate flex items-center gap-4 overflow-hidden rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.045] to-white/[0.01] p-4 transition-all duration-300 ease-out hover:-translate-y-[2px] active:translate-y-0 active:scale-[0.997] sm:gap-5 sm:p-5 ${
         c.primary ? "ring-1 ring-emerald-400/15" : ""
       }`}
-      style={
-        {
-          // subtle radial glow tinted to brand
-          backgroundImage: `radial-gradient(120% 120% at 0% 0%, rgba(${c.brand},0.08), transparent 55%)`,
-        } as React.CSSProperties
-      }
+      style={{
+        backgroundImage: `radial-gradient(120% 120% at 0% 0%, rgba(${c.brand},0.08), transparent 55%)`,
+      }}
     >
-      {/* hover sheen */}
       <span
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-500 group-hover/ch:opacity-100"
@@ -199,17 +228,12 @@ function ChannelCard({ channel: c }: { channel: Channel }) {
       />
 
       <div
-        className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] text-foreground transition-all duration-300 sm:h-14 sm:w-14 ${accentBorder} group-hover/ch:${accentText}`}
+        className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] text-foreground transition-all duration-300 sm:h-14 sm:w-14 ${s.hoverBorder} group-hover/ch:${s.text}`}
       >
         <c.Icon className="h-[19px] w-[19px] sm:h-[21px] sm:w-[21px]" />
-        {/* live presence dot */}
         <span className="absolute -right-0.5 -top-0.5 flex h-2.5 w-2.5">
-          <span
-            className={`absolute inline-flex h-full w-full animate-ping rounded-full ${accentRing} opacity-80`}
-          />
-          <span
-            className={`relative inline-flex h-2.5 w-2.5 rounded-full ring-2 ring-background ${accentDot}`}
-          />
+          <span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${s.ring} opacity-80`} />
+          <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ring-2 ring-background ${s.dot}`} />
         </span>
       </div>
 
@@ -228,14 +252,10 @@ function ChannelCard({ channel: c }: { channel: Channel }) {
           {c.tagline}
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span className={`inline-flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] ${accentText}`}>
+          <span className={`inline-flex items-center gap-1.5 text-[10.5px] font-semibold uppercase tracking-[0.12em] ${s.text}`}>
             <span className="relative flex h-1.5 w-1.5">
-              <span
-                className={`absolute inline-flex h-full w-full animate-ping rounded-full ${accentRing}`}
-              />
-              <span
-                className={`relative inline-flex h-1.5 w-1.5 rounded-full ${accentDot}`}
-              />
+              <span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${s.ring}`} />
+              <span className={`relative inline-flex h-1.5 w-1.5 rounded-full ${s.dot}`} />
             </span>
             {c.status}
           </span>
@@ -246,7 +266,7 @@ function ChannelCard({ channel: c }: { channel: Channel }) {
       </div>
 
       <div
-        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.03] text-muted-foreground transition-all duration-300 ${accentBorder} ${accentBg} group-hover/ch:${accentText}`}
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.03] text-muted-foreground transition-all duration-300 ${s.hoverBorder} ${s.hoverBg} group-hover/ch:${s.text}`}
       >
         <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover/ch:-translate-y-0.5 group-hover/ch:translate-x-0.5" />
       </div>
