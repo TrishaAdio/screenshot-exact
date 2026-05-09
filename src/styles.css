@@ -376,11 +376,18 @@
   }
   .group\/cta:hover .animate-btn-sheen { animation: btn-sheen 1.05s ease-out; }
 
+  @keyframes accent-pulse {
+    0%, 100% { opacity: 0.55; }
+    50%      { opacity: 1; }
+  }
+  .before\:animate-accent-pulse::before { animation: accent-pulse 2.2s ease-in-out infinite; }
+
   @media (prefers-reduced-motion: reduce) {
     .animate-orb-drift,
     .animate-orb-drift-slow,
     .animate-amount-glow,
-    .animate-success-ring { animation: none !important; }
+    .animate-success-ring,
+    .before\:animate-accent-pulse::before { animation: none !important; }
   }
 
   /* Premium tactile press for category tiles — 3-phase: press → micro delay → spring release */
