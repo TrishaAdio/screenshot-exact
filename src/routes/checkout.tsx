@@ -291,8 +291,6 @@ function CheckoutPage() {
                 </div>
 
                 <div className="relative mt-5">
-                  {/* connecting vertical line */}
-                  <div className="pointer-events-none absolute left-[19px] top-3 bottom-3 w-px bg-gradient-to-b from-emerald-400/40 via-emerald-400/15 to-transparent" />
                   <div className="space-y-3">
                     <Step
                       n={1}
