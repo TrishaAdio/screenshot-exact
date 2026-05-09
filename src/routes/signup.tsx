@@ -5,6 +5,7 @@ import { SwipeButton } from "@/components/SwipeButton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { OtpVerifyModal } from "@/components/OtpVerifyModal";
 import { signup as apiSignup, isLoggedIn, saveSession } from "@/lib/api";
+import { InlineErrorBanner } from "@/components/InlineErrorBanner";
 import symdealsLogo from "@/assets/symdeals-logo.png";
 
 export const Route = createFileRoute("/signup")({
