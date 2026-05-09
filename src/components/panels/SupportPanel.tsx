@@ -175,6 +175,7 @@ const ACCENTS: Record<
   string,
   {
     text: string;
+    hoverText: string;
     hoverBorder: string;
     hoverBg: string;
     dot: string;
@@ -183,6 +184,7 @@ const ACCENTS: Record<
 > = {
   emerald: {
     text: "text-emerald-300",
+    hoverText: "group-hover/ch:text-emerald-300",
     hoverBorder: "group-hover/ch:border-emerald-400/50",
     hoverBg: "group-hover/ch:bg-emerald-400/10",
     dot: "bg-emerald-400",
@@ -190,6 +192,7 @@ const ACCENTS: Record<
   },
   sky: {
     text: "text-sky-300",
+    hoverText: "group-hover/ch:text-sky-300",
     hoverBorder: "group-hover/ch:border-sky-400/50",
     hoverBg: "group-hover/ch:bg-sky-400/10",
     dot: "bg-sky-400",
@@ -197,6 +200,7 @@ const ACCENTS: Record<
   },
   fuchsia: {
     text: "text-fuchsia-300",
+    hoverText: "group-hover/ch:text-fuchsia-300",
     hoverBorder: "group-hover/ch:border-fuchsia-400/50",
     hoverBg: "group-hover/ch:bg-fuchsia-400/10",
     dot: "bg-fuchsia-400",
