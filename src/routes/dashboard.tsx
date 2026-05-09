@@ -95,6 +95,7 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardPage() {
   const navigate = useNavigate();
+  const { panel } = useSearch({ from: "/dashboard" });
   const [user, setUser] = useState<AuthUser | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingMe, setLoadingMe] = useState(true);
@@ -107,10 +108,22 @@ function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
+  const goToPanel = (next: PanelKey) => {
+    if (next === panel) return;
+    navigate({
+      to: "/dashboard",
+      search: next === "overview" ? {} : { panel: next },
+      replace: false,
+    });
+    // restore scroll on panel change
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const openProduct = (p: Product) => {
     const routeId = p.service_id ? String(p.service_id) : p.id;
     navigate({ to: "/product/$id", params: { id: routeId } });
   };
+
 
   useEffect(() => {
     if (!getToken()) {
