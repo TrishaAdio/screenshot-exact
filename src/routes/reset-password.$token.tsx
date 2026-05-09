@@ -236,11 +236,10 @@ function ResetPasswordPage() {
                 </li>
               </ul>
 
-              {submitError && (
-                <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-[12px] font-medium text-destructive">
-                  {submitError}
-                </p>
-              )}
+              <InlineErrorBanner
+                message={submitError}
+                onDismiss={() => setSubmitError(null)}
+              />
 
               <button
                 type="submit"
