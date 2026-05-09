@@ -266,109 +266,129 @@ function DashboardPage() {
               />
             )}
 
-            {/* Welcome + stats */}
-            <section className="grid gap-8 lg:grid-cols-12 lg:items-end">
-              <div className="lg:col-span-6 animate-fade-up">
-                <div className="label-uppercase">Overview</div>
-                <h1 className="mt-3 font-display text-[2rem] font-semibold tracking-[-0.025em] text-foreground sm:text-[2.35rem]">
-                  {loadingMe ? (
-                    <span className="text-muted-foreground/40">Loading…</span>
-                  ) : (
-                    <>Welcome back, {firstName}</>
-                  )}
-                </h1>
-                <p className="mt-2 text-[14px] text-muted-foreground">
-                  Pick up where you left off.
-                </p>
-              </div>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={panel}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {(panel === "overview" || panel === "browse") && (
+                  <>
+                    {panel === "overview" && (
+                      <section className="grid gap-8 lg:grid-cols-12 lg:items-end">
+                        <div className="lg:col-span-6">
+                          <div className="label-uppercase">Overview</div>
+                          <h1 className="mt-3 font-display text-[2rem] font-semibold tracking-[-0.025em] text-foreground sm:text-[2.35rem]">
+                            {loadingMe ? (
+                              <span className="text-muted-foreground/40">Loading…</span>
+                            ) : (
+                              <>Welcome back, {firstName}</>
+                            )}
+                          </h1>
+                          <p className="mt-2 text-[14px] text-muted-foreground">
+                            Pick up where you left off.
+                          </p>
+                        </div>
 
-              <div className="grid gap-4 sm:grid-cols-2 lg:col-span-6">
-                <ActiveOrdersCard loading={loadingMe} />
-                <TotalSavedCard loading={loadingMe} amount={totalSaved} />
-              </div>
-            </section>
+                        <div className="grid gap-4 sm:grid-cols-2 lg:col-span-6">
+                          <ActiveOrdersCard loading={loadingMe} onView={() => goToPanel("orders")} />
+                          <TotalSavedCard loading={loadingMe} amount={totalSaved} />
+                        </div>
+                      </section>
+                    )}
 
-            {/* Filter pills */}
-            <section className="mt-14 animate-fade-up" data-tour="categories">
-              <div className="flex items-center justify-between">
-                <h2 className="font-display text-[17px] font-semibold tracking-tight text-foreground">
-                  Catalog
-                </h2>
-                <span className="text-[12px] text-muted-foreground">
-                  {loadingProducts ? "—" : `${filteredProducts.length} services`}
-                </span>
-              </div>
-              <LayoutGroup id="category-pills">
-                <div
-                  className="mt-5 -mx-6 flex gap-2 overflow-x-auto px-6 pb-1 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                  role="tablist"
-                >
-                  {CATEGORY_TABS.map(({ key, label, Icon }) => {
-                    const active = selectedCategory === key;
-                    return (
-                      <motion.button
-                        key={key}
-                        role="tab"
-                        aria-selected={active}
-                        onClick={() => setSelectedCategory(key)}
-                        whileTap={{ scale: 0.94 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 26 }}
-                        className={`relative inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-medium tracking-tight transition-colors ${
-                          active
-                            ? "border-transparent text-background"
-                            : "border-border bg-surface/60 text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground"
-                        }`}
-                      >
-                        {active && (
-                          <motion.span
-                            layoutId="category-pill-active"
-                            className="absolute inset-0 rounded-full bg-foreground"
-                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                          />
-                        )}
-                        <Icon className="relative h-3.5 w-3.5" />
-                        <span className="relative">{label}</span>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              </LayoutGroup>
-            </section>
+                    <section className={panel === "overview" ? "mt-14" : ""} data-tour="categories">
+                      <div className="flex items-center justify-between">
+                        <h2 className="font-display text-[17px] font-semibold tracking-tight text-foreground">
+                          {panel === "browse" ? "Browse Services" : "Catalog"}
+                        </h2>
+                        <span className="text-[12px] text-muted-foreground">
+                          {loadingProducts ? "—" : `${filteredProducts.length} services`}
+                        </span>
+                      </div>
+                      <LayoutGroup id="category-pills">
+                        <div
+                          className="mt-5 -mx-6 flex gap-2 overflow-x-auto px-6 pb-1 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                          role="tablist"
+                        >
+                          {CATEGORY_TABS.map(({ key, label, Icon }) => {
+                            const active = selectedCategory === key;
+                            return (
+                              <motion.button
+                                key={key}
+                                role="tab"
+                                aria-selected={active}
+                                onClick={() => setSelectedCategory(key)}
+                                whileTap={{ scale: 0.94 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 26 }}
+                                className={`relative inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-medium tracking-tight transition-colors ${
+                                  active
+                                    ? "border-transparent text-background"
+                                    : "border-border bg-surface/60 text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground"
+                                }`}
+                              >
+                                {active && (
+                                  <motion.span
+                                    layoutId="category-pill-active"
+                                    className="absolute inset-0 rounded-full bg-foreground"
+                                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                  />
+                                )}
+                                <Icon className="relative h-3.5 w-3.5" />
+                                <span className="relative">{label}</span>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      </LayoutGroup>
+                    </section>
 
-            {/* Product grid */}
-            <section className="mt-7" data-tour="products">
-              {loadingProducts ? (
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {[0, 1, 2, 3, 4, 5].map((i) => (
-                    <div
-                      key={i}
-                      className="h-[180px] animate-pulse rounded-2xl border border-border bg-surface/60"
-                    />
-                  ))}
-                </div>
-              ) : filteredProducts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface/40 px-6 py-20 text-center">
-                  <Package className="h-7 w-7 text-muted-foreground/60" />
-                  <p className="mt-3 text-[14px] font-medium text-foreground">
-                    {selectedCategory === "All"
-                      ? "No services available yet"
-                      : `No services in ${selectedCategory}`}
-                  </p>
-                </div>
-              ) : (
-                <div
-                  className="grid animate-fade-up grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-                >
-                  {filteredProducts.map((p) => (
-                    <ProductCard
-                      key={p.id}
-                      product={p}
-                      onOpen={() => openProduct(p)}
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
+                    <section className="mt-7" data-tour="products">
+                      {loadingProducts ? (
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                          {[0, 1, 2, 3, 4, 5].map((i) => (
+                            <div
+                              key={i}
+                              className="h-[180px] animate-pulse rounded-2xl border border-border bg-surface/60"
+                            />
+                          ))}
+                        </div>
+                      ) : filteredProducts.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface/40 px-6 py-20 text-center">
+                          <Package className="h-7 w-7 text-muted-foreground/60" />
+                          <p className="mt-3 text-[14px] font-medium text-foreground">
+                            {selectedCategory === "All"
+                              ? "No services available yet"
+                              : `No services in ${selectedCategory}`}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                          {filteredProducts.map((p) => (
+                            <ProductCard
+                              key={p.id}
+                              product={p}
+                              onOpen={() => openProduct(p)}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </section>
+                  </>
+                )}
+
+                {panel === "orders" && <OrdersPanel onBrowse={() => goToPanel("browse")} />}
+                {panel === "wallet" && (
+                  <WalletPanel user={user} loading={loadingMe} onViewOrders={() => goToPanel("orders")} />
+                )}
+                {panel === "support" && <SupportPanel />}
+                {panel === "settings" && (
+                  <ProfilePanel initialUser={user} onUserChange={(u) => setUser(u)} />
+                )}
+              </motion.div>
+            </AnimatePresence>
 
           </main>
         </div>
