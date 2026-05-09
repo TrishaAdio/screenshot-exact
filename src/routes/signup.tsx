@@ -407,16 +407,21 @@ function SignupPage() {
         autoSend={false}
         onClose={() => {
           setOtpOpen(false);
-          navigate({ to: "/dashboard" });
+          setShowOnboardingLoader(true);
         }}
         onVerified={() => {
           setOtpOpen(false);
-          navigate({ to: "/dashboard" });
+          setShowOnboardingLoader(true);
         }}
         onSkip={() => {
           setOtpOpen(false);
-          navigate({ to: "/dashboard" });
+          setShowOnboardingLoader(true);
         }}
+      />
+
+      <OnboardingLoader
+        open={showOnboardingLoader}
+        onComplete={() => navigate({ to: "/dashboard" })}
       />
     </div>
   );
