@@ -76,7 +76,7 @@ export function WalletPanel({
               {loading ? (
                 <span className="text-muted-foreground/40">—</span>
               ) : (
-                <>₹{totalSaved.toLocaleString("en-IN")}</>
+                <>₹{display.toLocaleString("en-IN")}</>
               )}
             </span>
             <span className="text-[11.5px] font-medium text-muted-foreground">
