@@ -999,6 +999,19 @@ function ProductCard({
   const oldPrice =
     lowest && (lowest.realPrice ?? 0) > lowest.price ? lowest.realPrice! : null;
   const showOldPrice = oldPrice !== null;
+  const savePct =
+    showOldPrice && oldPrice && lowest
+      ? Math.round(((oldPrice - lowest.price) / oldPrice) * 100)
+      : 0;
+  const formatDuration = (m?: number) => {
+    if (!m) return null;
+    if (m % 12 === 0) {
+      const y = m / 12;
+      return `${y} ${y === 1 ? "Year" : "Years"}`;
+    }
+    return `${m} ${m === 1 ? "Month" : "Months"}`;
+  };
+  const duration = formatDuration(lowest?.months);
 
   const cardRef = useRef<HTMLElement>(null);
   const handleMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -1017,7 +1030,8 @@ function ProductCard({
       whileHover={{ y: -3 }}
       whileTap={{ scale: 0.985 }}
       transition={{ type: "spring", stiffness: 320, damping: 26 }}
-      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-surface/60 p-3 backdrop-blur transition-colors duration-300 hover:border-muted-foreground/30 hover:bg-surface-elevated/80 hover:shadow-elevated sm:p-5"
+      className="group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-border bg-surface/60 p-3.5 backdrop-blur transition-colors duration-300 hover:border-muted-foreground/30 hover:bg-surface-elevated/80 hover:shadow-elevated sm:flex-row sm:items-stretch sm:p-5"
+      style={{ minHeight: 0 }}
     >
       {/* cursor glow */}
       <span
@@ -1029,73 +1043,157 @@ function ProductCard({
         }}
       />
 
-      <div className="relative flex items-start gap-2.5 sm:gap-4">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border bg-background/70 transition-transform duration-300 group-hover:scale-[1.04] sm:h-16 sm:w-16 sm:rounded-xl">
+      {/* MOBILE LAYOUT */}
+      <div className="relative flex flex-col sm:hidden">
+        {/* Logo banner */}
+        <div className="relative mb-3 flex h-[88px] w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-gradient-to-br from-background/80 to-background/40">
           <ServiceLogo
             src={product.image}
             name={product.name}
             className="h-full w-full object-cover"
-            iconClass="h-5 w-5 sm:h-6 sm:w-6"
+            iconClass="h-9 w-9"
           />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-start justify-between gap-1.5">
-            <h3 className="truncate font-display text-[13px] font-semibold tracking-tight text-foreground sm:text-[15.5px]">
-              {product.name}
-            </h3>
-            <ArrowUpRight className="hidden h-4 w-4 shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground sm:block" />
-          </div>
-          <div className="mt-0.5 truncate text-[10.5px] text-muted-foreground sm:mt-1 sm:text-[12px]">
+          {savePct > 0 && (
+            <span className="absolute right-1.5 top-1.5 inline-flex items-center rounded-md border border-emerald-400/25 bg-emerald-500/15 px-1.5 py-0.5 text-[9.5px] font-semibold tracking-tight text-emerald-300 backdrop-blur">
+              −{savePct}%
+            </span>
+          )}
+          <span className="absolute left-1.5 top-1.5 inline-flex items-center rounded-md border border-white/10 bg-black/35 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.1em] text-white/80 backdrop-blur">
             {product.category || "Service"}
-          </div>
-
-          <div className="mt-2 hidden flex-wrap items-center gap-1.5 sm:mt-3.5 sm:flex">
-            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-2 py-0.5 text-[10.5px] font-medium text-muted-foreground">
-              <Zap className="h-2.5 w-2.5 text-primary" />
-              Instant
-            </span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-2 py-0.5 text-[10.5px] font-medium text-muted-foreground">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              In stock
-            </span>
-          </div>
+          </span>
         </div>
+
+        {/* Title — allow 2 lines */}
+        <h3 className="font-display text-[14px] font-semibold leading-[1.25] tracking-tight text-foreground line-clamp-2 min-h-[2.5em]">
+          {product.name}
+        </h3>
+
+        {/* Detail chips */}
+        <div className="mt-2 flex flex-wrap items-center gap-1">
+          {duration && (
+            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-1.5 py-0.5 text-[9.5px] font-medium text-foreground/85">
+              <Clock className="h-2.5 w-2.5 text-primary" />
+              {duration}
+            </span>
+          )}
+          <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-1.5 py-0.5 text-[9.5px] font-medium text-muted-foreground">
+            <Zap className="h-2.5 w-2.5 text-primary" />
+            Instant
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/20 bg-emerald-500/8 px-1.5 py-0.5 text-[9.5px] font-medium text-emerald-300/90">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            In Stock
+          </span>
+        </div>
+
+        {/* Price */}
+        <div className="mt-3 flex items-baseline gap-1.5">
+          <span className="font-display text-[18px] font-semibold tracking-tight text-foreground">
+            {lowest ? `₹${lowest.price.toLocaleString()}` : "—"}
+          </span>
+          {showOldPrice && (
+            <span className="text-[11px] font-medium text-muted-foreground line-through">
+              ₹{oldPrice!.toLocaleString()}
+            </span>
+          )}
+          {duration && (
+            <span className="ml-auto text-[10px] font-medium text-muted-foreground">
+              / {duration.toLowerCase()}
+            </span>
+          )}
+        </div>
+
+        {/* CTA — full width */}
+        <motion.button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpen();
+          }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 420, damping: 22 }}
+          className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1 rounded-xl bg-foreground text-[12px] font-semibold tracking-tight text-background shadow-[0_6px_20px_-8px_color-mix(in_oklab,var(--foreground)_60%,transparent)]"
+        >
+          Get Access
+          <ArrowUpRight className="h-3.5 w-3.5" />
+        </motion.button>
       </div>
 
-      <div className="relative mt-3 flex items-end justify-between border-t border-border pt-3 sm:mt-5 sm:pt-4">
-        <div className="min-w-0">
-          <div className="text-[9px] font-medium uppercase tracking-[0.14em] text-muted-foreground sm:text-[10.5px]">
-            From
+      {/* DESKTOP LAYOUT */}
+      <div className="relative hidden w-full sm:block">
+        <div className="flex items-start gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border bg-background/70 transition-transform duration-300 group-hover:scale-[1.04]">
+            <ServiceLogo
+              src={product.image}
+              name={product.name}
+              className="h-full w-full object-cover"
+              iconClass="h-6 w-6"
+            />
           </div>
-          <div className="mt-0.5 flex items-baseline gap-1 sm:mt-1 sm:gap-1.5">
-            <span className="font-display text-[15px] font-semibold tracking-tight text-foreground sm:text-[20px]">
-              {lowest ? `₹${lowest.price.toLocaleString()}` : "—"}
-            </span>
-            {showOldPrice && (
-              <span className="truncate text-[10px] font-medium text-muted-foreground line-through sm:text-[11.5px]">
-                ₹{oldPrice!.toLocaleString()}
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-2">
+              <h3 className="truncate font-display text-[15.5px] font-semibold tracking-tight text-foreground">
+                {product.name}
+              </h3>
+              <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />
+            </div>
+            <div className="mt-1 truncate text-[12px] text-muted-foreground">
+              {product.category || "Service"}
+            </div>
+            <div className="mt-3.5 flex flex-wrap items-center gap-1.5">
+              {duration && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-2 py-0.5 text-[10.5px] font-medium text-foreground/85">
+                  <Clock className="h-2.5 w-2.5 text-primary" />
+                  {duration}
+                </span>
+              )}
+              <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-2 py-0.5 text-[10.5px] font-medium text-muted-foreground">
+                <Zap className="h-2.5 w-2.5 text-primary" />
+                Instant
               </span>
-            )}
+              <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-2 py-0.5 text-[10.5px] font-medium text-muted-foreground">
+                <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                In stock
+              </span>
+            </div>
           </div>
         </div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <motion.button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpen();
-              }}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.92 }}
-              transition={{ type: "spring", stiffness: 420, damping: 22 }}
-              className="inline-flex h-8 shrink-0 items-center justify-center rounded-full bg-foreground px-3 text-[11px] font-semibold tracking-tight text-background shadow-sm transition-all hover:shadow-[0_6px_20px_-6px_color-mix(in_oklab,var(--foreground)_50%,transparent)] sm:h-9 sm:px-5 sm:text-[12.5px]"
-            >
-              Buy
-            </motion.button>
-          </TooltipTrigger>
-          <TooltipContent side="top" sideOffset={6}>Purchase instantly</TooltipContent>
-        </Tooltip>
+
+        <div className="mt-5 flex items-end justify-between border-t border-border pt-4">
+          <div>
+            <div className="text-[10.5px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+              From
+            </div>
+            <div className="mt-1 flex items-baseline gap-1.5">
+              <span className="font-display text-[20px] font-semibold tracking-tight text-foreground">
+                {lowest ? `₹${lowest.price.toLocaleString()}` : "—"}
+              </span>
+              {showOldPrice && (
+                <span className="text-[11.5px] font-medium text-muted-foreground line-through">
+                  ₹{oldPrice!.toLocaleString()}
+                </span>
+              )}
+            </div>
+          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <motion.button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpen();
+                }}
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.92 }}
+                transition={{ type: "spring", stiffness: 420, damping: 22 }}
+                className="inline-flex h-9 items-center justify-center rounded-full bg-foreground px-5 text-[12.5px] font-semibold tracking-tight text-background shadow-sm transition-all hover:shadow-[0_6px_20px_-6px_color-mix(in_oklab,var(--foreground)_50%,transparent)]"
+              >
+                Get Access
+              </motion.button>
+            </TooltipTrigger>
+            <TooltipContent side="top" sideOffset={6}>Purchase instantly</TooltipContent>
+          </Tooltip>
+        </div>
       </div>
     </motion.article>
   );
