@@ -700,7 +700,7 @@ function UserBadge({ user, loading }: { user: AuthUser | null; loading: boolean 
   );
 }
 
-function ActiveOrdersCard({ loading }: { loading: boolean }) {
+function ActiveOrdersCard({ loading, onView }: { loading: boolean; onView?: () => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -720,13 +720,14 @@ function ActiveOrdersCard({ loading }: { loading: boolean }) {
         <span className="font-display text-[1.85rem] font-semibold tracking-tight text-foreground">
           {loading ? <span className="text-muted-foreground/40">—</span> : "0"}
         </span>
-        <Link
-          to="/orders"
+        <button
+          type="button"
+          onClick={onView}
           className="group/link inline-flex items-center gap-0.5 text-[11.5px] font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           View all
           <ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-0.5" />
-        </Link>
+        </button>
       </div>
     </motion.div>
   );
