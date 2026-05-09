@@ -75,7 +75,7 @@ export function MobileBottomNav() {
 
   useEffect(() => {
     if (!mounted) return;
-    if (!draggingRef.current) measureTo(displayIdx, false);
+    measureTo(displayIdx, false);
   }, [displayIdx, mounted, measureTo]);
 
   useEffect(() => {
