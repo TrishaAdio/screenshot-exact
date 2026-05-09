@@ -14,6 +14,12 @@ const planSchema = new mongoose.Schema(
       min: 0,
       max: 10_000_000,
     },
+    realPrice: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 10_000_000,
+    },
   },
   { _id: false }
 );
