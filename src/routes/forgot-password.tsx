@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Loader2, Mail, CheckCircle2 } from "lucide-react";
 import { forgotPassword } from "@/lib/api";
+import { InlineErrorBanner } from "@/components/InlineErrorBanner";
 import symdealsLogo from "@/assets/symdeals-logo.png";
 
 export const Route = createFileRoute("/forgot-password")({
