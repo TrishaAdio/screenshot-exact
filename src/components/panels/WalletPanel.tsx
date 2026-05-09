@@ -72,7 +72,7 @@ export function WalletPanel({
             </div>
           </div>
           <div className="relative mt-4 flex items-baseline gap-2">
-            <span className="font-display text-[1.85rem] font-semibold tracking-tight text-foreground">
+            <span className="font-display text-[1.85rem] font-semibold tracking-tight text-foreground tabular-nums">
               {loading ? (
                 <span className="text-muted-foreground/40">—</span>
               ) : (
