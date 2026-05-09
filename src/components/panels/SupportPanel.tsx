@@ -172,11 +172,7 @@ export function SupportPanel() {
 }
 
 function ChannelCard({ channel: c }: { channel: Channel }) {
-  const accentText = `text-${c.accent}-300`;
-  const accentBorder = `group-hover/ch:border-${c.accent}-400/50`;
-  const accentBg = `group-hover/ch:bg-${c.accent}-400/10`;
-  const accentDot = `bg-${c.accent}-400`;
-  const accentRing = `bg-${c.accent}-400/60`;
+  const styles = ACCENTS[c.accent];
 
   return (
     <a
