@@ -448,11 +448,14 @@ function DashboardPage() {
 function DesktopSidebar({
   user,
   onLogout,
+  activePanel,
+  onPanelSelect,
 }: {
   user: AuthUser | null;
   onLogout: () => void;
+  activePanel: PanelKey;
+  onPanelSelect: (p: PanelKey) => void;
 }) {
-  const path = useRouterState({ select: (r) => r.location.pathname });
   return (
     <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-surface/40 backdrop-blur-xl lg:flex">
       <div className="flex h-14 items-center gap-2 border-b border-border px-5">
@@ -472,10 +475,9 @@ function DesktopSidebar({
         </div>
         <LayoutGroup id="sidebar-nav">
           <ul className="space-y-0.5">
-            {SIDEBAR_ITEMS.map((item, idx) => {
+            {SIDEBAR_ITEMS.map((item) => {
               const Icon = item.Icon;
-              const firstMatchIdx = SIDEBAR_ITEMS.findIndex((i) => i.to === path);
-              const active = idx === firstMatchIdx;
+              const active = activePanel === item.panel;
               const hint =
                 item.label === "Dashboard"
                   ? "Overview & catalog"
@@ -492,9 +494,11 @@ function DesktopSidebar({
                 <li key={item.label}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Link
-                        to={item.to}
-                        className={`group relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors duration-200 ${
+                      <button
+                        type="button"
+                        onClick={() => onPanelSelect(item.panel)}
+                        aria-current={active ? "page" : undefined}
+                        className={`group relative flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[13px] font-medium transition-colors duration-200 ${
                           active
                             ? "text-foreground"
                             : "text-muted-foreground hover:text-foreground"
@@ -515,7 +519,7 @@ function DesktopSidebar({
                         />
                         <Icon className="relative h-3.5 w-3.5" />
                         <span className="relative">{item.label}</span>
-                      </Link>
+                      </button>
                     </TooltipTrigger>
                     <TooltipContent side="right" sideOffset={10}>{hint}</TooltipContent>
                   </Tooltip>
