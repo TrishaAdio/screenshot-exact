@@ -173,27 +173,27 @@ function OttPanel() {
         </span>
       </div>
 
-      <div className="marquee-pause relative h-[320px] overflow-hidden mask-fade-y">
+      <div className="marquee-pause relative h-[300px] overflow-hidden mask-fade-y sm:h-[320px]">
         <div className="animate-marquee-y flex flex-col">
           {loop.map((p, i) => (
             <div
               key={`${p.name}-${i}`}
-              className="flex items-center justify-between border-b border-border/60 px-5 py-3.5 transition-colors hover:bg-surface-elevated/40"
+              className="flex items-center justify-between border-b border-border/60 px-4 py-3 transition-colors hover:bg-surface-elevated/40 sm:px-5 sm:py-3.5"
             >
-              <div className="flex items-center gap-3">
-                <div className="h-9 w-9 shrink-0 overflow-hidden rounded-lg">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg sm:h-9 sm:w-9">
                   <p.Logo className="h-full w-full" />
                 </div>
                 <div className="min-w-0">
-                  <div className="truncate text-[13px] font-semibold text-foreground">
+                  <div className="truncate text-[13.5px] font-semibold text-foreground sm:text-[13px]">
                     {p.name}
                   </div>
-                  <div className="text-[11px] text-muted-foreground">
+                  <div className="truncate text-[11px] text-muted-foreground">
                     {p.plan}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 items-center gap-2 pl-2">
                 <div className="text-right">
                   <div className="font-mono text-[12.5px] font-semibold text-primary">
                     -{p.savings}
