@@ -1,15 +1,17 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { motion, useMotionValue, animate } from "framer-motion";
 import { Headphones, LayoutDashboard, ShoppingBag, Wallet, User } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from "react";
 
-const TABS = [
-  { to: "/dashboard", label: "Home",    Icon: LayoutDashboard },
-  { to: "/orders",    label: "Orders",  Icon: ShoppingBag },
-  { to: "/myprofile", label: "Wallet",  Icon: Wallet },
-  { to: "/support",   label: "Help",    Icon: Headphones },
-  { to: "/myprofile", label: "Account", Icon: User },
-] as const;
+type PanelKey = "overview" | "browse" | "orders" | "wallet" | "support" | "settings";
+
+const TABS: { panel: PanelKey; label: string; Icon: typeof LayoutDashboard }[] = [
+  { panel: "overview", label: "Home",    Icon: LayoutDashboard },
+  { panel: "orders",   label: "Orders",  Icon: ShoppingBag },
+  { panel: "wallet",   label: "Wallet",  Icon: Wallet },
+  { panel: "support",  label: "Help",    Icon: Headphones },
+  { panel: "settings", label: "Account", Icon: User },
+];
 
 const SPRING = { type: "spring" as const, stiffness: 380, damping: 32, mass: 0.8 };
 
@@ -20,13 +22,26 @@ const SPRING = { type: "spring" as const, stiffness: 380, damping: 32, mass: 0.8
  * touch-action overrides — never blocks scroll or click.
  */
 export function MobileBottomNav() {
-  const path = useRouterState({ select: (r) => r.location.pathname });
+  const navigate = useNavigate();
+  const location = useRouterState({ select: (r) => r.location });
   const containerRef = useRef<HTMLDivElement | null>(null);
-  const tabRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const [pressedIdx, setPressedIdx] = useState<number | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  const activeIdx = Math.max(0, TABS.findIndex((t) => t.to === path));
+  const currentPanel: PanelKey = useMemo(() => {
+    if (location.pathname === "/dashboard") {
+      const p = (location.search as { panel?: string } | undefined)?.panel;
+      if (p && TABS.some((t) => t.panel === p)) return p as PanelKey;
+      return "overview";
+    }
+    if (location.pathname === "/orders") return "orders";
+    if (location.pathname === "/support") return "support";
+    if (location.pathname === "/myprofile") return "settings";
+    return "overview";
+  }, [location.pathname, location.search]);
+
+  const activeIdx = Math.max(0, TABS.findIndex((t) => t.panel === currentPanel));
 
   const pillX = useMotionValue(0);
   const pillW = useMotionValue(0);
@@ -53,7 +68,6 @@ export function MobileBottomNav() {
     }
   }, [pillX, pillW]);
 
-  // Measure once on mount synchronously to avoid pill flash
   useLayoutEffect(() => {
     measureTo(activeIdx, true);
     setMounted(true);
@@ -70,6 +84,14 @@ export function MobileBottomNav() {
     return () => window.removeEventListener("resize", onResize);
   }, [activeIdx, measureTo]);
 
+  const goToPanel = (p: PanelKey) => {
+    if (p === currentPanel && location.pathname === "/dashboard") return;
+    navigate({
+      to: "/dashboard",
+      search: p === "overview" ? {} : { panel: p },
+    });
+  };
+
   return (
     <nav
       className="fixed inset-x-3 z-40 lg:hidden"
@@ -85,7 +107,6 @@ export function MobileBottomNav() {
           className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
         />
 
-        {/* Fluid morphing active pill — non-interactive */}
         <motion.div
           aria-hidden
           style={{ x: pillX, width: pillW }}
@@ -99,17 +120,13 @@ export function MobileBottomNav() {
           const active = idx === activeIdx;
           const pressed = pressedIdx === idx;
           return (
-            <Link
+            <button
               key={item.label + idx}
-              to={item.to}
+              type="button"
               ref={(el) => { tabRefs.current[idx] = el; }}
               aria-label={item.label}
               aria-current={active ? "page" : undefined}
-              onClick={(e) => {
-                if (active && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
-                  e.preventDefault();
-                }
-              }}
+              onClick={() => goToPanel(item.panel)}
               onPointerDown={() => setPressedIdx(idx)}
               onPointerUp={() => setPressedIdx(null)}
               onPointerLeave={() => setPressedIdx((p) => (p === idx ? null : p))}
@@ -135,7 +152,7 @@ export function MobileBottomNav() {
                   {item.label}
                 </span>
               </motion.span>
-            </Link>
+            </button>
           );
         })}
       </div>

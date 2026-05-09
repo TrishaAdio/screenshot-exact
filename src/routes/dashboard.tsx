@@ -1,6 +1,10 @@
-import { createFileRoute, Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { motion, LayoutGroup } from "framer-motion";
+import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
+import { OrdersPanel } from "@/components/panels/OrdersPanel";
+import { SupportPanel } from "@/components/panels/SupportPanel";
+import { ProfilePanel } from "@/components/panels/ProfilePanel";
+import { WalletPanel } from "@/components/panels/WalletPanel";
 import {
   Bell,
   Code2,
@@ -62,17 +66,25 @@ const CATEGORY_TABS: {
   { key: "Combo Pack", label: "Combo Packs", Icon: Layers },
 ];
 
-const SIDEBAR_ITEMS = [
-  { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
-  { to: "/dashboard", label: "Browse", Icon: Grid3x3 },
-  { to: "/orders", label: "Orders", Icon: ShoppingBag },
-  { to: "/myprofile", label: "Wallet", Icon: Wallet },
-  { to: "/support", label: "Support", Icon: Headphones },
-  { to: "/myprofile", label: "Settings", Icon: SettingsIcon },
-] as const;
+type PanelKey = "overview" | "browse" | "orders" | "wallet" | "support" | "settings";
+
+const SIDEBAR_ITEMS: { panel: PanelKey; label: string; Icon: typeof LayoutDashboard }[] = [
+  { panel: "overview", label: "Dashboard", Icon: LayoutDashboard },
+  { panel: "browse",   label: "Browse",    Icon: Grid3x3 },
+  { panel: "orders",   label: "Orders",    Icon: ShoppingBag },
+  { panel: "wallet",   label: "Wallet",    Icon: Wallet },
+  { panel: "support",  label: "Support",   Icon: Headphones },
+  { panel: "settings", label: "Settings",  Icon: SettingsIcon },
+];
+
+const VALID_PANELS: PanelKey[] = ["overview", "browse", "orders", "wallet", "support", "settings"];
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
+  validateSearch: (search: Record<string, unknown>): { panel: PanelKey } => {
+    const p = search.panel as string | undefined;
+    return { panel: VALID_PANELS.includes(p as PanelKey) ? (p as PanelKey) : "overview" };
+  },
   head: () => ({
     meta: [
       { title: "Dashboard — SymDeals" },
@@ -83,6 +95,7 @@ export const Route = createFileRoute("/dashboard")({
 
 function DashboardPage() {
   const navigate = useNavigate();
+  const { panel } = useSearch({ from: "/dashboard" });
   const [user, setUser] = useState<AuthUser | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingMe, setLoadingMe] = useState(true);
@@ -95,10 +108,22 @@ function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
+  const goToPanel = (next: PanelKey) => {
+    if (next === panel) return;
+    navigate({
+      to: "/dashboard",
+      search: next === "overview" ? {} : { panel: next },
+      replace: false,
+    });
+    // restore scroll on panel change
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const openProduct = (p: Product) => {
     const routeId = p.service_id ? String(p.service_id) : p.id;
     navigate({ to: "/product/$id", params: { id: routeId } });
   };
+
 
   useEffect(() => {
     if (!getToken()) {
@@ -174,7 +199,7 @@ function DashboardPage() {
 
       <div className="flex min-h-screen">
         {/* Desktop sidebar */}
-        <DesktopSidebar onLogout={() => setLogoutOpen(true)} user={user} />
+        <DesktopSidebar onLogout={() => setLogoutOpen(true)} user={user} activePanel={panel} onPanelSelect={goToPanel} />
 
         <div className="flex min-w-0 flex-1 flex-col">
           {/* Top bar */}
@@ -241,109 +266,129 @@ function DashboardPage() {
               />
             )}
 
-            {/* Welcome + stats */}
-            <section className="grid gap-8 lg:grid-cols-12 lg:items-end">
-              <div className="lg:col-span-6 animate-fade-up">
-                <div className="label-uppercase">Overview</div>
-                <h1 className="mt-3 font-display text-[2rem] font-semibold tracking-[-0.025em] text-foreground sm:text-[2.35rem]">
-                  {loadingMe ? (
-                    <span className="text-muted-foreground/40">Loading…</span>
-                  ) : (
-                    <>Welcome back, {firstName}</>
-                  )}
-                </h1>
-                <p className="mt-2 text-[14px] text-muted-foreground">
-                  Pick up where you left off.
-                </p>
-              </div>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={panel}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+              >
+                {(panel === "overview" || panel === "browse") && (
+                  <>
+                    {panel === "overview" && (
+                      <section className="grid gap-8 lg:grid-cols-12 lg:items-end">
+                        <div className="lg:col-span-6">
+                          <div className="label-uppercase">Overview</div>
+                          <h1 className="mt-3 font-display text-[2rem] font-semibold tracking-[-0.025em] text-foreground sm:text-[2.35rem]">
+                            {loadingMe ? (
+                              <span className="text-muted-foreground/40">Loading…</span>
+                            ) : (
+                              <>Welcome back, {firstName}</>
+                            )}
+                          </h1>
+                          <p className="mt-2 text-[14px] text-muted-foreground">
+                            Pick up where you left off.
+                          </p>
+                        </div>
 
-              <div className="grid gap-4 sm:grid-cols-2 lg:col-span-6">
-                <ActiveOrdersCard loading={loadingMe} />
-                <TotalSavedCard loading={loadingMe} amount={totalSaved} />
-              </div>
-            </section>
+                        <div className="grid gap-4 sm:grid-cols-2 lg:col-span-6">
+                          <ActiveOrdersCard loading={loadingMe} onView={() => goToPanel("orders")} />
+                          <TotalSavedCard loading={loadingMe} amount={totalSaved} />
+                        </div>
+                      </section>
+                    )}
 
-            {/* Filter pills */}
-            <section className="mt-14 animate-fade-up" data-tour="categories">
-              <div className="flex items-center justify-between">
-                <h2 className="font-display text-[17px] font-semibold tracking-tight text-foreground">
-                  Catalog
-                </h2>
-                <span className="text-[12px] text-muted-foreground">
-                  {loadingProducts ? "—" : `${filteredProducts.length} services`}
-                </span>
-              </div>
-              <LayoutGroup id="category-pills">
-                <div
-                  className="mt-5 -mx-6 flex gap-2 overflow-x-auto px-6 pb-1 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-                  role="tablist"
-                >
-                  {CATEGORY_TABS.map(({ key, label, Icon }) => {
-                    const active = selectedCategory === key;
-                    return (
-                      <motion.button
-                        key={key}
-                        role="tab"
-                        aria-selected={active}
-                        onClick={() => setSelectedCategory(key)}
-                        whileTap={{ scale: 0.94 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 26 }}
-                        className={`relative inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-medium tracking-tight transition-colors ${
-                          active
-                            ? "border-transparent text-background"
-                            : "border-border bg-surface/60 text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground"
-                        }`}
-                      >
-                        {active && (
-                          <motion.span
-                            layoutId="category-pill-active"
-                            className="absolute inset-0 rounded-full bg-foreground"
-                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                          />
-                        )}
-                        <Icon className="relative h-3.5 w-3.5" />
-                        <span className="relative">{label}</span>
-                      </motion.button>
-                    );
-                  })}
-                </div>
-              </LayoutGroup>
-            </section>
+                    <section className={panel === "overview" ? "mt-14" : ""} data-tour="categories">
+                      <div className="flex items-center justify-between">
+                        <h2 className="font-display text-[17px] font-semibold tracking-tight text-foreground">
+                          {panel === "browse" ? "Browse Services" : "Catalog"}
+                        </h2>
+                        <span className="text-[12px] text-muted-foreground">
+                          {loadingProducts ? "—" : `${filteredProducts.length} services`}
+                        </span>
+                      </div>
+                      <LayoutGroup id="category-pills">
+                        <div
+                          className="mt-5 -mx-6 flex gap-2 overflow-x-auto px-6 pb-1 lg:mx-0 lg:px-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                          role="tablist"
+                        >
+                          {CATEGORY_TABS.map(({ key, label, Icon }) => {
+                            const active = selectedCategory === key;
+                            return (
+                              <motion.button
+                                key={key}
+                                role="tab"
+                                aria-selected={active}
+                                onClick={() => setSelectedCategory(key)}
+                                whileTap={{ scale: 0.94 }}
+                                transition={{ type: "spring", stiffness: 400, damping: 26 }}
+                                className={`relative inline-flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[13px] font-medium tracking-tight transition-colors ${
+                                  active
+                                    ? "border-transparent text-background"
+                                    : "border-border bg-surface/60 text-muted-foreground hover:border-muted-foreground/30 hover:text-foreground"
+                                }`}
+                              >
+                                {active && (
+                                  <motion.span
+                                    layoutId="category-pill-active"
+                                    className="absolute inset-0 rounded-full bg-foreground"
+                                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                  />
+                                )}
+                                <Icon className="relative h-3.5 w-3.5" />
+                                <span className="relative">{label}</span>
+                              </motion.button>
+                            );
+                          })}
+                        </div>
+                      </LayoutGroup>
+                    </section>
 
-            {/* Product grid */}
-            <section className="mt-7" data-tour="products">
-              {loadingProducts ? (
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                  {[0, 1, 2, 3, 4, 5].map((i) => (
-                    <div
-                      key={i}
-                      className="h-[180px] animate-pulse rounded-2xl border border-border bg-surface/60"
-                    />
-                  ))}
-                </div>
-              ) : filteredProducts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface/40 px-6 py-20 text-center">
-                  <Package className="h-7 w-7 text-muted-foreground/60" />
-                  <p className="mt-3 text-[14px] font-medium text-foreground">
-                    {selectedCategory === "All"
-                      ? "No services available yet"
-                      : `No services in ${selectedCategory}`}
-                  </p>
-                </div>
-              ) : (
-                <div
-                  className="grid animate-fade-up grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-                >
-                  {filteredProducts.map((p) => (
-                    <ProductCard
-                      key={p.id}
-                      product={p}
-                      onOpen={() => openProduct(p)}
-                    />
-                  ))}
-                </div>
-              )}
-            </section>
+                    <section className="mt-7" data-tour="products">
+                      {loadingProducts ? (
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                          {[0, 1, 2, 3, 4, 5].map((i) => (
+                            <div
+                              key={i}
+                              className="h-[180px] animate-pulse rounded-2xl border border-border bg-surface/60"
+                            />
+                          ))}
+                        </div>
+                      ) : filteredProducts.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-surface/40 px-6 py-20 text-center">
+                          <Package className="h-7 w-7 text-muted-foreground/60" />
+                          <p className="mt-3 text-[14px] font-medium text-foreground">
+                            {selectedCategory === "All"
+                              ? "No services available yet"
+                              : `No services in ${selectedCategory}`}
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                          {filteredProducts.map((p) => (
+                            <ProductCard
+                              key={p.id}
+                              product={p}
+                              onOpen={() => openProduct(p)}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </section>
+                  </>
+                )}
+
+                {panel === "orders" && <OrdersPanel onBrowse={() => goToPanel("browse")} />}
+                {panel === "wallet" && (
+                  <WalletPanel user={user} loading={loadingMe} onViewOrders={() => goToPanel("orders")} />
+                )}
+                {panel === "support" && <SupportPanel />}
+                {panel === "settings" && (
+                  <ProfilePanel initialUser={user} onUserChange={(u) => setUser(u)} />
+                )}
+              </motion.div>
+            </AnimatePresence>
 
           </main>
         </div>
@@ -361,6 +406,11 @@ function DashboardPage() {
           setLogoutOpen(true);
         }}
         user={user}
+        activePanel={panel}
+        onPanelSelect={(p) => {
+          setMobileNavOpen(false);
+          goToPanel(p);
+        }}
       />
 
       <LogoutConfirmDialog
@@ -403,11 +453,14 @@ function DashboardPage() {
 function DesktopSidebar({
   user,
   onLogout,
+  activePanel,
+  onPanelSelect,
 }: {
   user: AuthUser | null;
   onLogout: () => void;
+  activePanel: PanelKey;
+  onPanelSelect: (p: PanelKey) => void;
 }) {
-  const path = useRouterState({ select: (r) => r.location.pathname });
   return (
     <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-surface/40 backdrop-blur-xl lg:flex">
       <div className="flex h-14 items-center gap-2 border-b border-border px-5">
@@ -427,10 +480,9 @@ function DesktopSidebar({
         </div>
         <LayoutGroup id="sidebar-nav">
           <ul className="space-y-0.5">
-            {SIDEBAR_ITEMS.map((item, idx) => {
+            {SIDEBAR_ITEMS.map((item) => {
               const Icon = item.Icon;
-              const firstMatchIdx = SIDEBAR_ITEMS.findIndex((i) => i.to === path);
-              const active = idx === firstMatchIdx;
+              const active = activePanel === item.panel;
               const hint =
                 item.label === "Dashboard"
                   ? "Overview & catalog"
@@ -447,9 +499,11 @@ function DesktopSidebar({
                 <li key={item.label}>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Link
-                        to={item.to}
-                        className={`group relative flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-medium transition-colors duration-200 ${
+                      <button
+                        type="button"
+                        onClick={() => onPanelSelect(item.panel)}
+                        aria-current={active ? "page" : undefined}
+                        className={`group relative flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[13px] font-medium transition-colors duration-200 ${
                           active
                             ? "text-foreground"
                             : "text-muted-foreground hover:text-foreground"
@@ -470,7 +524,7 @@ function DesktopSidebar({
                         />
                         <Icon className="relative h-3.5 w-3.5" />
                         <span className="relative">{item.label}</span>
-                      </Link>
+                      </button>
                     </TooltipTrigger>
                     <TooltipContent side="right" sideOffset={10}>{hint}</TooltipContent>
                   </Tooltip>
@@ -516,11 +570,15 @@ function MobileDrawer({
   onClose,
   user,
   onLogout,
+  activePanel,
+  onPanelSelect,
 }: {
   open: boolean;
   onClose: () => void;
   user: AuthUser | null;
   onLogout: () => void;
+  activePanel: PanelKey;
+  onPanelSelect: (p: PanelKey) => void;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -574,18 +632,25 @@ function MobileDrawer({
 
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           <ul className="space-y-0.5">
-            {SIDEBAR_ITEMS.map((item) => (
-              <li key={item.label}>
-                <Link
-                  to={item.to}
-                  onClick={onClose}
-                  className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
-                >
-                  <item.Icon className="h-3.5 w-3.5" />
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {SIDEBAR_ITEMS.map((item) => {
+              const active = activePanel === item.panel;
+              return (
+                <li key={item.label}>
+                  <button
+                    type="button"
+                    onClick={() => onPanelSelect(item.panel)}
+                    className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[13px] font-medium transition-colors ${
+                      active
+                        ? "bg-surface-elevated text-foreground"
+                        : "text-muted-foreground hover:bg-surface hover:text-foreground"
+                    }`}
+                  >
+                    <item.Icon className="h-3.5 w-3.5" />
+                    {item.label}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
@@ -635,7 +700,7 @@ function UserBadge({ user, loading }: { user: AuthUser | null; loading: boolean 
   );
 }
 
-function ActiveOrdersCard({ loading }: { loading: boolean }) {
+function ActiveOrdersCard({ loading, onView }: { loading: boolean; onView?: () => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -655,13 +720,14 @@ function ActiveOrdersCard({ loading }: { loading: boolean }) {
         <span className="font-display text-[1.85rem] font-semibold tracking-tight text-foreground">
           {loading ? <span className="text-muted-foreground/40">—</span> : "0"}
         </span>
-        <Link
-          to="/orders"
+        <button
+          type="button"
+          onClick={onView}
           className="group/link inline-flex items-center gap-0.5 text-[11.5px] font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           View all
           <ArrowRight className="h-3 w-3 transition-transform group-hover/link:translate-x-0.5" />
-        </Link>
+        </button>
       </div>
     </motion.div>
   );
