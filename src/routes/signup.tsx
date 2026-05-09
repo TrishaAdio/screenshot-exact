@@ -121,7 +121,11 @@ function SignupPage() {
       setSignedUpEmail(res.user.email);
       setOtpOpen(true);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Signup failed");
+      setSubmitError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Signup failed. Please try again.",
+      );
       setShake((s) => s + 1);
     } finally {
       setSubmitting(false);
