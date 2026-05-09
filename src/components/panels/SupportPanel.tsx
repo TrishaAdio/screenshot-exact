@@ -228,7 +228,7 @@ function ChannelCard({ channel: c }: { channel: Channel }) {
       />
 
       <div
-        className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] text-foreground transition-all duration-300 sm:h-14 sm:w-14 ${s.hoverBorder} group-hover/ch:${s.text}`}
+        className={`relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-white/[0.02] text-foreground transition-all duration-300 sm:h-14 sm:w-14 ${s.hoverBorder} ${s.hoverText}`}
       >
         <c.Icon className="h-[19px] w-[19px] sm:h-[21px] sm:w-[21px]" />
         <span className="absolute -right-0.5 -top-0.5 flex h-2.5 w-2.5">
@@ -266,7 +266,7 @@ function ChannelCard({ channel: c }: { channel: Channel }) {
       </div>
 
       <div
-        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.03] text-muted-foreground transition-all duration-300 ${s.hoverBorder} ${s.hoverBg} group-hover/ch:${s.text}`}
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/[0.06] bg-white/[0.03] text-muted-foreground transition-all duration-300 ${s.hoverBorder} ${s.hoverBg} ${s.hoverText}`}
       >
         <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover/ch:-translate-y-0.5 group-hover/ch:translate-x-0.5" />
       </div>
