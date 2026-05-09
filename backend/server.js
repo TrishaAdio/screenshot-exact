@@ -26,6 +26,7 @@ const productRoutes = require("./routes/products");
 const userRoutes = require("./routes/user");
 const paymentRoutes = require("./routes/payments");
 const orderRoutes = require("./routes/orders");
+const noticeRoutes = require("./routes/notices");
 
 function getTrustProxySetting() {
   const value = (process.env.TRUST_PROXY || "1").trim();
@@ -109,6 +110,7 @@ function buildApp() {
   app.use("/api/user", userRoutes);
   app.use("/api/payments", paymentRoutes);
   app.use("/api/orders", orderRoutes);
+  app.use("/api/notices", noticeRoutes);
 
   app.use((_req, res) =>
     res.status(404).json({ success: false, message: "Not found" })

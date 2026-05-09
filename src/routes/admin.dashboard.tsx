@@ -31,6 +31,7 @@ import {
   resolveImageUrl,
 } from "@/lib/api";
 import { EmailCenter } from "@/components/admin/EmailCenter";
+import { NoticesManager } from "@/components/admin/NoticesManager";
 import { WeeklyGrowthChart } from "@/components/admin/WeeklyGrowthChart";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 
@@ -412,6 +413,8 @@ function AdminDashboardPage() {
           </div>
 
           <EmailCenter />
+
+          <NoticesManager />
         </div>
       </div>
 

@@ -1,5 +1,6 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute, HeadContent, Scripts, useRouterState } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
+import { GlobalNoticeBar } from "@/components/GlobalNoticeBar";
 
 import appCss from "../styles.css?url";
 
@@ -66,8 +67,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const hideNotices = pathname.startsWith("/admin") || pathname === "/login" || pathname === "/signup";
   return (
     <>
+      {!hideNotices && <GlobalNoticeBar />}
       <div className="app-route-shell">
         <Outlet />
       </div>

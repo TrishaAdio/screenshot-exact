@@ -460,3 +460,75 @@ export function verifyOrderStatus(
     token: getToken(),
   });
 }
+
+// ---------------- Notices ----------------
+
+export type NoticeType = "info" | "success" | "warning" | "urgent";
+
+export type Notice = {
+  id: string;
+  title: string;
+  message: string;
+  type: NoticeType;
+  active: boolean;
+  startsAt: string | null;
+  expiresAt: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+};
+
+export function fetchActiveNotices(): Promise<{
+  success: true;
+  notices: Notice[];
+}> {
+  return request(`/api/notices?t=${Date.now()}`);
+}
+
+export function adminFetchNotices(): Promise<{
+  success: true;
+  notices: Notice[];
+}> {
+  return request("/api/admin/notices", { token: getAdminToken() });
+}
+
+export function adminCreateNotice(input: {
+  title?: string;
+  message: string;
+  type: NoticeType;
+  active?: boolean;
+  startsAt?: string | null;
+  expiresAt?: string | null;
+}): Promise<{ success: true; notice: Notice }> {
+  return request("/api/admin/notices", {
+    method: "POST",
+    body: input,
+    token: getAdminToken(),
+  });
+}
+
+export function adminUpdateNotice(
+  id: string,
+  input: Partial<{
+    title: string;
+    message: string;
+    type: NoticeType;
+    active: boolean;
+    startsAt: string | null;
+    expiresAt: string | null;
+  }>
+): Promise<{ success: true; notice: Notice }> {
+  return request(`/api/admin/notices/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    body: input,
+    token: getAdminToken(),
+  });
+}
+
+export function adminDeleteNotice(
+  id: string
+): Promise<{ success: true; id: string }> {
+  return request(`/api/admin/notices/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    token: getAdminToken(),
+  });
+}
