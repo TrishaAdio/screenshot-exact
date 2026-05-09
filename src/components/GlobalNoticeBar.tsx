@@ -32,34 +32,38 @@ function writeDismissed(map: Record<string, number>) {
 
 const STYLES: Record<
   NoticeType,
-  { ring: string; bg: string; icon: string; chip: string; Icon: typeof Info }
+  { ring: string; bg: string; dot: string; chip: string; iconColor: string; Icon: typeof Info }
 > = {
   info: {
-    ring: "border-sky-400/25",
-    bg: "from-sky-500/[0.07] to-sky-500/[0.02]",
-    icon: "text-sky-300 bg-sky-400/10 border-sky-400/30",
+    ring: "border-sky-400/15",
+    bg: "from-sky-500/[0.04] to-transparent",
+    dot: "bg-sky-400/70",
     chip: "text-sky-300",
+    iconColor: "text-sky-300",
     Icon: Info,
   },
   success: {
-    ring: "border-emerald-400/25",
-    bg: "from-emerald-500/[0.07] to-emerald-500/[0.02]",
-    icon: "text-emerald-300 bg-emerald-400/10 border-emerald-400/30",
+    ring: "border-emerald-400/15",
+    bg: "from-emerald-500/[0.04] to-transparent",
+    dot: "bg-emerald-400/70",
     chip: "text-emerald-300",
+    iconColor: "text-emerald-300",
     Icon: CheckCircle2,
   },
   warning: {
-    ring: "border-amber-400/25",
-    bg: "from-amber-500/[0.07] to-amber-500/[0.02]",
-    icon: "text-amber-300 bg-amber-400/10 border-amber-400/30",
+    ring: "border-amber-400/15",
+    bg: "from-amber-500/[0.04] to-transparent",
+    dot: "bg-amber-400/70",
     chip: "text-amber-300",
+    iconColor: "text-amber-300",
     Icon: AlertTriangle,
   },
   urgent: {
-    ring: "border-rose-500/30",
-    bg: "from-rose-500/[0.09] to-rose-500/[0.02]",
-    icon: "text-rose-300 bg-rose-500/10 border-rose-500/30",
+    ring: "border-rose-500/20",
+    bg: "from-rose-500/[0.05] to-transparent",
+    dot: "bg-rose-400/80",
     chip: "text-rose-300",
+    iconColor: "text-rose-300",
     Icon: Megaphone,
   },
 };
