@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Inbox, Loader2, ShoppingBag } from "lucide-react";
 import {
@@ -26,6 +26,7 @@ const POLL_MS = 5000;
 const WHATSAPP_NUMBER = "251708539654";
 
 function OrdersPage() {
+  const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +34,7 @@ function OrdersPage() {
 
   useEffect(() => {
     if (!getToken()) {
-      window.location.href = "/login";
+      navigate({ to: "/login" });
       return;
     }
     let cancelled = false;
@@ -51,7 +52,7 @@ function OrdersPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [navigate]);
 
   // Polling: every 5s verify any PROCESSING orders
   useEffect(() => {
