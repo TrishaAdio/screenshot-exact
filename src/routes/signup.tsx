@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { OtpVerifyModal } from "@/components/OtpVerifyModal";
 import { signup as apiSignup, isLoggedIn, saveSession } from "@/lib/api";
 import { InlineErrorBanner } from "@/components/InlineErrorBanner";
+import { OnboardingLoader } from "@/components/OnboardingLoader";
 import symdealsLogo from "@/assets/symdeals-logo.png";
 
 export const Route = createFileRoute("/signup")({
@@ -81,6 +82,7 @@ function SignupPage() {
   const [submitting, setSubmitting] = useState(false);
   const [otpOpen, setOtpOpen] = useState(false);
   const [signedUpEmail, setSignedUpEmail] = useState<string>("");
+  const [showOnboardingLoader, setShowOnboardingLoader] = useState(false);
 
   useEffect(() => {
     if (isLoggedIn()) {
@@ -405,16 +407,21 @@ function SignupPage() {
         autoSend={false}
         onClose={() => {
           setOtpOpen(false);
-          navigate({ to: "/dashboard" });
+          setShowOnboardingLoader(true);
         }}
         onVerified={() => {
           setOtpOpen(false);
-          navigate({ to: "/dashboard" });
+          setShowOnboardingLoader(true);
         }}
         onSkip={() => {
           setOtpOpen(false);
-          navigate({ to: "/dashboard" });
+          setShowOnboardingLoader(true);
         }}
+      />
+
+      <OnboardingLoader
+        open={showOnboardingLoader}
+        onComplete={() => navigate({ to: "/dashboard" })}
       />
     </div>
   );
