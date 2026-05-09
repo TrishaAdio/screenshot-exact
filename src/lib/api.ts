@@ -422,7 +422,7 @@ export async function adminUploadImage(
       body: form,
     });
   } catch {
-    throw new Error(`Cannot reach backend at ${API_URL}.`);
+    throw new Error("Connection issue. Please check your internet and try again.");
   }
 
   let data: unknown = null;
@@ -432,9 +432,8 @@ export async function adminUploadImage(
     /* ignore */
   }
   if (!res.ok || !data || (data as { success?: boolean }).success === false) {
-    const msg =
-      (data as { message?: string })?.message || `Upload failed (${res.status})`;
-    throw new Error(msg);
+    const raw = (data as { message?: string })?.message;
+    throw new Error(sanitizeServerMessage(raw, res.status));
   }
   return data as {
     success: true;
