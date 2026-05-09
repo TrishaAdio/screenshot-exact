@@ -67,11 +67,8 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const showNotices = pathname === "/dashboard" || pathname.startsWith("/dashboard/");
   return (
     <>
-      {showNotices && <GlobalNoticeBar />}
       <div className="app-route-shell">
         <Outlet />
       </div>
