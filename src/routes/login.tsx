@@ -77,17 +77,18 @@ function LoginPage() {
     setSubmitError(null);
     setSubmitting(true);
     try {
-      console.log("[login] submitting", { email: form.email.trim() });
       const res = await apiLogin({
         email: form.email.trim(),
         password: form.password,
       });
-      console.log("[login] success");
       saveSession(res);
       navigate({ to: "/dashboard" });
     } catch (err) {
-      console.error("[login] failed", err);
-      setSubmitError(err instanceof Error ? err.message : "Login failed");
+      setSubmitError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Login failed. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
