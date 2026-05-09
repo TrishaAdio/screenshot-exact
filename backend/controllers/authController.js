@@ -98,7 +98,20 @@ exports.me = async (req, res) => {
   try {
     const user = await User.findById(req.user.sub);
     if (!user) return fail(res, 404, "User not found");
-    return res.json({ success: true, user: user.toSafeJSON() });
+    let totalSaved = 0;
+    try {
+      const agg = await Order.aggregate([
+        { $match: { userId: user._id, status: { $ne: "FAILED" } } },
+        { $group: { _id: null, total: { $sum: "$savings" } } },
+      ]);
+      totalSaved = agg[0]?.total || 0;
+    } catch (aggErr) {
+      console.warn("[me] totalSaved aggregate failed", aggErr.message || aggErr);
+    }
+    return res.json({
+      success: true,
+      user: { ...user.toSafeJSON(), totalSaved },
+    });
   } catch (err) {
     console.error("[me]", err);
     return fail(res, 500, "Server error");
