@@ -28,6 +28,12 @@ router.post("/send-email", requireAdmin, ctrl.sendEmail);
 router.post("/products", requireAdmin, products.create);
 router.delete("/products/:id", requireAdmin, products.remove);
 
+// Global notices — admin CRUD.
+router.get("/notices", requireAdmin, notices.listAll);
+router.post("/notices", requireAdmin, notices.create);
+router.patch("/notices/:id", requireAdmin, notices.update);
+router.delete("/notices/:id", requireAdmin, notices.remove);
+
 // Image upload — admin only. Field name: "image". Max 2MB. JPG/PNG/WEBP.
 router.post(
   "/upload",
