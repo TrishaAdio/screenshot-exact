@@ -32,7 +32,16 @@ export function SwipeButton({
   const [trackWidth, setTrackWidth] = useState(0);
   const startXRef = useRef(0);
   const startProgressRef = useRef(0);
+  const progressRef = useRef(0);
+  const draggingRef = useRef(false);
+  const loadingTimerRef = useRef<number | null>(null);
+  const confirmTimerRef = useRef<number | null>(null);
   const [shakeKey, setShakeKey] = useState(0);
+
+  const updateProgress = useCallback((next: number) => {
+    progressRef.current = next;
+    setProgress(next);
+  }, []);
 
   useEffect(() => {
     if (shake) setShakeKey((k) => k + 1);
@@ -41,10 +50,20 @@ export function SwipeButton({
   // Reset back to idle when parent signals (e.g. registration failed).
   useEffect(() => {
     if (resetSignal === 0) return;
+    if (loadingTimerRef.current) window.clearTimeout(loadingTimerRef.current);
+    if (confirmTimerRef.current) window.clearTimeout(confirmTimerRef.current);
+    draggingRef.current = false;
     setState("idle");
-    setProgress(0);
+    updateProgress(0);
     setDragging(false);
-  }, [resetSignal]);
+  }, [resetSignal, updateProgress]);
+
+  useEffect(() => {
+    return () => {
+      if (loadingTimerRef.current) window.clearTimeout(loadingTimerRef.current);
+      if (confirmTimerRef.current) window.clearTimeout(confirmTimerRef.current);
+    };
+  }, []);
 
   // Measure track width on mount + on resize so the slider is ready immediately.
   useLayoutEffect(() => {
@@ -65,41 +84,43 @@ export function SwipeButton({
 
   const finish = useCallback(() => {
     setState("loading");
-    setProgress(1);
-    window.setTimeout(() => {
+    updateProgress(1);
+    loadingTimerRef.current = window.setTimeout(() => {
       setState("success");
-      window.setTimeout(() => {
+      confirmTimerRef.current = window.setTimeout(() => {
         onConfirm();
       }, 500);
     }, 800);
-  }, [onConfirm]);
+  }, [onConfirm, updateProgress]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (state !== "idle" || maxTranslate <= 0 || disabled) return;
+    draggingRef.current = true;
     setDragging(true);
     startXRef.current = e.clientX;
-    startProgressRef.current = progress;
-    (e.target as Element).setPointerCapture?.(e.pointerId);
+    startProgressRef.current = progressRef.current;
+    e.currentTarget.setPointerCapture?.(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!dragging || state !== "idle" || maxTranslate <= 0) return;
+    if (!draggingRef.current || state !== "idle" || maxTranslate <= 0) return;
     const dx = e.clientX - startXRef.current;
     const next = Math.min(
       1,
       Math.max(0, startProgressRef.current + dx / maxTranslate),
     );
-    setProgress(next);
+    updateProgress(next);
   };
 
   const onPointerUp = (e: React.PointerEvent) => {
-    if (!dragging) return;
+    if (!draggingRef.current) return;
+    draggingRef.current = false;
     setDragging(false);
-    (e.target as Element).releasePointerCapture?.(e.pointerId);
-    if (progress > 0.92) {
+    e.currentTarget.releasePointerCapture?.(e.pointerId);
+    if (progressRef.current > 0.92) {
       finish();
     } else {
-      setProgress(0);
+      updateProgress(0);
     }
   };
 
