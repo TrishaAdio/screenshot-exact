@@ -26,6 +26,7 @@ export function SwipeButton({
   resetSignal?: number;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const shakeRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
   const [state, setState] = useState<SwipeState>("idle");
   const [dragging, setDragging] = useState(false);
@@ -36,7 +37,6 @@ export function SwipeButton({
   const draggingRef = useRef(false);
   const loadingTimerRef = useRef<number | null>(null);
   const confirmTimerRef = useRef<number | null>(null);
-  const [shakeKey, setShakeKey] = useState(0);
 
   const updateProgress = useCallback((next: number) => {
     progressRef.current = next;
@@ -44,7 +44,19 @@ export function SwipeButton({
   }, []);
 
   useEffect(() => {
-    if (shake) setShakeKey((k) => k + 1);
+    if (!shake || !shakeRef.current) return;
+    const animation = shakeRef.current.animate(
+      [
+        { transform: "translateX(0)" },
+        { transform: "translateX(-7px)" },
+        { transform: "translateX(7px)" },
+        { transform: "translateX(-5px)" },
+        { transform: "translateX(5px)" },
+        { transform: "translateX(0)" },
+      ],
+      { duration: 400, easing: "ease-in-out" },
+    );
+    return () => animation.cancel();
   }, [shake]);
 
   // Reset back to idle when parent signals (e.g. registration failed).
@@ -140,10 +152,7 @@ export function SwipeButton({
               ? "COMPLETE FORM TO CONTINUE"
               : label}
       </div>
-      <div
-        key={shakeKey}
-        className={shake ? "animate-[shake_0.4s_ease-in-out]" : ""}
-      >
+      <div ref={shakeRef}>
         <div
           ref={trackRef}
           onPointerDown={onPointerDown}
