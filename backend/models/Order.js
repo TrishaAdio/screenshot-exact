@@ -34,6 +34,8 @@ orderSchema.methods.toSafeJSON = function () {
     productName: this.productName,
     productImage: this.productImage,
     amount: this.amount,
+    realPrice: this.realPrice || 0,
+    savings: this.savings || 0,
     status: this.status,
     invoiceId: this.invoiceId,
     createdAt: this.createdAt,
