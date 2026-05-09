@@ -97,15 +97,16 @@ function ProductPage() {
   );
   const selectedPlan =
     plans.find((p) => p.months === selectedMonths) ?? plans[0] ?? null;
-  const highest = plans.length > 1 ? plans[plans.length - 1] : null;
-  const showOldPrice =
-    selectedPlan && highest && highest.price > selectedPlan.price;
+  const realPrice =
+    selectedPlan && (selectedPlan.realPrice ?? 0) > selectedPlan.price
+      ? selectedPlan.realPrice!
+      : null;
+  const showOldPrice = realPrice !== null;
+  const savedAmount =
+    showOldPrice && selectedPlan ? Math.max(0, realPrice! - selectedPlan.price) : 0;
   const savedPct =
-    showOldPrice && highest && selectedPlan
-      ? Math.max(
-          0,
-          Math.round(((highest.price - selectedPlan.price) / highest.price) * 100)
-        )
+    showOldPrice && selectedPlan && realPrice
+      ? Math.max(0, Math.round(((realPrice - selectedPlan.price) / realPrice) * 100))
       : 0;
   const total = selectedPlan ? selectedPlan.price * quantity : 0;
 
