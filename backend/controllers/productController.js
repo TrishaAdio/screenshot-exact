@@ -52,7 +52,7 @@ const serialize = (p) => ({
   category: p.category,
   description: p.description,
   image: p.image,
-  plans: (p.plans || []).map((pl) => ({ months: pl.months, price: pl.price })),
+  plans: (p.plans || []).map((pl) => ({ months: pl.months, price: pl.price, realPrice: pl.realPrice || 0 })),
   createdAt: p.createdAt,
 });
 
