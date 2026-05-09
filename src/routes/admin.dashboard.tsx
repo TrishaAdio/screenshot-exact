@@ -507,7 +507,7 @@ function AdminProductCard({
   );
 }
 
-type DraftPlan = { months: string; price: string };
+type DraftPlan = { months: string; price: string; realPrice: string };
 
 function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
   const [name, setName] = useState("");
