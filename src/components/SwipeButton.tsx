@@ -13,6 +13,7 @@ export function SwipeButton({
   onConfirm,
   shake = false,
   disabled = false,
+  resetSignal = 0,
 }: {
   label?: string;
   loadingLabel?: string;
@@ -21,6 +22,8 @@ export function SwipeButton({
   shake?: boolean;
   /** When true, slider is faded and not interactive (e.g. form not yet valid). */
   disabled?: boolean;
+  /** Increment to force the slider back to its idle state (e.g. on submit error). */
+  resetSignal?: number;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
@@ -34,6 +37,14 @@ export function SwipeButton({
   useEffect(() => {
     if (shake) setShakeKey((k) => k + 1);
   }, [shake]);
+
+  // Reset back to idle when parent signals (e.g. registration failed).
+  useEffect(() => {
+    if (resetSignal === 0) return;
+    setState("idle");
+    setProgress(0);
+    setDragging(false);
+  }, [resetSignal]);
 
   // Measure track width on mount + on resize so the slider is ready immediately.
   useLayoutEffect(() => {

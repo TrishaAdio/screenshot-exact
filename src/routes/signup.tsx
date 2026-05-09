@@ -302,6 +302,7 @@ function SignupPage() {
                   onConfirm={onSwipeConfirm}
                   shake={shake > 0 && (!isReady || !!submitError)}
                   disabled={!isReady || submitting}
+                  resetSignal={submitError ? shake : 0}
                 />
                 {submitting && (
                   <p className="mt-3 flex items-center justify-center gap-2 text-[12px] text-muted-foreground">
