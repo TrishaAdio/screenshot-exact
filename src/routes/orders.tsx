@@ -31,6 +31,9 @@ function OrdersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const ordersRef = useRef<Order[]>([]);
+  ordersRef.current = orders;
+  const hasPendingOrders = orders.some((o) => o.status === "PROCESSING");
 
   useEffect(() => {
     if (!getToken()) {
@@ -56,8 +59,7 @@ function OrdersPage() {
 
   // Polling: every 5s verify any PROCESSING orders
   useEffect(() => {
-    const hasPending = orders.some((o) => o.status === "PROCESSING");
-    if (!hasPending) {
+    if (!hasPendingOrders) {
       if (pollRef.current) {
         clearInterval(pollRef.current);
         pollRef.current = null;
@@ -67,7 +69,7 @@ function OrdersPage() {
     if (pollRef.current) return;
 
     const tick = async () => {
-      const pending = orders.filter((o) => o.status === "PROCESSING");
+      const pending = ordersRef.current.filter((o) => o.status === "PROCESSING");
       const updates = await Promise.all(
         pending.map(async (o) => {
           try {
@@ -81,11 +83,16 @@ function OrdersPage() {
       const map = new Map<string, OrderStatus>();
       for (const u of updates) if (u) map.set(u.orderId, u.status);
       if (map.size === 0) return;
-      setOrders((prev) =>
-        prev.map((o) =>
-          map.has(o.orderId) ? { ...o, status: map.get(o.orderId)! } : o
-        )
-      );
+      setOrders((prev) => {
+        let changed = false;
+        const next = prev.map((o) => {
+          const status = map.get(o.orderId);
+          if (!status || status === o.status) return o;
+          changed = true;
+          return { ...o, status };
+        });
+        return changed ? next : prev;
+      });
     };
 
     pollRef.current = setInterval(() => void tick(), POLL_MS);
@@ -97,7 +104,7 @@ function OrdersPage() {
         pollRef.current = null;
       }
     };
-  }, [orders]);
+  }, [hasPendingOrders]);
 
   return (
     <div className="min-h-screen bg-background">
