@@ -146,11 +146,10 @@ function ForgotPasswordPage() {
                 </div>
               </div>
 
-              {error && (
-                <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-[12px] font-medium text-destructive">
-                  {error}
-                </p>
-              )}
+              <InlineErrorBanner
+                message={error}
+                onDismiss={() => setError(null)}
+              />
 
               <button
                 type="submit"
