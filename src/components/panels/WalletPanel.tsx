@@ -1,6 +1,30 @@
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { TrendingDown, Wallet as WalletIcon, ShoppingBag, ArrowRight } from "lucide-react";
 import { type AuthUser } from "@/lib/api";
+
+function useCountUp(value: number, duration = 900) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (typeof window === "undefined" || !Number.isFinite(value)) return;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || value === 0) {
+      setN(value);
+      return;
+    }
+    const start = performance.now();
+    let raf = 0;
+    const step = (t: number) => {
+      const p = Math.min(1, (t - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setN(Math.round(value * eased));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value, duration]);
+  return n;
+}
 
 export function WalletPanel({
   user,
@@ -12,6 +36,7 @@ export function WalletPanel({
   onViewOrders?: () => void;
 }) {
   const totalSaved = user?.totalSaved ?? 0;
+  const display = useCountUp(totalSaved);
   return (
     <div className="mx-auto max-w-3xl">
       <div className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1">
