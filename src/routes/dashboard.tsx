@@ -66,17 +66,25 @@ const CATEGORY_TABS: {
   { key: "Combo Pack", label: "Combo Packs", Icon: Layers },
 ];
 
-const SIDEBAR_ITEMS = [
-  { to: "/dashboard", label: "Dashboard", Icon: LayoutDashboard },
-  { to: "/dashboard", label: "Browse", Icon: Grid3x3 },
-  { to: "/orders", label: "Orders", Icon: ShoppingBag },
-  { to: "/myprofile", label: "Wallet", Icon: Wallet },
-  { to: "/support", label: "Support", Icon: Headphones },
-  { to: "/myprofile", label: "Settings", Icon: SettingsIcon },
-] as const;
+type PanelKey = "overview" | "browse" | "orders" | "wallet" | "support" | "settings";
+
+const SIDEBAR_ITEMS: { panel: PanelKey; label: string; Icon: typeof LayoutDashboard }[] = [
+  { panel: "overview", label: "Dashboard", Icon: LayoutDashboard },
+  { panel: "browse",   label: "Browse",    Icon: Grid3x3 },
+  { panel: "orders",   label: "Orders",    Icon: ShoppingBag },
+  { panel: "wallet",   label: "Wallet",    Icon: Wallet },
+  { panel: "support",  label: "Support",   Icon: Headphones },
+  { panel: "settings", label: "Settings",  Icon: SettingsIcon },
+];
+
+const VALID_PANELS: PanelKey[] = ["overview", "browse", "orders", "wallet", "support", "settings"];
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
+  validateSearch: (search: Record<string, unknown>): { panel: PanelKey } => {
+    const p = search.panel as string | undefined;
+    return { panel: VALID_PANELS.includes(p as PanelKey) ? (p as PanelKey) : "overview" };
+  },
   head: () => ({
     meta: [
       { title: "Dashboard — SymDeals" },
