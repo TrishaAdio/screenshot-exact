@@ -82,6 +82,7 @@ function SignupPage() {
   const [submitting, setSubmitting] = useState(false);
   const [otpOpen, setOtpOpen] = useState(false);
   const [signedUpEmail, setSignedUpEmail] = useState<string>("");
+  const [showOnboardingLoader, setShowOnboardingLoader] = useState(false);
 
   useEffect(() => {
     if (isLoggedIn()) {
