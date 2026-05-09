@@ -341,7 +341,7 @@ export function fetchAdminWeeklyStats(range: AdminStatsRange = "7d"): Promise<{
   });
 }
 
-export type ProductPlan = { months: number; price: number };
+export type ProductPlan = { months: number; price: number; realPrice?: number };
 
 export const PRODUCT_CATEGORIES = [
   "Subscriptions",
