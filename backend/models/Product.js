@@ -90,6 +90,7 @@ productSchema.methods.toSafeJSON = function () {
   const plans = (this.plans || []).map((p) => ({
     months: p.months,
     price: p.price,
+    realPrice: p.realPrice || 0,
   }));
   return {
     id: this._id.toString(),
