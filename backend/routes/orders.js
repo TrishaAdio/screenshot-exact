@@ -73,6 +73,8 @@ router.post("/", requireAuth, async (req, res) => {
       productName: String(productName).trim().slice(0, 300),
       productImage: String(productImage || "").slice(0, 2000),
       amount,
+      realPrice: realP,
+      savings,
       status: (data.status || "PROCESSING").toUpperCase(),
       invoiceId: String(invoiceId || "").slice(0, 120),
       promoCode: safePromo,
