@@ -148,7 +148,7 @@ export function Navbar() {
                 </Link>
                 <Link
                   to="/signup"
-                  className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-3.5 py-1.5 text-[12px] font-semibold tracking-tight text-background transition-all hover:bg-foreground/90"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2 text-[12.5px] font-semibold tracking-tight text-background transition-all hover:bg-foreground/90 sm:px-3.5 sm:py-1.5 sm:text-[12px]"
                 >
                   Get Started
                 </Link>
