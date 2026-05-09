@@ -78,7 +78,11 @@ function ResetPasswordPage() {
       setStatus("done");
       window.setTimeout(() => navigate({ to: "/login" }), 2000);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Reset failed");
+      setSubmitError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Reset failed. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
