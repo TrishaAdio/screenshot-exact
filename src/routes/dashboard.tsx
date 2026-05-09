@@ -1048,7 +1048,7 @@ function ProductCard({
             </span>
             {showOldPrice && (
               <span className="text-[11.5px] font-medium text-muted-foreground line-through">
-                ₹{highest!.price.toLocaleString()}
+                ₹{oldPrice!.toLocaleString()}
               </span>
             )}
           </div>
