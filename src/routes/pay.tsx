@@ -41,6 +41,7 @@ type CheckoutState = {
   months?: number;
   quantity?: number;
   amount?: number;
+  realPrice?: number;
   productName?: string;
   productImage?: string;
 };
@@ -278,6 +279,7 @@ function PayPage() {
             service: merchantName,
             promoCode: `SYMDEALS${invoice.invoice_id.replace(/\D/g, "").slice(-4) || "0000"}`,
             value: Math.round(data.amount ?? invoice.unique_amount ?? fallbackAmount),
+            realPrice: Math.round(Number(state.realPrice) || 0),
             productName: merchantName,
             productImage: state.productImage || "",
             invoiceId: invoice.invoice_id,

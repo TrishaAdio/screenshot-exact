@@ -784,7 +784,32 @@ function ActiveOrdersCard({ loading, onView }: { loading: boolean; onView?: () =
   );
 }
 
+function useCountUp(value: number, duration = 900) {
+  const [n, setN] = useState(0);
+  useEffect(() => {
+    if (typeof window === "undefined" || !Number.isFinite(value)) return;
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion || value === 0) {
+      setN(value);
+      return;
+    }
+    const start = performance.now();
+    const from = 0;
+    let raf = 0;
+    const step = (t: number) => {
+      const p = Math.min(1, (t - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setN(Math.round(from + (value - from) * eased));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [value, duration]);
+  return n;
+}
+
 function TotalSavedCard({ loading, amount }: { loading: boolean; amount: number }) {
+  const display = useCountUp(amount);
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -806,11 +831,11 @@ function TotalSavedCard({ loading, amount }: { loading: boolean; amount: number 
         </div>
       </div>
       <div className="relative mt-4 flex items-baseline gap-2">
-        <span className="font-display text-[1.85rem] font-semibold tracking-tight text-foreground">
+        <span className="font-display text-[1.85rem] font-semibold tracking-tight text-foreground tabular-nums">
           {loading ? (
             <span className="text-muted-foreground/40">—</span>
           ) : (
-            <>₹{amount.toLocaleString("en-IN")}</>
+            <>₹{display.toLocaleString("en-IN")}</>
           )}
         </span>
         <span className="text-[11.5px] font-medium text-muted-foreground">
@@ -971,8 +996,9 @@ function ProductCard({
     ? [...product.plans].sort((a, b) => a.price - b.price)
     : [];
   const lowest = plans[0] ?? null;
-  const highest = plans.length > 1 ? plans[plans.length - 1] : null;
-  const showOldPrice = highest && highest.price > (lowest?.price ?? 0);
+  const oldPrice =
+    lowest && (lowest.realPrice ?? 0) > lowest.price ? lowest.realPrice! : null;
+  const showOldPrice = oldPrice !== null;
 
   const cardRef = useRef<HTMLElement>(null);
   const handleMove = (e: React.MouseEvent<HTMLElement>) => {
@@ -1047,7 +1073,7 @@ function ProductCard({
             </span>
             {showOldPrice && (
               <span className="text-[11.5px] font-medium text-muted-foreground line-through">
-                ₹{highest!.price.toLocaleString()}
+                ₹{oldPrice!.toLocaleString()}
               </span>
             )}
           </div>

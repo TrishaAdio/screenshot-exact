@@ -20,6 +20,7 @@ router.post("/", requireAuth, async (req, res) => {
       service,
       promoCode = "",
       value,
+      realPrice = 0,
       productName,
       productImage = "",
       invoiceId = "",
@@ -34,6 +35,8 @@ router.post("/", requireAuth, async (req, res) => {
     const safeService = String(service).trim().slice(0, 200);
     const safePromo = String(promoCode || "").trim().slice(0, 60);
     const amount = Number(value);
+    const realP = Math.max(0, Number(realPrice) || 0);
+    const savings = realP > amount ? Math.round(realP - amount) : 0;
 
     // Upstream order-creation API
     // Format: /create={service}={promo}={value}
@@ -70,6 +73,8 @@ router.post("/", requireAuth, async (req, res) => {
       productName: String(productName).trim().slice(0, 300),
       productImage: String(productImage || "").slice(0, 2000),
       amount,
+      realPrice: realP,
+      savings,
       status: (data.status || "PROCESSING").toUpperCase(),
       invoiceId: String(invoiceId || "").slice(0, 120),
       promoCode: safePromo,

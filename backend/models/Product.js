@@ -14,6 +14,12 @@ const planSchema = new mongoose.Schema(
       min: 0,
       max: 10_000_000,
     },
+    realPrice: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 10_000_000,
+    },
   },
   { _id: false }
 );
@@ -84,6 +90,7 @@ productSchema.methods.toSafeJSON = function () {
   const plans = (this.plans || []).map((p) => ({
     months: p.months,
     price: p.price,
+    realPrice: p.realPrice || 0,
   }));
   return {
     id: this._id.toString(),

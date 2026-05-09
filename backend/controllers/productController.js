@@ -12,6 +12,7 @@ const PRODUCT_CATEGORIES = [
 const planInputSchema = z.object({
   months: z.coerce.number().int("Months must be an integer").min(1).max(120),
   price: z.coerce.number().min(0).max(10_000_000),
+  realPrice: z.coerce.number().min(0).max(10_000_000).optional().default(0),
 });
 
 const productSchema = z.object({
@@ -51,7 +52,7 @@ const serialize = (p) => ({
   category: p.category,
   description: p.description,
   image: p.image,
-  plans: (p.plans || []).map((pl) => ({ months: pl.months, price: pl.price })),
+  plans: (p.plans || []).map((pl) => ({ months: pl.months, price: pl.price, realPrice: pl.realPrice || 0 })),
   createdAt: p.createdAt,
 });
 

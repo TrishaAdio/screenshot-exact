@@ -97,15 +97,16 @@ function ProductPage() {
   );
   const selectedPlan =
     plans.find((p) => p.months === selectedMonths) ?? plans[0] ?? null;
-  const highest = plans.length > 1 ? plans[plans.length - 1] : null;
-  const showOldPrice =
-    selectedPlan && highest && highest.price > selectedPlan.price;
+  const realPrice =
+    selectedPlan && (selectedPlan.realPrice ?? 0) > selectedPlan.price
+      ? selectedPlan.realPrice!
+      : null;
+  const showOldPrice = realPrice !== null;
+  const savedAmount =
+    showOldPrice && selectedPlan ? Math.max(0, realPrice! - selectedPlan.price) : 0;
   const savedPct =
-    showOldPrice && highest && selectedPlan
-      ? Math.max(
-          0,
-          Math.round(((highest.price - selectedPlan.price) / highest.price) * 100)
-        )
+    showOldPrice && selectedPlan && realPrice
+      ? Math.max(0, Math.round(((realPrice - selectedPlan.price) / realPrice) * 100))
       : 0;
   const total = selectedPlan ? selectedPlan.price * quantity : 0;
 
@@ -253,7 +254,7 @@ function ProductPage() {
                     </span>
                     {showOldPrice && (
                       <span className="text-[14px] font-medium text-muted-foreground line-through">
-                        ₹{highest!.price.toLocaleString()}
+                        ₹{realPrice!.toLocaleString()}
                       </span>
                     )}
                     {selectedPlan && (
@@ -267,6 +268,11 @@ function ProductPage() {
                       </span>
                     )}
                   </div>
+                  {savedAmount > 0 && (
+                    <p className="-mt-1 text-[12.5px] font-medium text-emerald-300/90">
+                      You save ₹{savedAmount.toLocaleString()}
+                    </p>
+                  )}
 
                   {/* Duration */}
                   {plans.length > 0 && (
@@ -296,6 +302,11 @@ function ProductPage() {
                               </span>
                               <span className="mt-0.5 block text-[10.5px] font-medium text-muted-foreground">
                                 ₹{p.price.toLocaleString()}
+                                {(p.realPrice ?? 0) > p.price && (
+                                  <span className="ml-1 text-muted-foreground/60 line-through">
+                                    ₹{p.realPrice!.toLocaleString()}
+                                  </span>
+                                )}
                               </span>
                             </motion.button>
                           );
@@ -511,6 +522,11 @@ function ProductPage() {
                               </td>
                               <td className="px-4 py-3 text-right font-semibold text-foreground">
                                 ₹{p.price.toLocaleString()}
+                                {(p.realPrice ?? 0) > p.price && (
+                                  <span className="ml-2 text-[11.5px] font-medium text-muted-foreground line-through">
+                                    ₹{p.realPrice!.toLocaleString()}
+                                  </span>
+                                )}
                               </td>
                             </tr>
                           ))}

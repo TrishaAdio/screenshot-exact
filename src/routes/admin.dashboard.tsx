@@ -507,7 +507,7 @@ function AdminProductCard({
   );
 }
 
-type DraftPlan = { months: string; price: string };
+type DraftPlan = { months: string; price: string; realPrice: string };
 
 function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
   const [name, setName] = useState("");
@@ -518,7 +518,7 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
   const [fileName, setFileName] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
   const [uploading, setUploading] = useState(false);
-  const [plans, setPlans] = useState<DraftPlan[]>([{ months: "1", price: "" }]);
+  const [plans, setPlans] = useState<DraftPlan[]>([{ months: "1", price: "", realPrice: "" }]);
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -585,7 +585,7 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
       toast.error("Maximum 12 plans allowed");
       return;
     }
-    setPlans((prev) => [...prev, { months: "", price: "" }]);
+    setPlans((prev) => [...prev, { months: "", price: "", realPrice: "" }]);
   };
   const removePlan = (i: number) => {
     if (plans.length === 1) {
@@ -621,11 +621,12 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
       toast.error("Please upload a product image");
       return;
     }
-    const parsedPlans: { months: number; price: number }[] = [];
+    const parsedPlans: { months: number; price: number; realPrice: number }[] = [];
     const seenMonths = new Set<number>();
     for (const [i, pl] of plans.entries()) {
       const m = Number(pl.months);
       const pr = Number(pl.price);
+      const rp = pl.realPrice.trim() === "" ? 0 : Number(pl.realPrice);
       if (!Number.isInteger(m) || m < 1 || m > 120) {
         toast.error(`Plan ${i + 1}: months must be a whole number (1–120)`);
         return;
@@ -634,12 +635,16 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
         toast.error(`Plan ${i + 1}: enter a valid price`);
         return;
       }
+      if (!Number.isFinite(rp) || rp < 0) {
+        toast.error(`Plan ${i + 1}: enter a valid real price`);
+        return;
+      }
       if (seenMonths.has(m)) {
         toast.error(`Plan ${i + 1}: duration "${m} month(s)" is duplicated`);
         return;
       }
       seenMonths.add(m);
-      parsedPlans.push({ months: m, price: pr });
+      parsedPlans.push({ months: m, price: pr, realPrice: rp });
     }
 
     setSubmitting(true);
@@ -658,7 +663,7 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
       setCategory("");
       setDescription("");
       resetImage();
-      setPlans([{ months: "1", price: "" }]);
+      setPlans([{ months: "1", price: "", realPrice: "" }]);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to add product");
     } finally {
@@ -847,7 +852,7 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
               </div>
               <div className="flex-1">
                 <label className="mb-1 block text-[9.5px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/80">
-                  Price (₹)
+                  Selling Price (₹)
                 </label>
                 <input
                   type="number"
@@ -856,6 +861,20 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
                   className={inputCls}
                   value={pl.price}
                   onChange={(e) => updatePlan(i, { price: e.target.value })}
+                  placeholder="23"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="mb-1 block text-[9.5px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/80">
+                  Real Price (₹)
+                </label>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  className={inputCls}
+                  value={pl.realPrice}
+                  onChange={(e) => updatePlan(i, { realPrice: e.target.value })}
                   placeholder="299"
                 />
               </div>

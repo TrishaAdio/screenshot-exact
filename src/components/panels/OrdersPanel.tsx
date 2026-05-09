@@ -244,6 +244,11 @@ function OrderCard({
             <div className="font-display text-[15px] font-semibold tabular-nums text-foreground sm:text-[16px]">
               ₹{order.amount.toLocaleString()}
             </div>
+            {(order.savings ?? 0) > 0 && (
+              <div className="mt-0.5 text-[10.5px] font-medium tabular-nums text-emerald-300/80">
+                Saved ₹{order.savings!.toLocaleString()}
+              </div>
+            )}
           </div>
           <StatusPill status={order.status} />
           <ChevronDown
@@ -274,6 +279,12 @@ function OrderCard({
                 label="Amount"
                 value={`₹${order.amount.toLocaleString()}`}
               />
+              {(order.savings ?? 0) > 0 && (
+                <DetailRow
+                  label="You saved"
+                  value={`₹${order.savings!.toLocaleString()}`}
+                />
+              )}
             </div>
 
             <div
