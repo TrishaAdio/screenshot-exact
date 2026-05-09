@@ -522,6 +522,11 @@ function ProductPage() {
                               </td>
                               <td className="px-4 py-3 text-right font-semibold text-foreground">
                                 ₹{p.price.toLocaleString()}
+                                {(p.realPrice ?? 0) > p.price && (
+                                  <span className="ml-2 text-[11.5px] font-medium text-muted-foreground line-through">
+                                    ₹{p.realPrice!.toLocaleString()}
+                                  </span>
+                                )}
                               </td>
                             </tr>
                           ))}
