@@ -68,6 +68,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  useEffect(() => {
+    installConsoleShield();
+  }, []);
+
   return (
     <>
       <div className="app-route-shell">
