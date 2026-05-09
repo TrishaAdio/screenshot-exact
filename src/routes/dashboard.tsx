@@ -931,24 +931,27 @@ function InlineNoticeBanner({
       className="mb-6"
     >
       <div
-        className={`relative flex items-center gap-2.5 overflow-hidden rounded-lg border ${style.ring} ${style.bg} py-1.5 pl-3 pr-1.5 backdrop-blur-sm`}
+        className={`relative flex items-start gap-2.5 overflow-hidden rounded-xl border ${style.ring} ${style.bg} px-3 py-2.5 backdrop-blur-sm sm:items-center sm:rounded-lg sm:py-1.5 sm:pl-3 sm:pr-1.5`}
       >
-        <span aria-hidden className={`flex h-5 w-5 items-center justify-center rounded-md ${style.iconBg}`}>
-          <Bell className={`h-3 w-3 ${style.iconColor}`} />
+        <span
+          aria-hidden
+          className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md ${style.iconBg} sm:mt-0 sm:h-5 sm:w-5`}
+        >
+          <Bell className={`h-3.5 w-3.5 ${style.iconColor} sm:h-3 sm:w-3`} />
         </span>
-        <p className="flex-1 truncate text-[12px] font-medium text-foreground/90">
+        <p className="flex-1 min-w-0 text-[13px] font-medium leading-snug text-foreground/90 sm:truncate sm:text-[12px] sm:leading-5">
           <span className={`font-semibold ${style.chip}`}>{label}</span>
           <span aria-hidden className={`mx-2 inline-block h-1 w-1 rounded-full align-middle ${style.dot}`} />
-          <span className="text-foreground/85">{notice.message}</span>
+          <span className="text-foreground/85 break-words sm:break-normal">{notice.message}</span>
         </p>
         <motion.button
           type="button"
           onClick={onDismiss}
           aria-label="Dismiss"
           whileTap={{ scale: 0.9 }}
-          className="inline-flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+          className="-mr-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-surface hover:text-foreground sm:mr-0 sm:h-6 sm:w-6"
         >
-          <X className="h-3 w-3" />
+          <X className="h-3.5 w-3.5 sm:h-3 sm:w-3" />
         </motion.button>
       </div>
     </motion.div>
