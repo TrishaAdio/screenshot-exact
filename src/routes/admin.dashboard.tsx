@@ -852,7 +852,7 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
               </div>
               <div className="flex-1">
                 <label className="mb-1 block text-[9.5px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/80">
-                  Price (₹)
+                  Selling Price (₹)
                 </label>
                 <input
                   type="number"
@@ -861,6 +861,20 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
                   className={inputCls}
                   value={pl.price}
                   onChange={(e) => updatePlan(i, { price: e.target.value })}
+                  placeholder="23"
+                />
+              </div>
+              <div className="flex-1">
+                <label className="mb-1 block text-[9.5px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/80">
+                  Real Price (₹)
+                </label>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  className={inputCls}
+                  value={pl.realPrice}
+                  onChange={(e) => updatePlan(i, { realPrice: e.target.value })}
                   placeholder="299"
                 />
               </div>
