@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { motion, useMotionValue, animate } from "framer-motion";
 import { Headphones, LayoutDashboard, ShoppingBag, Wallet, User } from "lucide-react";
-import { useEffect, useLayoutEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from "react";
 
 const TABS = [
   { to: "/dashboard", label: "Home",    Icon: LayoutDashboard },
@@ -30,6 +30,7 @@ export function MobileBottomNav() {
 
   const pillX = useMotionValue(0);
   const pillW = useMotionValue(0);
+  const pressTransition = useMemo(() => SPRING, []);
 
   const measureTo = useCallback((idx: number, immediate: boolean) => {
     const el = tabRefs.current[idx];
@@ -43,8 +44,12 @@ export function MobileBottomNav() {
       pillX.set(x);
       pillW.set(w);
     } else {
-      animate(pillX, x, SPRING);
-      animate(pillW, w, SPRING);
+      const xControls = animate(pillX, x, SPRING);
+      const wControls = animate(pillW, w, SPRING);
+      return () => {
+        xControls.stop();
+        wControls.stop();
+      };
     }
   }, [pillX, pillW]);
 
@@ -56,7 +61,7 @@ export function MobileBottomNav() {
   }, []);
 
   useEffect(() => {
-    if (mounted) measureTo(activeIdx, false);
+    if (mounted) return measureTo(activeIdx, false);
   }, [activeIdx, mounted, measureTo]);
 
   useEffect(() => {
@@ -100,6 +105,11 @@ export function MobileBottomNav() {
               ref={(el) => { tabRefs.current[idx] = el; }}
               aria-label={item.label}
               aria-current={active ? "page" : undefined}
+              onClick={(e) => {
+                if (active && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                  e.preventDefault();
+                }
+              }}
               onPointerDown={() => setPressedIdx(idx)}
               onPointerUp={() => setPressedIdx(null)}
               onPointerLeave={() => setPressedIdx((p) => (p === idx ? null : p))}
@@ -112,7 +122,7 @@ export function MobileBottomNav() {
                   scale: pressed ? 0.94 : active ? 1.04 : 1,
                   y: active ? -1 : 0,
                 }}
-                transition={SPRING}
+                transition={pressTransition}
                 className="relative flex flex-col items-center gap-0.5 rounded-xl px-2 py-1.5 text-[10px] font-medium tracking-tight"
               >
                 <Icon

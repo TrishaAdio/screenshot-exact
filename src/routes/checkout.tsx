@@ -101,7 +101,8 @@ function CheckoutPage() {
     return () => {
       cancelled = true;
     };
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const plan = useMemo(
     () => product?.plans.find((p) => p.months === months) ?? null,

@@ -88,7 +88,8 @@ function ProductPage() {
     return () => {
       cancelled = true;
     };
-  }, [id, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const plans = useMemo(
     () => (product ? [...product.plans].sort((a, b) => a.months - b.months) : []),
@@ -130,8 +131,7 @@ function ProductPage() {
     } catch {
       /* ignore */
     }
-    // Brief tactile delay then navigate — feels like a checkout handoff.
-    setTimeout(() => navigate({ to: "/checkout" }), 380);
+    navigate({ to: "/checkout" });
   };
 
   const handleAddToCart = () => {

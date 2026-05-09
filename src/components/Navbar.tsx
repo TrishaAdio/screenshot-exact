@@ -1,9 +1,10 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, LayoutDashboard, ShoppingBag, User, LogOut } from "lucide-react";
 import { isLoggedIn, clearSession, type AuthUser } from "@/lib/api";
 
 export function Navbar() {
+  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [authed, setAuthed] = useState(false);
   const [authReady, setAuthReady] = useState(false);
@@ -11,7 +12,10 @@ export function Navbar() {
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 6);
+    const onScroll = () => {
+      const next = window.scrollY > 6;
+      setScrolled((current) => (current === next ? current : next));
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -128,7 +132,9 @@ export function Navbar() {
                     <button
                       onClick={() => {
                         clearSession();
-                        window.location.href = "/";
+                        setAuthed(false);
+                        setMenuOpen(false);
+                        navigate({ to: "/" });
                       }}
                       className="flex w-full items-center gap-2.5 border-t border-border px-3 py-2.5 text-left text-[13px] text-muted-foreground transition-colors hover:bg-surface-elevated hover:text-foreground"
                     >

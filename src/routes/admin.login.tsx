@@ -26,7 +26,8 @@ function AdminLoginPage() {
   // Already signed in? Skip straight to dashboard.
   useEffect(() => {
     if (getAdminToken()) navigate({ to: "/admin/dashboard" });
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const submit = async () => {
     setError(null);
