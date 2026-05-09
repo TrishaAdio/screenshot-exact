@@ -570,11 +570,15 @@ function MobileDrawer({
   onClose,
   user,
   onLogout,
+  activePanel,
+  onPanelSelect,
 }: {
   open: boolean;
   onClose: () => void;
   user: AuthUser | null;
   onLogout: () => void;
+  activePanel: PanelKey;
+  onPanelSelect: (p: PanelKey) => void;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -628,18 +632,25 @@ function MobileDrawer({
 
         <nav className="flex-1 overflow-y-auto px-3 py-4">
           <ul className="space-y-0.5">
-            {SIDEBAR_ITEMS.map((item) => (
-              <li key={item.label}>
-                <Link
-                  to={item.to}
-                  onClick={onClose}
-                  className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
-                >
-                  <item.Icon className="h-3.5 w-3.5" />
-                  {item.label}
-                </Link>
-              </li>
-            ))}
+            {SIDEBAR_ITEMS.map((item) => {
+              const active = activePanel === item.panel;
+              return (
+                <li key={item.label}>
+                  <button
+                    type="button"
+                    onClick={() => onPanelSelect(item.panel)}
+                    className={`flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[13px] font-medium transition-colors ${
+                      active
+                        ? "bg-surface-elevated text-foreground"
+                        : "text-muted-foreground hover:bg-surface hover:text-foreground"
+                    }`}
+                  >
+                    <item.Icon className="h-3.5 w-3.5" />
+                    {item.label}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </nav>
 
