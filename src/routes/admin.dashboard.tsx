@@ -621,11 +621,12 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
       toast.error("Please upload a product image");
       return;
     }
-    const parsedPlans: { months: number; price: number }[] = [];
+    const parsedPlans: { months: number; price: number; realPrice: number }[] = [];
     const seenMonths = new Set<number>();
     for (const [i, pl] of plans.entries()) {
       const m = Number(pl.months);
       const pr = Number(pl.price);
+      const rp = pl.realPrice.trim() === "" ? 0 : Number(pl.realPrice);
       if (!Number.isInteger(m) || m < 1 || m > 120) {
         toast.error(`Plan ${i + 1}: months must be a whole number (1–120)`);
         return;
@@ -634,12 +635,16 @@ function ProductForm({ onCreated }: { onCreated: (p: Product) => void }) {
         toast.error(`Plan ${i + 1}: enter a valid price`);
         return;
       }
+      if (!Number.isFinite(rp) || rp < 0) {
+        toast.error(`Plan ${i + 1}: enter a valid real price`);
+        return;
+      }
       if (seenMonths.has(m)) {
         toast.error(`Plan ${i + 1}: duration "${m} month(s)" is duplicated`);
         return;
       }
       seenMonths.add(m);
-      parsedPlans.push({ months: m, price: pr });
+      parsedPlans.push({ months: m, price: pr, realPrice: rp });
     }
 
     setSubmitting(true);
