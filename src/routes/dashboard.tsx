@@ -406,6 +406,11 @@ function DashboardPage() {
           setLogoutOpen(true);
         }}
         user={user}
+        activePanel={panel}
+        onPanelSelect={(p) => {
+          setMobileNavOpen(false);
+          goToPanel(p);
+        }}
       />
 
       <LogoutConfirmDialog
