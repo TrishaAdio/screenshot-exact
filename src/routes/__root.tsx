@@ -67,8 +67,11 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const hideNotices = pathname.startsWith("/admin") || pathname === "/login" || pathname === "/signup";
   return (
     <>
+      {!hideNotices && <GlobalNoticeBar />}
       <div className="app-route-shell">
         <Outlet />
       </div>
