@@ -30,6 +30,7 @@ export function ServiceLogo({
         src={resolveImageUrl(src)}
         alt={name || "Service"}
         loading="lazy"
+        decoding="async"
         className={className}
         onError={() => setFailed(true)}
       />
@@ -47,6 +48,7 @@ export function ServiceLogo({
           src={brand.url}
           alt={name || brand.name}
           loading="lazy"
+          decoding="async"
           className="h-[58%] w-[58%] object-contain"
         />
       </div>

@@ -59,7 +59,13 @@ export const getRouter = () => {
     routeTree,
     context: {},
     scrollRestoration: true,
+    // Preload route chunks + data on hover/touchstart for instant navigation
+    defaultPreload: "intent",
+    defaultPreloadDelay: 40,
     defaultPreloadStaleTime: 0,
+    // Avoid pending-flash: keep showing previous page until new one is ready
+    defaultPendingMs: 800,
+    defaultPendingMinMs: 0,
     defaultErrorComponent: DefaultErrorComponent,
   });
 
