@@ -199,7 +199,7 @@ function DashboardPage() {
 
       <div className="flex min-h-screen">
         {/* Desktop sidebar */}
-        <DesktopSidebar onLogout={() => setLogoutOpen(true)} user={user} />
+        <DesktopSidebar onLogout={() => setLogoutOpen(true)} user={user} activePanel={panel} onPanelSelect={goToPanel} />
 
         <div className="flex min-w-0 flex-1 flex-col">
           {/* Top bar */}
