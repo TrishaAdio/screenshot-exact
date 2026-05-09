@@ -1,5 +1,6 @@
 const { z } = require("zod");
 const User = require("../models/User");
+const Order = require("../models/Order");
 const { signToken } = require("../config/jwt");
 const { sendOtpEmail, generateOtp } = require("../utils/sendOtpEmail");
 
