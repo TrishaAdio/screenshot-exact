@@ -1,15 +1,17 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { motion, useMotionValue, animate } from "framer-motion";
 import { Headphones, LayoutDashboard, ShoppingBag, Wallet, User } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from "react";
 
-const TABS = [
-  { to: "/dashboard", label: "Home",    Icon: LayoutDashboard },
-  { to: "/orders",    label: "Orders",  Icon: ShoppingBag },
-  { to: "/myprofile", label: "Wallet",  Icon: Wallet },
-  { to: "/support",   label: "Help",    Icon: Headphones },
-  { to: "/myprofile", label: "Account", Icon: User },
-] as const;
+type PanelKey = "overview" | "browse" | "orders" | "wallet" | "support" | "settings";
+
+const TABS: { panel: PanelKey; label: string; Icon: typeof LayoutDashboard }[] = [
+  { panel: "overview", label: "Home",    Icon: LayoutDashboard },
+  { panel: "orders",   label: "Orders",  Icon: ShoppingBag },
+  { panel: "wallet",   label: "Wallet",  Icon: Wallet },
+  { panel: "support",  label: "Help",    Icon: Headphones },
+  { panel: "settings", label: "Account", Icon: User },
+];
 
 const SPRING = { type: "spring" as const, stiffness: 380, damping: 32, mass: 0.8 };
 
