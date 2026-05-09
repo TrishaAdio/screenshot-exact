@@ -309,10 +309,13 @@ function SignupPage() {
                     Creating your account…
                   </p>
                 )}
-                {submitError && !submitting && (
-                  <p className="mt-3 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-[12px] font-medium text-destructive">
-                    {submitError}
-                  </p>
+                {!submitting && (
+                  <div className="mt-3">
+                    <InlineErrorBanner
+                      message={submitError}
+                      onDismiss={() => setSubmitError(null)}
+                    />
+                  </div>
                 )}
               </div>
             </form>
