@@ -38,6 +38,9 @@ import {
   fetchProducts,
   getToken,
   resolveImageUrl,
+  fetchActiveNotices,
+  type Notice,
+  type NoticeType,
 } from "@/lib/api";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { OtpVerifyModal } from "@/components/OtpVerifyModal";
