@@ -1,4 +1,4 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { motion, useMotionValue, animate } from "framer-motion";
 import { Headphones, LayoutDashboard, ShoppingBag, Wallet, User } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from "react";
