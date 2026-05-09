@@ -971,8 +971,9 @@ function ProductCard({
     ? [...product.plans].sort((a, b) => a.price - b.price)
     : [];
   const lowest = plans[0] ?? null;
-  const highest = plans.length > 1 ? plans[plans.length - 1] : null;
-  const showOldPrice = highest && highest.price > (lowest?.price ?? 0);
+  const oldPrice =
+    lowest && (lowest.realPrice ?? 0) > lowest.price ? lowest.realPrice! : null;
+  const showOldPrice = oldPrice !== null;
 
   const cardRef = useRef<HTMLElement>(null);
   const handleMove = (e: React.MouseEvent<HTMLElement>) => {
