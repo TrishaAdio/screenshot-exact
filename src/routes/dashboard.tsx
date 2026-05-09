@@ -110,6 +110,45 @@ function DashboardPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [activeNotice, setActiveNotice] = useState<Notice | null>(null);
+  const [noticeDismissedIds, setNoticeDismissedIds] = useState<Record<string, boolean>>(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      return JSON.parse(sessionStorage.getItem("symdeals.notices.dismissed") || "{}");
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await fetchActiveNotices();
+        if (!cancelled) setActiveNotice(res.notices[0] ?? null);
+      } catch {
+        /* silent */
+      }
+    };
+    void load();
+    const id = window.setInterval(load, 60_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, []);
+
+  const dismissNotice = (id: string) => {
+    const next = { ...noticeDismissedIds, [id]: true };
+    setNoticeDismissedIds(next);
+    try {
+      sessionStorage.setItem("symdeals.notices.dismissed", JSON.stringify(next));
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const visibleNotice = activeNotice && !noticeDismissedIds[activeNotice.id] ? activeNotice : null;
 
   const goToPanel = (next: PanelKey) => {
     if (next === panel) return;
