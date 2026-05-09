@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Eye, EyeOff, Loader2, Check, ShieldCheck, Lock, ArrowRight } from "lucide-react";
 import { login as apiLogin, isLoggedIn, saveSession } from "@/lib/api";
+import { InlineErrorBanner } from "@/components/InlineErrorBanner";
 import symdealsLogo from "@/assets/symdeals-logo.png";
 
 export const Route = createFileRoute("/login")({
