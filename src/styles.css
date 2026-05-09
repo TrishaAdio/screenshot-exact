@@ -349,6 +349,40 @@
   }
   .animate-success-stagger { animation: success-stagger 0.5s ease-out both; }
 
+  /* Ambient floating orb behind the success card */
+  @keyframes orb-drift {
+    0%, 100% { transform: translate3d(0,0,0) scale(1); opacity: 0.55; }
+    50%      { transform: translate3d(0,-18px,0) scale(1.06); opacity: 0.85; }
+  }
+  .animate-orb-drift { animation: orb-drift 9s ease-in-out infinite; }
+
+  @keyframes orb-drift-slow {
+    0%, 100% { transform: translate3d(0,0,0) scale(1); opacity: 0.35; }
+    50%      { transform: translate3d(12px,14px,0) scale(1.1); opacity: 0.55; }
+  }
+  .animate-orb-drift-slow { animation: orb-drift-slow 13s ease-in-out infinite; }
+
+  /* Soft pulsing glow ring around the amount block */
+  @keyframes amount-glow {
+    0%, 100% { box-shadow: 0 0 0 1px rgba(16,185,129,0.18), 0 12px 40px -18px rgba(16,185,129,0.55); }
+    50%      { box-shadow: 0 0 0 1px rgba(16,185,129,0.32), 0 18px 60px -18px rgba(16,185,129,0.85); }
+  }
+  .animate-amount-glow { animation: amount-glow 3.6s ease-in-out infinite; }
+
+  /* Button sheen sweep on hover */
+  @keyframes btn-sheen {
+    0%   { transform: translateX(-120%) skewX(-20deg); }
+    100% { transform: translateX(220%)  skewX(-20deg); }
+  }
+  .group\/cta:hover .animate-btn-sheen { animation: btn-sheen 1.05s ease-out; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-orb-drift,
+    .animate-orb-drift-slow,
+    .animate-amount-glow,
+    .animate-success-ring { animation: none !important; }
+  }
+
   /* Premium tactile press for category tiles — 3-phase: press → micro delay → spring release */
   /* Phase 1: Press (weighted compression) */
   @keyframes cat-press-down {
