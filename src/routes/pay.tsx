@@ -713,13 +713,13 @@ function DetailRow({
   highlight?: boolean;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 text-sm">
-      <span className="text-muted-foreground">{label}</span>
+    <div className="flex items-center justify-between gap-4 text-[13px]">
+      <span className="text-[11.5px] font-medium uppercase tracking-wider text-muted-foreground/80">{label}</span>
       <span
         className={[
-          mono ? "font-mono text-xs" : "",
-          highlight ? "font-display text-base font-bold text-emerald-400" : "text-foreground",
-          "truncate text-right",
+          mono ? "font-mono text-[12px]" : "text-[13.5px]",
+          highlight ? "font-display text-base font-bold text-emerald-400" : "font-semibold text-foreground",
+          "max-w-[60%] truncate text-right",
         ].join(" ")}
       >
         {value}
@@ -727,3 +727,26 @@ function DetailRow({
     </div>
   );
 }
+
+function CountUp({ value, duration = 900 }: { value: number; duration?: number }) {
+  const [display, setDisplay] = useState(0);
+  useEffect(() => {
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      setDisplay(value);
+      return;
+    }
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      setDisplay(value * eased);
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [value, duration]);
+  return <>{display.toFixed(2)}</>;
+}
+
