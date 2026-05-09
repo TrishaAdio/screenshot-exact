@@ -416,3 +416,51 @@
     .page-transition { animation: none; }
   }
 }
+
+@layer utilities {
+  /* Tactile press — GPU only (transform + opacity) */
+  .tap {
+    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+                opacity   180ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  .tap:active { transform: scale(0.97) translateZ(0); }
+
+  /* Soft card lift — transform-only, no shadow repaint storms */
+  .lift {
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+    transform: translateZ(0);
+  }
+  @media (hover: hover) {
+    .lift:hover { transform: translate3d(0, -2px, 0); }
+  }
+
+  /* Smooth fade-in primitive */
+  @keyframes soft-in {
+    from { opacity: 0; transform: translate3d(0, 6px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
+  }
+  .soft-in { animation: soft-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+  /* Auto-quiet on low-end devices / accessibility preference.
+     Disables non-essential animations and transitions globally. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+    .page-transition,
+    .soft-in,
+    .animate-fade-in,
+    .animate-fade-up,
+    .animate-scale-in {
+      animation: none !important;
+    }
+  }
+}
