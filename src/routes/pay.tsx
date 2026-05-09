@@ -41,6 +41,7 @@ type CheckoutState = {
   months?: number;
   quantity?: number;
   amount?: number;
+  realPrice?: number;
   productName?: string;
   productImage?: string;
 };
