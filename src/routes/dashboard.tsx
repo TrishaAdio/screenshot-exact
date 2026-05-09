@@ -332,7 +332,6 @@ function DashboardPage() {
                 </div>
               ) : (
                 <div
-                  key={selectedCategory}
                   className="grid animate-fade-up grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
                 >
                   {filteredProducts.map((p) => (
