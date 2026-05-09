@@ -410,29 +410,41 @@ function PayPage() {
 
   // ------------- Success view -------------
   if (paid && invoice) {
-    const finalAmount = (paid.amount ?? invoice.unique_amount).toFixed(2);
+    const finalAmountNum = paid.amount ?? invoice.unique_amount;
     return (
-      <div className="min-h-screen overflow-hidden bg-background">
-        {/* Ambient glow */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-[420px] max-w-2xl bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.18),transparent_70%)]" />
+      <div className="relative min-h-screen overflow-hidden bg-background">
+        {/* Cinematic ambient background */}
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute inset-x-0 top-0 mx-auto h-[520px] max-w-3xl bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.22),transparent_72%)]" />
+          <div className="animate-orb-drift absolute left-1/2 top-[18%] h-[340px] w-[340px] -translate-x-1/2 rounded-full bg-emerald-500/20 blur-[110px]" />
+          <div className="animate-orb-drift-slow absolute left-[12%] bottom-[10%] h-[260px] w-[260px] rounded-full bg-emerald-400/10 blur-[120px]" />
+          <div className="animate-orb-drift-slow absolute right-[8%] top-[28%] h-[220px] w-[220px] rounded-full bg-teal-400/10 blur-[110px]" style={{ animationDelay: "2s" }} />
+        </div>
 
-        <main className="relative mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-5 py-12 sm:px-6">
-          <div className="animate-success-card w-full overflow-hidden rounded-3xl border border-emerald-400/25 bg-gradient-to-b from-emerald-500/[0.07] via-background/60 to-background p-7 text-center shadow-[0_30px_80px_-20px_rgba(16,185,129,0.45)] backdrop-blur-xl sm:p-9">
-            {/* Success icon with bounce + ripple */}
-            <div className="relative mx-auto flex h-24 w-24 items-center justify-center">
-              <span className="absolute inset-0 animate-success-ring rounded-full bg-emerald-400/30" />
+        <main className="relative mx-auto flex min-h-screen max-w-md flex-col items-center justify-center px-5 py-10 sm:px-6 sm:py-14">
+          <div className="animate-success-card relative w-full overflow-hidden rounded-[28px] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(16,185,129,0.10)_0%,rgba(20,22,26,0.55)_38%,rgba(14,16,20,0.85)_100%)] p-7 text-center shadow-[0_1px_0_0_rgba(255,255,255,0.06)_inset,0_40px_100px_-30px_rgba(16,185,129,0.45),0_20px_60px_-25px_rgba(0,0,0,0.8)] backdrop-blur-2xl backdrop-saturate-150 sm:p-9">
+            {/* Inner top highlight */}
+            <span className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/60 to-transparent" />
+
+            {/* Success icon with bounce + ripple + glow halo */}
+            <div className="relative mx-auto flex h-28 w-28 items-center justify-center">
+              <span className="absolute inset-0 animate-success-ring rounded-full bg-emerald-400/35" />
               <span
                 className="absolute inset-0 animate-success-ring rounded-full bg-emerald-400/20"
                 style={{ animationDelay: "0.25s" }}
               />
-              <div className="animate-success-pop relative flex h-20 w-20 items-center justify-center rounded-full border border-emerald-400/50 bg-gradient-to-br from-emerald-400/30 to-emerald-500/10 text-emerald-400 shadow-[0_0_40px_-5px_rgba(16,185,129,0.7)]">
-                <CheckCircle2 className="h-12 w-12" strokeWidth={2.2} />
+              <span
+                className="absolute inset-0 animate-success-ring rounded-full bg-emerald-400/12"
+                style={{ animationDelay: "0.5s" }}
+              />
+              <div className="animate-success-pop relative flex h-20 w-20 items-center justify-center rounded-full border border-emerald-300/55 bg-[radial-gradient(circle_at_30%_25%,rgba(110,231,183,0.55),rgba(16,185,129,0.15)_70%)] text-emerald-300 shadow-[0_0_0_6px_rgba(16,185,129,0.08),0_0_50px_-4px_rgba(16,185,129,0.85)]">
+                <CheckCircle2 className="h-12 w-12 drop-shadow-[0_0_10px_rgba(16,185,129,0.6)]" strokeWidth={2.4} />
               </div>
             </div>
 
             {/* Title + subtitle */}
             <h1
-              className="animate-success-stagger mt-6 font-display text-[1.65rem] font-bold tracking-tight text-foreground sm:text-[1.85rem]"
+              className="animate-success-stagger mt-6 font-display text-[1.7rem] font-bold tracking-tight text-foreground sm:text-[1.95rem]"
               style={{ animationDelay: "0.25s" }}
             >
               Payment Successful
@@ -446,20 +458,25 @@ function PayPage() {
 
             {/* Amount hero */}
             <div
-              className="animate-success-stagger mt-6 rounded-2xl border border-emerald-400/20 bg-emerald-500/[0.06] px-5 py-4"
+              className="animate-success-stagger animate-amount-glow mt-7 rounded-2xl border border-emerald-400/25 bg-[linear-gradient(180deg,rgba(16,185,129,0.12),rgba(16,185,129,0.04))] px-5 py-5"
               style={{ animationDelay: "0.45s" }}
             >
-              <p className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-emerald-400/80">
+              <p className="text-[10.5px] font-semibold uppercase tracking-[0.18em] text-emerald-300/85">
                 Amount Paid
               </p>
-              <p className="mt-1 font-display text-[2rem] font-bold tracking-tight text-foreground sm:text-[2.25rem]">
-                ₹{finalAmount}
+              <p className="mt-1.5 font-display text-[2.4rem] font-bold leading-none tracking-tight text-foreground sm:text-[2.7rem]">
+                <span className="text-emerald-300/90">₹</span>
+                <CountUp value={finalAmountNum} />
+              </p>
+              <p className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-emerald-300/80">
+                <ShieldCheck className="h-3 w-3" />
+                Verified by UPI
               </p>
             </div>
 
             {/* Details */}
             <div
-              className="animate-success-stagger mt-5 space-y-3 rounded-2xl border border-border bg-white/[0.02] p-5 text-left"
+              className="animate-success-stagger mt-5 space-y-3.5 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-5 text-left"
               style={{ animationDelay: "0.55s" }}
             >
               <DetailRow label="Invoice ID" value={invoice.invoice_id} mono />
@@ -487,14 +504,17 @@ function PayPage() {
                     onClick={(e) => {
                       if (!oid) e.preventDefault();
                     }}
-                    className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold transition-all duration-200 ${
+                    className={`group/cta relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-5 py-3.5 text-sm font-semibold transition-all duration-200 ${
                       oid
-                        ? "bg-emerald-500 text-emerald-950 shadow-[0_10px_30px_-12px_rgba(16,185,129,0.7)] hover:bg-emerald-400 hover:shadow-[0_14px_36px_-12px_rgba(16,185,129,0.85)] active:scale-[0.98]"
+                        ? "bg-gradient-to-b from-emerald-400 to-emerald-500 text-emerald-950 shadow-[0_10px_30px_-12px_rgba(16,185,129,0.75),inset_0_1px_0_0_rgba(255,255,255,0.35)] hover:from-emerald-300 hover:to-emerald-400 hover:shadow-[0_18px_44px_-12px_rgba(16,185,129,0.9),inset_0_1px_0_0_rgba(255,255,255,0.4)] active:scale-[0.985] active:shadow-[0_6px_18px_-8px_rgba(16,185,129,0.6),inset_0_1px_0_0_rgba(255,255,255,0.3)]"
                         : "cursor-wait border border-border bg-white/[0.03] text-muted-foreground"
                     }`}
                   >
-                    <MessageCircle className="h-4 w-4" />
-                    {oid ? "Get Access" : "Preparing your order…"}
+                    {oid && (
+                      <span className="animate-btn-sheen pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/45 to-transparent" />
+                    )}
+                    <MessageCircle className="relative h-4 w-4" />
+                    <span className="relative">{oid ? "Get Access" : "Preparing your order…"}</span>
                   </a>
                 );
               })()}
