@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, ArrowRight, Loader2, Mail, CheckCircle2 } from "lucide-react";
 import { forgotPassword } from "@/lib/api";
+import { InlineErrorBanner } from "@/components/InlineErrorBanner";
 import symdealsLogo from "@/assets/symdeals-logo.png";
 
 export const Route = createFileRoute("/forgot-password")({
@@ -36,7 +37,11 @@ function ForgotPasswordPage() {
       await forgotPassword({ email: email.trim() });
       setSent(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Something went wrong. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -141,11 +146,10 @@ function ForgotPasswordPage() {
                 </div>
               </div>
 
-              {error && (
-                <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-[12px] font-medium text-destructive">
-                  {error}
-                </p>
-              )}
+              <InlineErrorBanner
+                message={error}
+                onDismiss={() => setError(null)}
+              />
 
               <button
                 type="submit"

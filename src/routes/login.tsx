@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Eye, EyeOff, Loader2, Check, ShieldCheck, Lock, ArrowRight } from "lucide-react";
 import { login as apiLogin, isLoggedIn, saveSession } from "@/lib/api";
+import { InlineErrorBanner } from "@/components/InlineErrorBanner";
 import symdealsLogo from "@/assets/symdeals-logo.png";
 
 export const Route = createFileRoute("/login")({
@@ -76,17 +77,18 @@ function LoginPage() {
     setSubmitError(null);
     setSubmitting(true);
     try {
-      console.log("[login] submitting", { email: form.email.trim() });
       const res = await apiLogin({
         email: form.email.trim(),
         password: form.password,
       });
-      console.log("[login] success");
       saveSession(res);
       navigate({ to: "/dashboard" });
     } catch (err) {
-      console.error("[login] failed", err);
-      setSubmitError(err instanceof Error ? err.message : "Login failed");
+      setSubmitError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Login failed. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -209,11 +211,10 @@ function LoginPage() {
                 )}
               </div>
 
-              {submitError && (
-                <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-[12px] font-medium text-destructive">
-                  {submitError}
-                </p>
-              )}
+              <InlineErrorBanner
+                message={submitError}
+                onDismiss={() => setSubmitError(null)}
+              />
 
               <button
                 type="submit"

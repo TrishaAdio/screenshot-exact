@@ -5,6 +5,7 @@ import { SwipeButton } from "@/components/SwipeButton";
 import { Checkbox } from "@/components/ui/checkbox";
 import { OtpVerifyModal } from "@/components/OtpVerifyModal";
 import { signup as apiSignup, isLoggedIn, saveSession } from "@/lib/api";
+import { InlineErrorBanner } from "@/components/InlineErrorBanner";
 import symdealsLogo from "@/assets/symdeals-logo.png";
 
 export const Route = createFileRoute("/signup")({
@@ -120,7 +121,11 @@ function SignupPage() {
       setSignedUpEmail(res.user.email);
       setOtpOpen(true);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Signup failed");
+      setSubmitError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Signup failed. Please try again.",
+      );
       setShake((s) => s + 1);
     } finally {
       setSubmitting(false);
@@ -304,10 +309,13 @@ function SignupPage() {
                     Creating your account…
                   </p>
                 )}
-                {submitError && !submitting && (
-                  <p className="mt-3 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-[12px] font-medium text-destructive">
-                    {submitError}
-                  </p>
+                {!submitting && (
+                  <div className="mt-3">
+                    <InlineErrorBanner
+                      message={submitError}
+                      onDismiss={() => setSubmitError(null)}
+                    />
+                  </div>
                 )}
               </div>
             </form>

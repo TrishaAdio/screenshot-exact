@@ -11,6 +11,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { resetPassword, verifyResetToken } from "@/lib/api";
+import { InlineErrorBanner } from "@/components/InlineErrorBanner";
 import symdealsLogo from "@/assets/symdeals-logo.png";
 
 export const Route = createFileRoute("/reset-password/$token")({
@@ -77,7 +78,11 @@ function ResetPasswordPage() {
       setStatus("done");
       window.setTimeout(() => navigate({ to: "/login" }), 2000);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : "Reset failed");
+      setSubmitError(
+        err instanceof Error && err.message
+          ? err.message
+          : "Reset failed. Please try again.",
+      );
     } finally {
       setSubmitting(false);
     }
@@ -231,11 +236,10 @@ function ResetPasswordPage() {
                 </li>
               </ul>
 
-              {submitError && (
-                <p className="rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-[12px] font-medium text-destructive">
-                  {submitError}
-                </p>
-              )}
+              <InlineErrorBanner
+                message={submitError}
+                onDismiss={() => setSubmitError(null)}
+              />
 
               <button
                 type="submit"
