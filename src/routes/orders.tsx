@@ -55,7 +55,8 @@ function OrdersPage() {
     return () => {
       cancelled = true;
     };
-  }, [navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Polling: every 5s verify any PROCESSING orders
   useEffect(() => {
