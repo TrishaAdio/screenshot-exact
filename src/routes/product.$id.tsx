@@ -302,6 +302,11 @@ function ProductPage() {
                               </span>
                               <span className="mt-0.5 block text-[10.5px] font-medium text-muted-foreground">
                                 ₹{p.price.toLocaleString()}
+                                {(p.realPrice ?? 0) > p.price && (
+                                  <span className="ml-1 text-muted-foreground/60 line-through">
+                                    ₹{p.realPrice!.toLocaleString()}
+                                  </span>
+                                )}
                               </span>
                             </motion.button>
                           );
