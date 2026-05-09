@@ -139,6 +139,10 @@ function CheckoutPage() {
     }
     setSubmitting(true);
     try {
+      const realPriceTotal =
+        plan.realPrice && plan.realPrice > plan.price
+          ? plan.realPrice * quantity
+          : 0;
       sessionStorage.setItem(
         "symdeals.checkout",
         JSON.stringify({
@@ -146,6 +150,7 @@ function CheckoutPage() {
           months: plan.months,
           quantity,
           amount: total,
+          realPrice: realPriceTotal,
           productName: `${product.name} ${plan.months} month${plan.months > 1 ? "s" : ""}`,
           productImage: product.image,
           whatsapp,
