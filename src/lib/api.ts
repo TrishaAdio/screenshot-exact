@@ -47,9 +47,7 @@ async function request<T>(
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
   } catch {
-    throw new Error(
-      `Cannot reach backend at ${API_URL}. Make sure the backend is running.`
-    );
+    throw new Error("Connection issue. Please check your internet and try again.");
   }
   let data: unknown = null;
   try {
@@ -58,10 +56,39 @@ async function request<T>(
     /* ignore */
   }
   if (!res.ok || !data || (data as { success?: boolean }).success === false) {
-    const msg = (data as { message?: string })?.message || `Request failed (${res.status})`;
-    throw new Error(msg);
+    const raw = (data as { message?: string })?.message;
+    throw new Error(sanitizeServerMessage(raw, res.status));
   }
   return data as T;
+}
+
+// Strip any infrastructure details (URLs, hostnames, stack traces) from
+// server messages before they're surfaced to end users.
+function sanitizeServerMessage(raw: string | undefined, status: number): string {
+  const fallback =
+    status >= 500
+      ? "Server temporarily unavailable. Please try again shortly."
+      : status === 401 || status === 403
+        ? "Your session has expired. Please sign in again."
+        : status === 404
+          ? "We couldn't find what you were looking for."
+          : status === 429
+            ? "Too many attempts. Please wait a moment and try again."
+            : "Something went wrong. Please try again.";
+
+  if (!raw || typeof raw !== "string") return fallback;
+  // If the message contains a URL, hostname, stack, or looks like a debug
+  // payload, drop it entirely — never leak infrastructure to the UI.
+  if (
+    /https?:\/\//i.test(raw) ||
+    /\b(?:ngrok|localhost|127\.0\.0\.1|0\.0\.0\.0)\b/i.test(raw) ||
+    /\bat\s+\S+\s+\(/.test(raw) ||
+    /[A-Za-z]+Error:/.test(raw) ||
+    raw.length > 200
+  ) {
+    return fallback;
+  }
+  return raw;
 }
 
 function postJSON<T>(path: string, body: unknown): Promise<T> {
