@@ -2,6 +2,7 @@ const express = require("express");
 const rateLimit = require("express-rate-limit");
 const ctrl = require("../controllers/adminController");
 const products = require("../controllers/productController");
+const notices = require("../controllers/noticeController");
 const uploadCtrl = require("../controllers/uploadController");
 const requireAdmin = require("../middleware/adminAuth");
 const { upload } = require("../middleware/upload");
