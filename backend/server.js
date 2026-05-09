@@ -110,6 +110,7 @@ function buildApp() {
   app.use("/api/user", userRoutes);
   app.use("/api/payments", paymentRoutes);
   app.use("/api/orders", orderRoutes);
+  app.use("/api/notices", noticeRoutes);
 
   app.use((_req, res) =>
     res.status(404).json({ success: false, message: "Not found" })
