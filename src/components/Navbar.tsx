@@ -12,7 +12,10 @@ export function Navbar() {
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 6);
+    const onScroll = () => {
+      const next = window.scrollY > 6;
+      setScrolled((current) => (current === next ? current : next));
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
