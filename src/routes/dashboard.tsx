@@ -28,6 +28,7 @@ import {
   Zap,
   ArrowUpRight,
   ArrowRight,
+  Clock,
 } from "lucide-react";
 import {
   type AuthUser,
