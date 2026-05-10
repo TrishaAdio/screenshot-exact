@@ -4,7 +4,7 @@ import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 import { OrdersPanel } from "@/components/panels/OrdersPanel";
 import { SupportPanel } from "@/components/panels/SupportPanel";
 import { ProfilePanel } from "@/components/panels/ProfilePanel";
-import { WalletPanel } from "@/components/panels/WalletPanel";
+import { CartPanel } from "@/components/panels/CartPanel";
 import {
   Bell,
   Code2,
@@ -20,10 +20,10 @@ import {
   Search,
   Settings as SettingsIcon,
   ShoppingBag,
+  ShoppingCart,
   Sparkles,
   TrendingDown,
   Tv,
-  Wallet,
   X,
   Zap,
   ArrowUpRight,
@@ -70,18 +70,19 @@ const CATEGORY_TABS: {
   { key: "Combo Pack", label: "Combo Packs", Icon: Layers },
 ];
 
-type PanelKey = "overview" | "browse" | "orders" | "wallet" | "support" | "settings";
+type PanelKey = "overview" | "browse" | "orders" | "cart" | "support" | "settings";
 
 const SIDEBAR_ITEMS: { panel: PanelKey; label: string; Icon: typeof LayoutDashboard }[] = [
   { panel: "overview", label: "Dashboard", Icon: LayoutDashboard },
   { panel: "browse",   label: "Browse",    Icon: Grid3x3 },
   { panel: "orders",   label: "Orders",    Icon: ShoppingBag },
-  { panel: "wallet",   label: "Wallet",    Icon: Wallet },
+  { panel: "cart",     label: "Cart",      Icon: ShoppingCart },
   { panel: "support",  label: "Support",   Icon: Headphones },
   { panel: "settings", label: "Settings",  Icon: SettingsIcon },
 ];
 
-const VALID_PANELS: PanelKey[] = ["overview", "browse", "orders", "wallet", "support", "settings"];
+const VALID_PANELS: PanelKey[] = ["overview", "browse", "orders", "cart", "support", "settings"];
+
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
@@ -435,8 +436,8 @@ function DashboardPage() {
                 )}
 
                 {panel === "orders" && <OrdersPanel onBrowse={() => goToPanel("browse")} />}
-                {panel === "wallet" && (
-                  <WalletPanel user={user} loading={loadingMe} onViewOrders={() => goToPanel("orders")} />
+                {panel === "cart" && (
+                  <CartPanel onBrowse={() => goToPanel("browse")} />
                 )}
                 {panel === "support" && <SupportPanel />}
                 {panel === "settings" && (
@@ -545,8 +546,8 @@ function DesktopSidebar({
                   ? "Browse all services"
                   : item.label === "Orders"
                   ? "View your active orders"
-                  : item.label === "Wallet"
-                  ? "Wallet & billing"
+                  : item.label === "Cart"
+                  ? "Your shopping cart"
                   : item.label === "Support"
                   ? "Talk to support"
                   : "Account settings";

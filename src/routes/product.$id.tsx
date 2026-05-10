@@ -26,6 +26,7 @@ import {
   getToken,
   resolveImageUrl,
 } from "@/lib/api";
+import { addToCart } from "@/lib/cart";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { getBrandArt } from "@/lib/brandLogos";
@@ -136,8 +137,20 @@ function ProductPage() {
   };
 
   const handleAddToCart = () => {
-    if (!product) return;
-    toast("Added to cart", { description: product.name });
+    if (!product || !selectedPlan) return;
+    addToCart({
+      productId: product.id,
+      name: product.name,
+      image: product.image,
+      category: product.category,
+      months: selectedPlan.months,
+      price: selectedPlan.price,
+      realPrice: selectedPlan.realPrice,
+      quantity,
+    });
+    toast("Added to cart", {
+      description: `${product.name} · ${selectedPlan.months} mo × ${quantity}`,
+    });
   };
 
   return (
