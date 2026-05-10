@@ -88,6 +88,16 @@ function PayPage() {
   const [expired, setExpired] = useState(false);
   const [paid, setPaid] = useState<CheckResponse | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [paidAt, setPaidAt] = useState<Date | null>(null);
+  const [waClickedAt, setWaClickedAt] = useState<Date | null>(null);
+  const [now, setNow] = useState<Date>(() => new Date());
+
+  // Tick a "now" clock once paid (for relative timestamps)
+  useEffect(() => {
+    if (!paid) return;
+    const id = setInterval(() => setNow(new Date()), 15000);
+    return () => clearInterval(id);
+  }, [paid]);
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
