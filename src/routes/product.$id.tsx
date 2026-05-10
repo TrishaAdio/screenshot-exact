@@ -26,6 +26,7 @@ import {
   getToken,
   resolveImageUrl,
 } from "@/lib/api";
+import { addToCart } from "@/lib/cart";
 import { LogoutConfirmDialog } from "@/components/LogoutConfirmDialog";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 import { getBrandArt } from "@/lib/brandLogos";
