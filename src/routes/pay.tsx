@@ -498,10 +498,70 @@ function PayPage() {
               <DetailRow label="Product" value={merchantName} />
             </div>
 
+            {/* Paid-at + Estimated delivery */}
+            <div
+              className="animate-success-stagger mt-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4 text-left"
+              style={{ animationDelay: "0.6s" }}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="inline-flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/60" />
+                    <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  </span>
+                  Payment received
+                </span>
+                <span className="font-mono text-[11.5px] tabular-nums text-foreground/85">
+                  {paidAt ? formatClock(paidAt) : "—"}
+                </span>
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/[0.05] pt-3">
+                <span className="text-[11.5px] text-muted-foreground">Estimated delivery</span>
+                <span className="text-[12px] font-semibold text-foreground">Within 5–15 minutes</span>
+              </div>
+              <p className="mt-1.5 text-[10.5px] text-muted-foreground/70">
+                May take longer during high traffic.
+              </p>
+            </div>
+
+            {/* Live status timeline */}
+            <div
+              className="animate-success-stagger mt-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4 text-left"
+              style={{ animationDelay: "0.65s" }}
+            >
+              <TimelineRow
+                state="done"
+                label="Payment received"
+                time={paidAt ? relativeTime(paidAt, now) : undefined}
+              />
+              <TimelineRow
+                state={waClickedAt ? "done" : "active"}
+                label={
+                  waClickedAt
+                    ? "WhatsApp message sent"
+                    : "Awaiting WhatsApp verification"
+                }
+                time={
+                  waClickedAt
+                    ? relativeTime(waClickedAt, now)
+                    : undefined
+                }
+              />
+              <TimelineRow
+                state={waClickedAt ? "active" : "pending"}
+                label={
+                  waClickedAt
+                    ? "Waiting for your WhatsApp confirmation…"
+                    : "Access delivery pending"
+                }
+                last
+              />
+            </div>
+
             {/* Buttons */}
             <div
-              className="animate-success-stagger mt-7 flex flex-col gap-2.5"
-              style={{ animationDelay: "0.65s" }}
+              className="animate-success-stagger mt-6 flex flex-col gap-2.5"
+              style={{ animationDelay: "0.7s" }}
             >
               {(() => {
                 const finalAmt = paid.amount ?? invoice.unique_amount;
@@ -515,7 +575,11 @@ function PayPage() {
                     rel="noopener noreferrer"
                     aria-disabled={!oid}
                     onClick={(e) => {
-                      if (!oid) e.preventDefault();
+                      if (!oid) {
+                        e.preventDefault();
+                        return;
+                      }
+                      if (!waClickedAt) setWaClickedAt(new Date());
                     }}
                     className={`group/cta relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-5 py-3.5 text-sm font-semibold transition-all duration-200 ${
                       oid
@@ -535,11 +599,16 @@ function PayPage() {
 
             {/* Trust footer */}
             <div
-              className="animate-success-stagger mt-6 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground"
-              style={{ animationDelay: "0.75s" }}
+              className="animate-success-stagger mt-5 flex flex-col items-center justify-center gap-1 text-[11px] text-muted-foreground"
+              style={{ animationDelay: "0.8s" }}
             >
-              <ShieldCheck className="h-3 w-3 text-emerald-400" />
-              <span>Secured by SymDeals · UPI verified</span>
+              <span className="inline-flex items-center gap-1.5">
+                <ShieldCheck className="h-3 w-3 text-emerald-400" />
+                Secured by SymDeals · UPI verified
+              </span>
+              <span className="text-[10.5px] text-muted-foreground/70">
+                Support usually responds within minutes.
+              </span>
             </div>
           </div>
         </main>
