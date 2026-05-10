@@ -436,8 +436,8 @@ function DashboardPage() {
                 )}
 
                 {panel === "orders" && <OrdersPanel onBrowse={() => goToPanel("browse")} />}
-                {panel === "wallet" && (
-                  <WalletPanel user={user} loading={loadingMe} onViewOrders={() => goToPanel("orders")} />
+                {panel === "cart" && (
+                  <CartPanel onBrowse={() => goToPanel("browse")} />
                 )}
                 {panel === "support" && <SupportPanel />}
                 {panel === "settings" && (
