@@ -300,7 +300,10 @@ function DashboardPage() {
             </div>
           </header>
 
-          <main className="mx-auto w-full max-w-7xl flex-1 px-6 pb-28 pt-10 lg:px-10 lg:pb-16">
+          <main
+            className="mx-auto w-full max-w-7xl flex-1 px-6 pt-10 lg:px-10 lg:pb-16"
+            style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 7.5rem)" }}
+          >
             {/* Inline banner — admin notice takes precedence over verify banner */}
             <AnimatePresence mode="wait" initial={false}>
               {visibleNotice ? (
