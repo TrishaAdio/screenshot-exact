@@ -832,3 +832,71 @@ function CountUp({ value, duration = 900 }: { value: number; duration?: number }
   return <>{display.toFixed(2)}</>;
 }
 
+function formatClock(d: Date) {
+  return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
+function relativeTime(d: Date, now: Date) {
+  const diff = Math.max(0, now.getTime() - d.getTime());
+  const s = Math.floor(diff / 1000);
+  if (s < 45) return "Just now";
+  const m = Math.floor(s / 60);
+  if (m < 1) return "Just now";
+  if (m === 1) return "1 min ago";
+  if (m < 60) return `${m} mins ago`;
+  const h = Math.floor(m / 60);
+  return h === 1 ? "1 hr ago" : `${h} hrs ago`;
+}
+
+function TimelineRow({
+  state,
+  label,
+  time,
+  last,
+}: {
+  state: "done" | "active" | "pending";
+  label: string;
+  time?: string;
+  last?: boolean;
+}) {
+  return (
+    <div className="relative flex items-start gap-3 pb-3 last:pb-0">
+      {!last && (
+        <span className="absolute left-[7px] top-4 h-[calc(100%-12px)] w-px bg-white/[0.07]" />
+      )}
+      <span className="relative mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center">
+        {state === "done" && (
+          <span className="h-3.5 w-3.5 rounded-full bg-emerald-400/90 shadow-[0_0_10px_rgba(16,185,129,0.55)] ring-2 ring-emerald-400/20" />
+        )}
+        {state === "active" && (
+          <>
+            <span className="absolute inset-0 animate-ping rounded-full bg-amber-300/50" />
+            <span className="relative h-3.5 w-3.5 rounded-full border border-amber-300/70 bg-amber-300/20" />
+          </>
+        )}
+        {state === "pending" && (
+          <span className="h-3 w-3 rounded-full border border-white/15 bg-white/[0.03]" />
+        )}
+      </span>
+      <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
+        <span
+          className={
+            state === "done"
+              ? "text-[12.5px] font-medium text-foreground/90"
+              : state === "active"
+                ? "text-[12.5px] font-medium text-amber-200/90"
+                : "text-[12.5px] text-muted-foreground/70"
+          }
+        >
+          {label}
+        </span>
+        {time && (
+          <span className="font-mono text-[10.5px] tabular-nums text-muted-foreground/70">
+            {time}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
