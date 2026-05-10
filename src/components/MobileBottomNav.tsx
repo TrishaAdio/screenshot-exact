@@ -1,14 +1,14 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { motion, useMotionValue, animate } from "framer-motion";
-import { Headphones, LayoutDashboard, ShoppingBag, Wallet, User } from "lucide-react";
+import { Headphones, LayoutDashboard, ShoppingBag, ShoppingCart, User } from "lucide-react";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from "react";
 
-type PanelKey = "overview" | "browse" | "orders" | "wallet" | "support" | "settings";
+type PanelKey = "overview" | "browse" | "orders" | "cart" | "support" | "settings";
 
 const TABS: { panel: PanelKey; label: string; Icon: typeof LayoutDashboard }[] = [
   { panel: "overview", label: "Home",    Icon: LayoutDashboard },
   { panel: "orders",   label: "Orders",  Icon: ShoppingBag },
-  { panel: "wallet",   label: "Wallet",  Icon: Wallet },
+  { panel: "cart",     label: "Cart",    Icon: ShoppingCart },
   { panel: "support",  label: "Help",    Icon: Headphones },
   { panel: "settings", label: "Account", Icon: User },
 ];
