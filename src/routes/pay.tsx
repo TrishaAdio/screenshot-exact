@@ -88,6 +88,16 @@ function PayPage() {
   const [expired, setExpired] = useState(false);
   const [paid, setPaid] = useState<CheckResponse | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
+  const [paidAt, setPaidAt] = useState<Date | null>(null);
+  const [waClickedAt, setWaClickedAt] = useState<Date | null>(null);
+  const [now, setNow] = useState<Date>(() => new Date());
+
+  // Tick a "now" clock once paid (for relative timestamps)
+  useEffect(() => {
+    if (!paid) return;
+    const id = setInterval(() => setNow(new Date()), 15000);
+    return () => clearInterval(id);
+  }, [paid]);
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -259,6 +269,7 @@ function PayPage() {
           stopPolling();
           stopTicker();
           setPaid(data);
+          setPaidAt(new Date());
           try {
             sessionStorage.setItem(
               "symdeals.lastPayment",
@@ -487,10 +498,70 @@ function PayPage() {
               <DetailRow label="Product" value={merchantName} />
             </div>
 
+            {/* Paid-at + Estimated delivery */}
+            <div
+              className="animate-success-stagger mt-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4 text-left"
+              style={{ animationDelay: "0.6s" }}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="inline-flex items-center gap-1.5 text-[11.5px] text-muted-foreground">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inset-0 animate-ping rounded-full bg-emerald-400/60" />
+                    <span className="relative h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  </span>
+                  Payment received
+                </span>
+                <span className="font-mono text-[11.5px] tabular-nums text-foreground/85">
+                  {paidAt ? formatClock(paidAt) : "—"}
+                </span>
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/[0.05] pt-3">
+                <span className="text-[11.5px] text-muted-foreground">Estimated delivery</span>
+                <span className="text-[12px] font-semibold text-foreground">Within 5–15 minutes</span>
+              </div>
+              <p className="mt-1.5 text-[10.5px] text-muted-foreground/70">
+                May take longer during high traffic.
+              </p>
+            </div>
+
+            {/* Live status timeline */}
+            <div
+              className="animate-success-stagger mt-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4 text-left"
+              style={{ animationDelay: "0.65s" }}
+            >
+              <TimelineRow
+                state="done"
+                label="Payment received"
+                time={paidAt ? relativeTime(paidAt, now) : undefined}
+              />
+              <TimelineRow
+                state={waClickedAt ? "done" : "active"}
+                label={
+                  waClickedAt
+                    ? "WhatsApp message sent"
+                    : "Awaiting WhatsApp verification"
+                }
+                time={
+                  waClickedAt
+                    ? relativeTime(waClickedAt, now)
+                    : undefined
+                }
+              />
+              <TimelineRow
+                state={waClickedAt ? "active" : "pending"}
+                label={
+                  waClickedAt
+                    ? "Waiting for your WhatsApp confirmation…"
+                    : "Access delivery pending"
+                }
+                last
+              />
+            </div>
+
             {/* Buttons */}
             <div
-              className="animate-success-stagger mt-7 flex flex-col gap-2.5"
-              style={{ animationDelay: "0.65s" }}
+              className="animate-success-stagger mt-6 flex flex-col gap-2.5"
+              style={{ animationDelay: "0.7s" }}
             >
               {(() => {
                 const finalAmt = paid.amount ?? invoice.unique_amount;
@@ -504,7 +575,11 @@ function PayPage() {
                     rel="noopener noreferrer"
                     aria-disabled={!oid}
                     onClick={(e) => {
-                      if (!oid) e.preventDefault();
+                      if (!oid) {
+                        e.preventDefault();
+                        return;
+                      }
+                      if (!waClickedAt) setWaClickedAt(new Date());
                     }}
                     className={`group/cta relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl px-5 py-3.5 text-sm font-semibold transition-all duration-200 ${
                       oid
@@ -524,11 +599,16 @@ function PayPage() {
 
             {/* Trust footer */}
             <div
-              className="animate-success-stagger mt-6 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground"
-              style={{ animationDelay: "0.75s" }}
+              className="animate-success-stagger mt-5 flex flex-col items-center justify-center gap-1 text-[11px] text-muted-foreground"
+              style={{ animationDelay: "0.8s" }}
             >
-              <ShieldCheck className="h-3 w-3 text-emerald-400" />
-              <span>Secured by SymDeals · UPI verified</span>
+              <span className="inline-flex items-center gap-1.5">
+                <ShieldCheck className="h-3 w-3 text-emerald-400" />
+                Secured by SymDeals · UPI verified
+              </span>
+              <span className="text-[10.5px] text-muted-foreground/70">
+                Support usually responds within minutes.
+              </span>
             </div>
           </div>
         </main>
@@ -750,5 +830,73 @@ function CountUp({ value, duration = 900 }: { value: number; duration?: number }
     return () => cancelAnimationFrame(raf);
   }, [value, duration]);
   return <>{display.toFixed(2)}</>;
+}
+
+function formatClock(d: Date) {
+  return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
+function relativeTime(d: Date, now: Date) {
+  const diff = Math.max(0, now.getTime() - d.getTime());
+  const s = Math.floor(diff / 1000);
+  if (s < 45) return "Just now";
+  const m = Math.floor(s / 60);
+  if (m < 1) return "Just now";
+  if (m === 1) return "1 min ago";
+  if (m < 60) return `${m} mins ago`;
+  const h = Math.floor(m / 60);
+  return h === 1 ? "1 hr ago" : `${h} hrs ago`;
+}
+
+function TimelineRow({
+  state,
+  label,
+  time,
+  last,
+}: {
+  state: "done" | "active" | "pending";
+  label: string;
+  time?: string;
+  last?: boolean;
+}) {
+  return (
+    <div className="relative flex items-start gap-3 pb-3 last:pb-0">
+      {!last && (
+        <span className="absolute left-[7px] top-4 h-[calc(100%-12px)] w-px bg-white/[0.07]" />
+      )}
+      <span className="relative mt-0.5 flex h-3.5 w-3.5 shrink-0 items-center justify-center">
+        {state === "done" && (
+          <span className="h-3.5 w-3.5 rounded-full bg-emerald-400/90 shadow-[0_0_10px_rgba(16,185,129,0.55)] ring-2 ring-emerald-400/20" />
+        )}
+        {state === "active" && (
+          <>
+            <span className="absolute inset-0 animate-ping rounded-full bg-amber-300/50" />
+            <span className="relative h-3.5 w-3.5 rounded-full border border-amber-300/70 bg-amber-300/20" />
+          </>
+        )}
+        {state === "pending" && (
+          <span className="h-3 w-3 rounded-full border border-white/15 bg-white/[0.03]" />
+        )}
+      </span>
+      <div className="flex min-w-0 flex-1 items-center justify-between gap-2">
+        <span
+          className={
+            state === "done"
+              ? "text-[12.5px] font-medium text-foreground/90"
+              : state === "active"
+                ? "text-[12.5px] font-medium text-amber-200/90"
+                : "text-[12.5px] text-muted-foreground/70"
+          }
+        >
+          {label}
+        </span>
+        {time && (
+          <span className="font-mono text-[10.5px] tabular-nums text-muted-foreground/70">
+            {time}
+          </span>
+        )}
+      </div>
+    </div>
+  );
 }
 
