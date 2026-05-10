@@ -300,7 +300,10 @@ function DashboardPage() {
             </div>
           </header>
 
-          <main className="mx-auto w-full max-w-7xl flex-1 px-6 pb-28 pt-10 lg:px-10 lg:pb-16">
+          <main
+            className="mx-auto w-full max-w-7xl flex-1 px-6 pt-10 lg:px-10 lg:pb-16"
+            style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 7.5rem)" }}
+          >
             {/* Inline banner — admin notice takes precedence over verify banner */}
             <AnimatePresence mode="wait" initial={false}>
               {visibleNotice ? (
@@ -1029,15 +1032,15 @@ function ProductCard({
       onClick={onOpen}
       onMouseMove={handleMove}
       whileHover={{ y: -3 }}
-      whileTap={{ scale: 0.985 }}
-      transition={{ type: "spring", stiffness: 320, damping: 26 }}
-      className="group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-border bg-surface/60 p-3.5 backdrop-blur transition-colors duration-300 hover:border-muted-foreground/30 hover:bg-surface-elevated/80 hover:shadow-elevated sm:flex-row sm:items-stretch sm:p-5"
-      style={{ minHeight: 0 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ type: "spring", stiffness: 360, damping: 26 }}
+      className="group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-white/[0.06] bg-surface/55 p-3 backdrop-blur-xl transition-[border-color,background-color,box-shadow] duration-200 hover:border-white/[0.12] hover:bg-surface-elevated/75 hover:shadow-[0_10px_30px_-18px_rgba(0,0,0,0.7)] active:scale-[0.985] sm:flex-row sm:items-stretch sm:p-5"
+      style={{ minHeight: 0, willChange: "transform" }}
     >
-      {/* cursor glow */}
+      {/* cursor glow (desktop only) */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 hidden opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:block"
         style={{
           background:
             "radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%)",
@@ -1046,74 +1049,73 @@ function ProductCard({
 
       {/* MOBILE LAYOUT */}
       <div className="relative flex flex-col sm:hidden">
-        {/* Logo banner */}
-        <div className="relative mb-3 flex h-[88px] w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-gradient-to-br from-background/80 to-background/40">
+        {/* Logo banner — slimmer, calmer */}
+        <div className="relative mb-3 flex h-[72px] w-full items-center justify-center overflow-hidden rounded-xl border border-white/[0.05] bg-gradient-to-br from-white/[0.04] to-transparent">
           <ServiceLogo
             src={product.image}
             name={product.name}
             className="h-full w-full object-cover"
-            iconClass="h-9 w-9"
+            iconClass="h-8 w-8"
           />
           {savePct > 0 && (
-            <span className="absolute right-1.5 top-1.5 inline-flex items-center rounded-md border border-emerald-400/25 bg-emerald-500/15 px-1.5 py-0.5 text-[9.5px] font-semibold tracking-tight text-emerald-300 backdrop-blur">
+            <span className="absolute right-1.5 top-1.5 inline-flex items-center rounded-md border border-emerald-400/20 bg-emerald-500/12 px-1.5 py-[2px] text-[9px] font-semibold tracking-tight text-emerald-300/95 backdrop-blur-md">
               −{savePct}%
             </span>
           )}
-          <span className="absolute left-1.5 top-1.5 inline-flex items-center rounded-md border border-white/10 bg-black/35 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.1em] text-white/80 backdrop-blur">
-            {product.category || "Service"}
-          </span>
         </div>
 
-        {/* Title — allow 2 lines */}
-        <h3 className="font-display text-[14px] font-semibold leading-[1.25] tracking-tight text-foreground line-clamp-2 min-h-[2.5em]">
+        {/* Category — small muted label */}
+        <div className="text-[9.5px] font-medium uppercase tracking-[0.14em] text-muted-foreground/80">
+          {product.category || "Service"}
+        </div>
+
+        {/* Title — 2 lines, bold, tight */}
+        <h3 className="mt-1 font-display text-[14px] font-semibold leading-[1.3] tracking-tight text-foreground line-clamp-2 min-h-[2.6em]">
           {product.name}
         </h3>
 
-        {/* Detail chips */}
-        <div className="mt-2 flex flex-wrap items-center gap-1">
+        {/* Detail chips — uniform, restrained */}
+        <div className="mt-2.5 flex items-center gap-1">
           {duration && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-1.5 py-0.5 text-[9.5px] font-medium text-foreground/85">
-              <Clock className="h-2.5 w-2.5 text-primary" />
+            <span className="inline-flex h-[20px] items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.03] px-2 text-[9.5px] font-medium text-foreground/85">
+              <Clock className="h-2.5 w-2.5 text-primary/90" />
               {duration}
             </span>
           )}
-          <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background/60 px-1.5 py-0.5 text-[9.5px] font-medium text-muted-foreground">
-            <Zap className="h-2.5 w-2.5 text-primary" />
+          <span className="inline-flex h-[20px] items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.03] px-2 text-[9.5px] font-medium text-muted-foreground">
+            <Zap className="h-2.5 w-2.5 text-primary/90" />
             Instant
-          </span>
-          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/20 bg-emerald-500/8 px-1.5 py-0.5 text-[9.5px] font-medium text-emerald-300/90">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            In Stock
           </span>
         </div>
 
-        {/* Price */}
+        {/* Price row — current dominant, real softer, duration right */}
         <div className="mt-3 flex items-baseline gap-1.5">
-          <span className="font-display text-[18px] font-semibold tracking-tight text-foreground">
+          <span className="font-display text-[18px] font-semibold leading-none tracking-tight text-foreground tabular-nums">
             {lowest ? `₹${lowest.price.toLocaleString()}` : "—"}
           </span>
           {showOldPrice && (
-            <span className="text-[11px] font-medium text-muted-foreground line-through">
+            <span className="text-[11px] font-medium text-muted-foreground/55 line-through tabular-nums">
               ₹{oldPrice!.toLocaleString()}
             </span>
           )}
           {duration && (
-            <span className="ml-auto text-[10px] font-medium text-muted-foreground">
+            <span className="ml-auto text-[10px] font-medium text-muted-foreground/80">
               / {duration.toLowerCase()}
             </span>
           )}
         </div>
 
-        {/* CTA — full width */}
+        {/* CTA — soft compress, premium */}
         <motion.button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             onOpen();
           }}
-          whileTap={{ scale: 0.96 }}
-          transition={{ type: "spring", stiffness: 420, damping: 22 }}
-          className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1 rounded-xl bg-foreground text-[12px] font-semibold tracking-tight text-background shadow-[0_6px_20px_-8px_color-mix(in_oklab,var(--foreground)_60%,transparent)]"
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 480, damping: 26 }}
+          className="mt-3 inline-flex h-9 w-full items-center justify-center gap-1 rounded-xl bg-foreground text-[12px] font-semibold tracking-tight text-background shadow-[0_8px_22px_-10px_color-mix(in_oklab,var(--foreground)_55%,transparent)] transition-shadow duration-200 active:shadow-[0_4px_14px_-8px_color-mix(in_oklab,var(--foreground)_45%,transparent)]"
+          style={{ willChange: "transform" }}
         >
           Get Access
           <ArrowUpRight className="h-3.5 w-3.5" />
