@@ -546,8 +546,8 @@ function DesktopSidebar({
                   ? "Browse all services"
                   : item.label === "Orders"
                   ? "View your active orders"
-                  : item.label === "Wallet"
-                  ? "Wallet & billing"
+                  : item.label === "Cart"
+                  ? "Your shopping cart"
                   : item.label === "Support"
                   ? "Talk to support"
                   : "Account settings";
