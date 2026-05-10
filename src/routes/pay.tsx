@@ -269,6 +269,7 @@ function PayPage() {
           stopPolling();
           stopTicker();
           setPaid(data);
+          setPaidAt(new Date());
           try {
             sessionStorage.setItem(
               "symdeals.lastPayment",
