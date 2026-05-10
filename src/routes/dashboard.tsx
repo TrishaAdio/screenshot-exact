@@ -4,7 +4,7 @@ import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 import { OrdersPanel } from "@/components/panels/OrdersPanel";
 import { SupportPanel } from "@/components/panels/SupportPanel";
 import { ProfilePanel } from "@/components/panels/ProfilePanel";
-import { WalletPanel } from "@/components/panels/WalletPanel";
+import { CartPanel } from "@/components/panels/CartPanel";
 import {
   Bell,
   Code2,
